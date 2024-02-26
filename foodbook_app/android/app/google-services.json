@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "168193050245",
+    "project_id": "foodbook-back",
+    "storage_bucket": "foodbook-back.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168193050245:android:b9d373a233116738c98bec",
+        "android_client_info": {
+          "package_name": "com.example.foodbook_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXln-Rns5qpp3oT9m9-k7V7THWoXjqKT4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168193050245:android:e1fe480eeb2e00c9c98bec",
+        "android_client_info": {
+          "package_name": "com.example.foodbook_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXln-Rns5qpp3oT9m9-k7V7THWoXjqKT4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
