@@ -112,12 +112,10 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 115.0),
+                    padding: const EdgeInsets.symmetric(vertical: 100.0),
                     child: OutlinedButton(
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => CategoriesAndStarsView()), // Reemplaza NewScreen con tu pantalla destino
-                        );
+                        Navigator.of(context).pop();
                       },
                       style: OutlinedButton.styleFrom(
                         side: BorderSide.none,
@@ -127,7 +125,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                         'Back to categories and stars',
                         style: TextStyle(
                           fontSize: 20,
-                          color: Color.fromRGBO(0, 122, 255 , 100), // Corrección en la opacidad
+                          color: Color.fromRGBO(0, 122, 255 , 100),
                         ),
                       ),
                     ),
@@ -141,23 +139,3 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 }
-
-        // Positioned(
-        //           bottom: 50, // Ajusta este valor para mover el botón más arriba o más abajo
-        //           right: 20, // Ajusta para alinear a la derecha
-        //           left: 20, // Ajusta para alinear a la izquierda y dar un ancho consistente
-        //           child: OutlinedButton(
-        //             onPressed: getImage,
-        //             style: OutlinedButton.styleFrom(
-        //               side: BorderSide.none,
-        //               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        //             ),
-        //             child: const Text(
-        //               'Add a photo',
-        //               style: TextStyle(
-        //                 fontSize: 20,
-        //                 color: Color.fromRGBO(0, 122, 255 , 100),
-        //               ),
-        //             ),
-        //           ),
-        //         ),
