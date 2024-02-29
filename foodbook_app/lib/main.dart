@@ -23,8 +23,8 @@ class MyApp extends StatelessWidget {
           BlocProvider<FoodCategoryBloc>(
             create: (context) => FoodCategoryBloc(3),
           ),
-          BlocProvider<ReviewBloc>(
-            create: (context) => ReviewBloc(),
+          BlocProvider<StarsBloc>(
+            create: (context) => StarsBloc(),
           ),
         ],
         child: CreateReviewView(),

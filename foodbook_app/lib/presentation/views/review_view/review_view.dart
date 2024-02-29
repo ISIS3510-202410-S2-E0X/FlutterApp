@@ -133,45 +133,57 @@ class CreateReviewView extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: <Widget>[
-                  const RatingCategory(category: 'Cleanliness'),
-                  const SizedBox(height: 16),
-                  const RatingCategory(category: 'Waiting Time'),
-                  // Repeat RatingBar.builder for each rating category...
-                  const SizedBox(height: 16),
-                  const RatingCategory(category: 'Service'),
-                  // RatingBar for 'Service'
-                  const SizedBox(height: 16),
-                  const RatingCategory(category: 'Food Quality'),
-                  // RatingBar for 'Food Quality'
-                  const SizedBox(height: 16),
-                  // Add a photo button
+                  const RatingCategory(category: 'Cleanliness', initialRating: 0),
+                  const SizedBox(height: 8),
+                  const RatingCategory(category: 'Waiting Time', initialRating: 0),
+                  const SizedBox(height: 8),
+                  const RatingCategory(category: 'Service', initialRating: 0),
+                  const SizedBox(height: 8),
+                  const RatingCategory(category: 'Food Quality', initialRating: 0),
+                  const SizedBox(height: 20),
+
                   OutlinedButton(
                     onPressed: () {
-                      // Handle add photo action
+                      // Acción del botón
                     },
-                    child: const Text('Add a photo...'),
-                  ),
-                  const SizedBox(height: 24),
-                  const Text('Leave a comment', style: TextStyle(fontSize: 22)),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Title',
-                      hintText: 'Optional',
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide.none,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),                  
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Body',
-                      hintText: 'Value',
+                    child: const Text(
+                      'Next',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Color.fromRGBO(0, 122, 255 , 100),
+                      ),
                     ),
-                    maxLines: 5,
-                  ),
-                  // Add other widgets if needed
+                  )
                 ],
               ),
             ),
-          )
+          ),
+          // Expanded(
+          //   child: Column(
+          //       children: <Widget>[
+          //         const Text('Leave a comment', style: TextStyle(fontSize: 22)),
+          //         TextFormField(
+          //           decoration: const InputDecoration(
+          //             labelText: 'Title',
+          //             hintText: 'Optional',
+          //           ),
+          //         ),
+          //         const SizedBox(height: 16),
+          //         TextFormField(
+          //           decoration: const InputDecoration(
+          //             labelText: 'Body',
+          //             hintText: 'Value',
+          //           ),
+          //           maxLines: 5,
+          //         ),
+          //       ]
+          //   ),
+          // )
         ],
       ),
     );

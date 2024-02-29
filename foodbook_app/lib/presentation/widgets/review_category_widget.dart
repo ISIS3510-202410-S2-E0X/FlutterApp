@@ -8,11 +8,7 @@ class RatingCategory extends StatelessWidget {
   final String category;
   final double initialRating;
 
-  const RatingCategory({
-    Key? key,
-    required this.category,
-    this.initialRating = 0,
-  }) : super(key: key);
+  const RatingCategory({super.key, required this.category, required this.initialRating});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +34,8 @@ class RatingCategory extends StatelessWidget {
             ),
             onRatingUpdate: (rating) {
               // Enviar evento al BLoC
-              context.read<ReviewBloc>().add(ReviewRatingChanged(category, rating));
+              print('UPDATED!');
+              context.read<StarsBloc>().add(ReviewRatingChanged(category, rating));
             },
           ),
         ],
