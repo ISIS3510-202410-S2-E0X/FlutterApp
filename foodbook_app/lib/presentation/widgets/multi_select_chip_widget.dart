@@ -13,6 +13,7 @@ class MultiSelectChip extends StatefulWidget {
   const MultiSelectChip(this.categoriesList, {super.key, this.onSelectionChanged, this.onMaxSelected, this.maxSelection});
 
   @override
+  // ignore: library_private_types_in_public_api
   _MultiSelectChipState createState() => _MultiSelectChipState();
 }
 
