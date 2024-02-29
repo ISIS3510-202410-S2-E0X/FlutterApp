@@ -42,10 +42,10 @@ class login_view extends StatelessWidget {
             Spacer(),
             // This would be your login or sign up button
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.symmetric(horizontal: 70),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(255, 0, 120, 218), // background (button) color
+                  primary: Color.fromARGB(255, 0, 140, 255), // background (button) color
                   onPrimary: Colors.white, // foreground (text) color
                   minimumSize: Size(double.infinity, 50), // set the size
                   shape: RoundedRectangleBorder(
@@ -60,10 +60,6 @@ class login_view extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(
-                        'lib/presentation/images/guglu.png',
-                        height: 24, // Set the image height
-                      ),
                       SizedBox(width: 8), // Add some spacing between the image and text
                       Text('Continue with Google'),
                     ],
