@@ -5,11 +5,12 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:foodbook_app/presentation/widgets/multi_select_chip_widget.dart';
 import 'package:foodbook_app/presentation/widgets/review_category_widget.dart';
 
+import 'package:foodbook_app/presentation/views/review_view/text_images_view.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
 
-class CreateReviewView extends StatelessWidget {
+class CategoriesAndStarsView extends StatelessWidget {
   // TO-DO: Change this to a list of categories from Firebase
   final List<String> _categories = [
     'Vegan',
@@ -51,17 +52,15 @@ class CreateReviewView extends StatelessWidget {
     'Pizza',
   ];
 
-  CreateReviewView({super.key});
+  CategoriesAndStarsView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<FoodCategoryBloc>(context);
-
     return Scaffold(
       body: Column(
         children: [
           const Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 6),
             child: Text(
               'What did you order?',
               style: TextStyle(
@@ -134,21 +133,22 @@ class CreateReviewView extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   const RatingCategory(category: 'Cleanliness', initialRating: 0),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 1),
                   const RatingCategory(category: 'Waiting Time', initialRating: 0),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 1),
                   const RatingCategory(category: 'Service', initialRating: 0),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 1),
                   const RatingCategory(category: 'Food Quality', initialRating: 0),
-                  const SizedBox(height: 20),
-
+                  const SizedBox(height: 14),
                   OutlinedButton(
                     onPressed: () {
-                      // Acción del botón
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => const TextAndImagesView()), // Reemplaza NewScreen con tu pantalla destino
+                      );
                     },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide.none,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),                  
+                      // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),                  
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
                     child: const Text(
@@ -163,27 +163,6 @@ class CreateReviewView extends StatelessWidget {
               ),
             ),
           ),
-          // Expanded(
-          //   child: Column(
-          //       children: <Widget>[
-          //         const Text('Leave a comment', style: TextStyle(fontSize: 22)),
-          //         TextFormField(
-          //           decoration: const InputDecoration(
-          //             labelText: 'Title',
-          //             hintText: 'Optional',
-          //           ),
-          //         ),
-          //         const SizedBox(height: 16),
-          //         TextFormField(
-          //           decoration: const InputDecoration(
-          //             labelText: 'Body',
-          //             hintText: 'Value',
-          //           ),
-          //           maxLines: 5,
-          //         ),
-          //       ]
-          //   ),
-          // )
         ],
       ),
     );
