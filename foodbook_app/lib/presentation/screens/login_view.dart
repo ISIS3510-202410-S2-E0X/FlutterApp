@@ -58,10 +58,19 @@ class login_view extends StatelessWidget {
                 },
                 child: Center(
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start, // Align content to the left
                     children: [
-                      SizedBox(width: 8), // Add some spacing between the image and text
-                      Text('Continue with Google'),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: Image.asset(
+                          'lib/presentation/images/google2.jpeg',
+                          height: 30, // Set the image height
+                        ),
+                      ),
+                      SizedBox(width: 10), // Add some spacing between the image and text
+                      Center(
+                        child: Text('Continue with Google'),
+                      ),
                     ],
                   ),
                 ),
