@@ -1,39 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
-import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
-import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/data/repository/restaurant_repo.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card.dart';
 
 class BrowseView extends StatelessWidget {
+  BrowseView({Key? key}) : super(key: key);
+
+  final RestaurantRepository repository = RestaurantRepository();
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<BrowseBloc>(
-      create: (_) => BrowseBloc()..add(LoadRestaurantsEvent()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Browse'),
-          // Add other AppBar properties as needed
-        ),
-        body: BlocBuilder<BrowseBloc, BrowseState>(
-          builder: (context, state) {
-            if (state is BrowseLoadInProgress) {
-              return Center(child: CircularProgressIndicator());
-            } else if (state is BrowseLoadSuccess) {
-              return ListView.builder(
-                itemCount: state.restaurants.length,
-                itemBuilder: (context, index) {
-                  return RestaurantCard(restaurant: state.restaurants[index]);
-                },
-              );
-            } else if (state is BrowseLoadFailure) {
-              return Center(child: Text('Failed to load restaurants'));
-            } else {
-              return Center(child: Text('Please wait...'));
-            }
+    List<Restaurant> restaurants = repository.fetchRestaurants();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Browse', style: TextStyle(fontWeight: FontWeight.bold)), // Bold title
+        actions: [
+          IconButton(
+            icon: Icon(Icons.tune), // Filter icon
+            onPressed: () {
+              // Handle filter action
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              // Handle search action
+            },
+          ),
+        ],
+      ),
+      body: Container(
+        color: Colors.grey[200], // Set the background color to grey
+        child: ListView.builder(
+          itemCount: restaurants.length,
+          itemBuilder: (context, index) {
+            return RestaurantCard(restaurant: restaurants[index]);
           },
         ),
-        // Add other Scaffold properties as needed
       ),
     );
   }

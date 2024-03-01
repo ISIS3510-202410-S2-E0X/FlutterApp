@@ -1,32 +1,20 @@
+import 'package:foodbook_app/data/models/restaurant.dart';
+
 abstract class BrowseState {}
 
-class BrowseInitial extends BrowseState {}
+class RestaurantsInitial extends BrowseState {}
 
-class BrowseLoadInProgress extends BrowseState {}
+class RestaurantsLoadInProgress extends BrowseState {}
 
-class BrowseLoadSuccess extends BrowseState {
+class RestaurantsLoadSuccess extends BrowseState {
   final List<Restaurant> restaurants;
 
-  BrowseLoadSuccess(this.restaurants);
+  RestaurantsLoadSuccess(this.restaurants);
 }
 
-class BrowseLoadFailure extends BrowseState {}
+class RestaurantsLoadFailure extends BrowseState {
+  final String error;
 
-// You'll need to define a Restaurant model that matches the data you're displaying
-class Restaurant {
-  final String name;
-  final String priceIndicator;
-  final String waitTime;
-  final String distance;
-  final List<String> tags;
-  final List<String> imageUrls;
-
-  Restaurant({
-    required this.name,
-    required this.priceIndicator,
-    required this.waitTime,
-    required this.distance,
-    required this.tags,
-    required this.imageUrls,
-  });
+  RestaurantsLoadFailure(this.error);
 }
+

@@ -1,3 +1,4 @@
 abstract class BrowseEvent {}
 
-class LoadRestaurantsEvent extends BrowseEvent {}
+class LoadRestaurants extends BrowseEvent {}
+
