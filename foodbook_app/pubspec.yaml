@@ -41,6 +41,7 @@ dependencies:
   email_validator:
   google_sign_in:
   google_fonts: ^6.1.0
+  firebase_core: ^2.25.5
 
 
 dev_dependencies:
