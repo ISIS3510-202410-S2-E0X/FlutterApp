@@ -19,5 +19,8 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
       emit(RestaurantsLoadFailure(error.toString()));
     }
   }
+
+
+  
 }
 

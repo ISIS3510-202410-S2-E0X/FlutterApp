@@ -15,13 +15,47 @@ class RestaurantCard extends StatelessWidget {
     Widget buildImages() {
       switch (imageCount) {
         case 1:
-          return Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover);
+          return Center(
+            child: Container(
+              width: double.infinity, // Ensure the container tries to expand to fill all available width.
+              height: double.infinity, // Ensure the container tries to expand to fill all available height.
+              decoration: BoxDecoration(
+                // Define the border and border radius here
+                border: Border.all(
+                  color: Colors.white, // White border
+                  width: 3, // Border width
+                ),
+                borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+              ),
+              child: ClipRRect(
+                // If you want rounded corners, otherwise just remove the ClipRRect
+                borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                child: Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover),
+              ),
+            ),
+          );
         case 2:
           return Row(
             children: List.generate(
               imageCount,
               (index) => Expanded(
-                child: Image.asset(restaurant.imagePaths[index], fit: BoxFit.cover),
+                child: Container(
+                  width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                  height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                  decoration: BoxDecoration(
+                    // Define the border and border radius here
+                    border: Border.all(
+                      color: Colors.white, // White border
+                      width: 3, // Border width
+                    ),
+                    borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                  ),
+                  child: ClipRRect(
+                    // If you want rounded corners, otherwise just remove the ClipRRect
+                    borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                    child: Image.asset(restaurant.imagePaths[index], fit: BoxFit.cover),
+                  ),
+                ),
               ),
             ),
           );
@@ -29,8 +63,24 @@ class RestaurantCard extends StatelessWidget {
           return Row(
             children: [
               Expanded(
-                flex: 2,
-                child: Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover),
+                flex: 1,
+                child: Container(
+                  width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                  height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                  decoration: BoxDecoration(
+                    // Define the border and border radius here
+                    border: Border.all(
+                      color: Colors.white, // White border
+                      width: 3, // Border width
+                    ),
+                    borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                  ),
+                  child: ClipRRect(
+                    // If you want rounded corners, otherwise just remove the ClipRRect
+                    borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                    child: Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover),
+                  ),
+                ),
               ),
               Expanded(
                 flex: 1,
@@ -38,7 +88,23 @@ class RestaurantCard extends StatelessWidget {
                   children: List.generate(
                     imageCount - 1,
                     (index) => Expanded(
-                      child: Image.asset(restaurant.imagePaths[index + 1], fit: BoxFit.cover),
+                      child: Container(
+                        width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                        height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                        decoration: BoxDecoration(
+                          // Define the border and border radius here
+                          border: Border.all(
+                            color: Colors.white, // White border
+                            width: 3, // Border width
+                          ),
+                          borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                        ),
+                        child: ClipRRect(
+                          // If you want rounded corners, otherwise just remove the ClipRRect
+                          borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                          child: Image.asset(restaurant.imagePaths[index+1], fit: BoxFit.cover),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -46,31 +112,232 @@ class RestaurantCard extends StatelessWidget {
             ],
           );
         case 4:
-        default: // Handle 4 or more images
           return Row(
             children: [
+              // The first image takes up the full height on the left
               Expanded(
                 flex: 1,
-                child: Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover),
+                child: Container(
+                  width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                  height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                  decoration: BoxDecoration(
+                    // Define the border and border radius here
+                    border: Border.all(
+                      color: Colors.white, // White border
+                      width: 3, // Border width
+                    ),
+                    borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                  ),
+                  child: ClipRRect(
+                    // If you want rounded corners, otherwise just remove the ClipRRect
+                    borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                    child: Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover),
+                  ),
+                ),
               ),
+              // The next three images are on the right
               Expanded(
                 flex: 1,
                 child: Column(
                   children: [
-                    Expanded(child: Image.asset(restaurant.imagePaths[1], fit: BoxFit.cover)),
-                    Expanded(child: Image.asset(restaurant.imagePaths[2], fit: BoxFit.cover)),
-                    if (imageCount > 3)
-                      Expanded(child: Image.asset(restaurant.imagePaths[3], fit: BoxFit.cover)),
+                    // The second image takes up the top half of the right side
+                    Expanded(
+                      child: Container(
+                        width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                        height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                        decoration: BoxDecoration(
+                          // Define the border and border radius here
+                          border: Border.all(
+                            color: Colors.white, // White border
+                            width: 3, // Border width
+                          ),
+                          borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                        ),
+                        child: ClipRRect(
+                          // If you want rounded corners, otherwise just remove the ClipRRect
+                          borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                          child: Image.asset(restaurant.imagePaths[1], fit: BoxFit.cover),
+                        ),
+                      ),
+                    ),
+                    // The third and fourth images are side by side on the bottom half of the right side
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                              height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                              decoration: BoxDecoration(
+                                // Define the border and border radius here
+                                border: Border.all(
+                                  color: Colors.white, // White border
+                                  width: 3, // Border width
+                                ),
+                                borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                              ),
+                              child: ClipRRect(
+                                // If you want rounded corners, otherwise just remove the ClipRRect
+                                borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                                child: Image.asset(restaurant.imagePaths[2], fit: BoxFit.cover),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                              height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                              decoration: BoxDecoration(
+                                // Define the border and border radius here
+                                border: Border.all(
+                                  color: Colors.white, // White border
+                                  width: 3, // Border width
+                                ),
+                                borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                              ),
+                              child: ClipRRect(
+                                // If you want rounded corners, otherwise just remove the ClipRRect
+                                borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                                child: Image.asset(restaurant.imagePaths[3], fit: BoxFit.cover),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
             ],
           );
+          case 5:
+          default:
+            return Row(
+              children: [
+                // The first image takes up the full height on the left
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                    height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                    decoration: BoxDecoration(
+                      // Define the border and border radius here
+                      border: Border.all(
+                        color: Colors.white, // White border
+                        width: 3, // Border width
+                      ),
+                      borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                    ),
+                    child: ClipRRect(
+                      // If you want rounded corners, otherwise just remove the ClipRRect
+                      borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                      child: Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover),
+                    ),
+                  ),
+                ),
+                // The next four images are in a 2x2 grid on the right
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                                height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                                decoration: BoxDecoration(
+                                  // Define the border and border radius here
+                                  border: Border.all(
+                                    color: Colors.white, // White border
+                                    width: 3, // Border width
+                                  ),
+                                  borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                                ),
+                                child: ClipRRect(
+                                  // If you want rounded corners, otherwise just remove the ClipRRect
+                                  borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                                  child: Image.asset(restaurant.imagePaths[1], fit: BoxFit.cover),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                                height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                                decoration: BoxDecoration(
+                                  // Define the border and border radius here
+                                  border: Border.all(
+                                    color: Colors.white, // White border
+                                    width: 3, // Border width
+                                  ),
+                                  borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                                ),
+                                child: ClipRRect(
+                                  // If you want rounded corners, otherwise just remove the ClipRRect
+                                  borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                                  child: Image.asset(restaurant.imagePaths[2], fit: BoxFit.cover),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                                height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                                decoration: BoxDecoration(
+                                  // Define the border and border radius here
+                                  border: Border.all(
+                                    color: Colors.white, // White border
+                                    width: 3, // Border width
+                                  ),
+                                  borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                                ),
+                                child: ClipRRect(
+                                  // If you want rounded corners, otherwise just remove the ClipRRect
+                                  borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                                  child: Image.asset(restaurant.imagePaths[3], fit: BoxFit.cover),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                width: double.infinity, // Ensure the container tries to expand to fill all available width.
+                                height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                                decoration: BoxDecoration(
+                                  // Define the border and border radius here
+                                  border: Border.all(
+                                    color: Colors.white, // White border
+                                    width: 3, // Border width
+                                  ),
+                                  borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                                ),
+                                child: ClipRRect(
+                                  // If you want rounded corners, otherwise just remove the ClipRRect
+                                  borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                                  child: Image.asset(restaurant.imagePaths[4], fit: BoxFit.cover),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
       }
     }
 
     return Card(
-      color: Color.fromARGB(255, 255, 254, 254), // Card background color
+      color: Color.fromARGB(255, 255, 255, 255), // Card background color
       elevation: 4.0,
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
@@ -79,7 +346,7 @@ class RestaurantCard extends StatelessWidget {
           // Image layout based on the number of images
           SizedBox(
             height: 200,
-            child: hasImages ? buildImages() : Container(color: Colors.grey),
+            child: hasImages ? buildImages() : Container(color: Color.fromARGB(255, 255, 255, 255)),
           ),
           // Restaurant details
           Padding(
@@ -155,8 +422,8 @@ class RestaurantCard extends StatelessWidget {
                     children: restaurant.categories.map((category) => Container(
                       margin: EdgeInsets.only(right: 8),
                       child: Chip(
-                        label: Text(category),
-                        backgroundColor: const Color.fromARGB(255, 202, 202, 202), // Changed color to grey
+                        label: Text(category,style: TextStyle(fontWeight: FontWeight.bold),),
+                        backgroundColor: Color.fromARGB(255, 199, 199, 199), // Changed color to grey
                       ),
                     )).toList(),
                   ),

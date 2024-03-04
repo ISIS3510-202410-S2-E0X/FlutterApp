@@ -22,33 +22,52 @@ class _BrowseViewState extends State<BrowseView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Browse', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white, // Set AppBar background to white
+        title: Text(
+          'Browse',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black, // Title color
+          ),
+        ),
+        iconTheme: IconThemeData(color: Colors.black), // Appbar icons color
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.filter_list), // Icon for filter
+            icon: Icon(Icons.filter_list, color: Colors.black), // Icon for filter
             onPressed: () {
               // Handle filter action
             },
           ),
         ],
+        elevation: 0, // Remove shadow
       ),
       backgroundColor: Colors.grey[200], // Set the background color to grey
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          Container(
+            color: Color.fromARGB(255, 255, 255, 255), // White background color for search bar container
+            padding: const EdgeInsets.symmetric(horizontal: 8.0), // Horizontal padding only
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: Icon(Icons.search, color: Colors.black),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
                 ),
+                contentPadding: EdgeInsets.symmetric(vertical: 5), // Reduced vertical padding to make the search bar thinner
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: const Color.fromARGB(255, 197, 197, 197), // Search bar fill color
               ),
             ),
+          ),
+          Container(
+            color: Colors.white, // White background color for the SizedBox container
+            child: SizedBox(height: 8), // White space below the search bar
+          ),
+          Divider(
+            height: 1, // Height of the divider line
+            color: Colors.grey[300], // Color of the divider line
           ),
           Expanded(
             child: ListView.builder(
