@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 
-class RestaurantCard extends StatelessWidget {
+class ImagesDisplay extends StatelessWidget {
   final Restaurant restaurant;
-
-  const RestaurantCard({Key? key, required this.restaurant}) : super(key: key);
+  const ImagesDisplay({Key? key, required this.restaurant}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -336,104 +335,6 @@ class RestaurantCard extends StatelessWidget {
       }
     }
 
-    return Card(
-      color: Color.fromARGB(255, 255, 255, 255), // Card background color
-      elevation: 4.0,
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image layout based on the number of images
-          SizedBox(
-            height: 200,
-            child: hasImages ? buildImages() : Container(color: Color.fromARGB(255, 255, 255, 255)),
-          ),
-          // Restaurant details
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Restaurant name, price range, and bookmark icon on the same line
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: RichText(
-                        overflow: TextOverflow.ellipsis,
-                        text: TextSpan(
-                          style: TextStyle(
-                            fontSize: 18, // Increased font size
-                            color: Colors.black, // Default color for all spans
-                          ),
-                          children: [
-                            TextSpan(
-                              text: restaurant.name,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const TextSpan(text: ' · '), // Dot separator
-                            TextSpan(
-                              text: restaurant.priceRange,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Icon(
-                      Icons.bookmark_border,
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4), // Add a little space between title and icons
-                // Time and distance with icons
-                Row(
-                  children: [
-                    Icon(Icons.access_time, size: 16, color: const Color.fromARGB(255, 0, 0, 0)),
-                    SizedBox(width: 4),
-                    Text(
-                      '${restaurant.timeRange} · ',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: const Color.fromARGB(255, 53, 53, 53),
-                      ),
-                    ),
-                    Icon(Icons.location_on, size: 16, color: const Color.fromARGB(255, 0, 0, 0)),
-                    SizedBox(width: 4),
-                    Text(
-                      '${restaurant.distance.toStringAsFixed(1)} km',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: const Color.fromARGB(255, 53, 53, 53),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 8),
-                // Category chips
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: restaurant.categories.map((category) => Container(
-                      margin: EdgeInsets.only(right: 8),
-                      child: Chip(
-                        label: Text(category,style: TextStyle(fontWeight: FontWeight.bold),),
-                        backgroundColor: Color.fromARGB(255, 199, 199, 199), // Changed color to grey
-                      ),
-                    )).toList(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    return hasImages ? buildImages() : Container(color: Colors.grey, width: double.infinity, height: 200);
   }
 }
-

@@ -9,7 +9,8 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
 
   BrowseBloc({required this.restaurantRepository}) : super(RestaurantsInitial()) {
     on<LoadRestaurants>(_onLoadRestaurants);
-    on<FilterRestaurants>(_onFilterRestaurants); // Add this line
+    on<FilterRestaurants>(_onFilterRestaurants);
+    on<ToggleBookmark>(_onToggleBookmark);
   }
 
   void _onLoadRestaurants(LoadRestaurants event, Emitter<BrowseState> emit) async {
@@ -52,6 +53,18 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
       final matchesCategory = category == null || restaurant.categories.contains(category);
       return matchesPrice && withinDistance && matchesCategory;
     }).toList();
+  }
+
+
+  void _onToggleBookmark(ToggleBookmark event, Emitter<BrowseState> emit) async {
+    emit(RestaurantsLoadInProgress()); // Show loading while processing the bookmark toggle
+    try {
+      await restaurantRepository.toggleBookmark(event.restaurantId);
+      final restaurants = await restaurantRepository.fetchRestaurants(); // Re-fetch the updated list of restaurants
+      emit(RestaurantsLoadSuccess(restaurants));
+    } catch (error) {
+      emit(RestaurantsLoadFailure(error.toString()));
+    }
   }
 
   

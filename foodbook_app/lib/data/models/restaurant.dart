@@ -10,6 +10,7 @@ class Restaurant {
   final int waiting_time_avg;
   final int service_avg;
   final int food_quality_avg;
+  final bool bookmarked;
 
   Restaurant({
     required this.name,
@@ -22,6 +23,7 @@ class Restaurant {
     required this.waiting_time_avg,
     required this.service_avg,
     required this.food_quality_avg,
+    required this.bookmarked,
   });
 
   // Method to create a Restaurant from a JSON object
@@ -37,6 +39,7 @@ class Restaurant {
       waiting_time_avg: json['waiting_time_avg'],
       service_avg: json['service_avg'],
       food_quality_avg: json['food_quality_avg'],
+      bookmarked: false,
     );
   }
 
@@ -53,6 +56,7 @@ class Restaurant {
       'waiting_time_avg': waiting_time_avg,
       'service_avg': service_avg,
       'food_quality_avg': food_quality_avg,
+      'bookmarked': bookmarked,
     };
   }
 }

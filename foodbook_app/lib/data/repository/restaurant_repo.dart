@@ -22,6 +22,7 @@ class RestaurantRepository {
         waiting_time_avg: 89,
         service_avg: 92,
         food_quality_avg: 94,
+        bookmarked: true,
       ),
       Restaurant(
         name: 'MiCaserito',
@@ -40,9 +41,18 @@ class RestaurantRepository {
         waiting_time_avg: 89,
         service_avg: 92,
         food_quality_avg: 94,
+        bookmarked: false,
       ),
     ];
   }
+
+
+  Future<void> toggleBookmark(String restaurantId) async {
+    // Implement the logic to toggle the bookmark status in your data source
+    // For example, finding the restaurant by ID and updating the 'bookmarked' field
+  }
+
+  
 }
 
 

@@ -15,3 +15,9 @@ class FilterRestaurants extends BrowseEvent {
   });
 }
 
+class ToggleBookmark extends BrowseEvent {
+  final String restaurantId;
+
+  ToggleBookmark(this.restaurantId);
+}
+
