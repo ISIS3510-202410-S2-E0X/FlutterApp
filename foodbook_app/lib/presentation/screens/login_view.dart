@@ -1,8 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:foodbook_app/user_controller.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class login_view extends StatelessWidget {
-  const login_view({super.key});
+// ignore: camel_case_types
+class LoginView extends StatefulWidget {
+  const LoginView({Key? key}) : super(key: key);
+
+  @override
+  _LoginViewState createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +35,6 @@ class login_view extends StatelessWidget {
               ),
             ),
             Spacer(),
-            
             Image.asset(
               'lib/presentation/images/toasty.png',
               height: 300, // Set the image height
@@ -40,7 +48,6 @@ class login_view extends StatelessWidget {
               ),
             ),
             Spacer(),
-            // This would be your login or sign up button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 70),
               child: ElevatedButton(
@@ -52,9 +59,26 @@ class login_view extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10), // set the border radius
                   ),
                 ),
-                onPressed: () {
-                  // Implement your login functionality
-                  print('Continue with Google');
+                onPressed: () async {
+                  try {
+                    final user = await UserControllers.signInWithGoogle();
+                    if (user != null) {
+                      Navigator.of(context).pushReplacementNamed('/home');
+                    }
+                  } on FirebaseAuthException catch (error) {
+                    print(error.toString());
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('An error occurred' ?? "something went wrong"),
+                      ),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(e.toString()),
+                      ),
+                    );
+                  }
                 },
                 child: Center(
                   child: Row(

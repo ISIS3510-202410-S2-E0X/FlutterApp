@@ -39,9 +39,10 @@ dependencies:
   equatable:
   flutter_bloc:
   email_validator:
-  google_sign_in:
+  google_sign_in: ^6.2.1
   google_fonts: ^6.1.0
   firebase_core: ^2.25.5
+  firebase_auth: ^4.17.6
 
 
 dev_dependencies:
