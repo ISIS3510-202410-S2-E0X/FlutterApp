@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
-
 class TextAndImagesView extends StatefulWidget {
   const TextAndImagesView({super.key});
 
@@ -74,11 +72,11 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                       maxLines: 5,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 60),
                   GestureDetector(
                     onTap: getImage,
                     child: Container(
-                      height: 200,
+                      height: 300,
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
@@ -106,13 +104,13 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                         'Add a photo',
                         style: TextStyle(
                           fontSize: 20,
-                          color: Color.fromRGBO(0, 122, 255 , 100), // Corrección en la opacidad
+                          color: Color.fromRGBO(0, 122, 255 , 100),
                         ),
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 100.0),
+                    padding: const EdgeInsets.symmetric(vertical: 50.0),
                     child: OutlinedButton(
                       onPressed: () {
                         Navigator.of(context).pop();

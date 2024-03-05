@@ -132,14 +132,15 @@ class CategoriesAndStarsView extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: <Widget>[
+                  const SizedBox(height: 8),
                   const RatingCategory(category: 'Cleanliness', initialRating: 0),
-                  const SizedBox(height: 1),
+                  const SizedBox(height: 2),
                   const RatingCategory(category: 'Waiting Time', initialRating: 0),
-                  const SizedBox(height: 1),
+                  const SizedBox(height: 2),
                   const RatingCategory(category: 'Service', initialRating: 0),
-                  const SizedBox(height: 1),
+                  const SizedBox(height: 2),
                   const RatingCategory(category: 'Food Quality', initialRating: 0),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 30),
                   OutlinedButton(
                     onPressed: () {
                       Navigator.of(context).push(
