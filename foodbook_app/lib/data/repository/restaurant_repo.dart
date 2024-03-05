@@ -3,10 +3,10 @@ import '../models/restaurant.dart';
 
 class RestaurantRepository {
   // This method simulates fetching restaurant data
-  List<Restaurant> fetchRestaurants() {
+  List<Restaurant> _restaurants = [
     // Ideally, this data would come from an API or a local database
-    return [
       Restaurant(
+        id: '1',
         name: 'Divino Pecado',
         priceRange: '\$\$',
         timeRange: '15-20 min',
@@ -25,6 +25,7 @@ class RestaurantRepository {
         bookmarked: true,
       ),
       Restaurant(
+        id: '2',
         name: 'MiCaserito',
         priceRange: '\$',
         timeRange: '25-30 min',
@@ -43,13 +44,34 @@ class RestaurantRepository {
         food_quality_avg: 94,
         bookmarked: false,
       ),
-    ];
+  ];
+
+  List<Restaurant> fetchRestaurants() {
+    return _restaurants;
   }
+  
 
 
   Future<void> toggleBookmark(String restaurantId) async {
-    // Implement the logic to toggle the bookmark status in your data source
-    // For example, finding the restaurant by ID and updating the 'bookmarked' field
+    // Encuentra el restaurante por ID y cambia su estado de `bookmarked`
+    final index = _restaurants.indexWhere((r) => r.id == restaurantId); // Asegúrate de que tu modelo de restaurante tenga un campo `id`
+    if (index != -1) {
+      final restaurant = _restaurants[index];
+      _restaurants[index] = Restaurant(
+        id: restaurant.id,
+        name: restaurant.name,
+        priceRange: restaurant.priceRange,
+        timeRange: restaurant.timeRange,
+        distance: restaurant.distance,
+        categories: restaurant.categories,
+        imagePaths: restaurant.imagePaths,
+        cleanliness_avg: restaurant.cleanliness_avg,
+        waiting_time_avg: restaurant.waiting_time_avg,
+        service_avg: restaurant.service_avg,
+        food_quality_avg: restaurant.food_quality_avg,
+        bookmarked: !restaurant.bookmarked,
+      );
+    }
   }
 
   

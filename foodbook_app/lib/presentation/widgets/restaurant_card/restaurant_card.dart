@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart'; // Importa tu Bloc aquí
+import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart'; // Importa los eventos de tu Bloc aquí
 import 'package:foodbook_app/presentation/widgets/restaurant_card/category_section.dart';
 //Importar imagesdisplay
 import 'package:foodbook_app/presentation/widgets/restaurant_card/images_display.dart';
@@ -39,16 +42,15 @@ class RestaurantCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TitleSection(restaurant: restaurant),
-                    IconButton(
-                      icon: Icon(
-                        // Paso 5: Cambiar el ícono visualmente según el estado
-                        restaurant.bookmarked ? Icons.bookmark : Icons.bookmark_border,
-                        color: const Color.fromARGB(255, 0, 0, 0),
-                      ),
-                      onPressed: () {
-                        
+                    BookmarkIcon(
+                      restaurant: restaurant,
+                      onBookmarkPressed: () {
+                        // Aquí manejas el evento de presión del ícono de marcador.
+                        // Por ejemplo, despachar un evento de Bloc:
+                        BlocProvider.of<BrowseBloc>(context).add(ToggleBookmark(restaurant.id));
                       },
                     ),
+
                   ],
                 ),
                 SizedBox(height: 4), // Add a little space between title and icons

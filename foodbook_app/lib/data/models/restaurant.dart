@@ -1,5 +1,6 @@
 
 class Restaurant {
+  final String id;
   final String name;
   final String priceRange;
   final String timeRange;
@@ -10,9 +11,10 @@ class Restaurant {
   final int waiting_time_avg;
   final int service_avg;
   final int food_quality_avg;
-  final bool bookmarked;
+  bool bookmarked;
 
   Restaurant({
+    required this.id,
     required this.name,
     required this.priceRange,
     required this.timeRange,
@@ -29,6 +31,7 @@ class Restaurant {
   // Method to create a Restaurant from a JSON object
   factory Restaurant.fromJson(Map<String, dynamic> json) {
     return Restaurant(
+      id: json['id'],
       name: json['name'],
       priceRange: json['priceRange'],
       timeRange: json['timeRange'],
@@ -46,6 +49,7 @@ class Restaurant {
   // Method to convert a Restaurant object to a JSON object
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'priceRange': priceRange,
       'timeRange': timeRange,

@@ -16,12 +16,15 @@ class _BookmarkIconState extends State<BookmarkIcon> {
   Widget build(BuildContext context) {
     return IconButton(
       icon: Icon(
-        // Cambiar el ícono visualmente según el estado
         widget.restaurant.bookmarked ? Icons.bookmark : Icons.bookmark_border,
         color: Color.fromARGB(255, 0, 0, 0),
       ),
-      onPressed: () => widget.onBookmarkPressed(),
+      onPressed: () {
+        widget.onBookmarkPressed();
+        setState(() {}); // Force rebuild to reflect changes
+      },
     );
   }
 }
+
 
