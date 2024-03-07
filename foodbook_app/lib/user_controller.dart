@@ -24,7 +24,4 @@ class UserControllers{
     // Return the User object from the UserCredential
     return userCredential.user;
   }
-
-  
-
 }
