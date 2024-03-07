@@ -16,8 +16,9 @@ class BrowseView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white, // Set AppBar background to white
-        title: Text(
+        title: const Text(
           'Browse',
           style: TextStyle(
             fontWeight: FontWeight.bold,

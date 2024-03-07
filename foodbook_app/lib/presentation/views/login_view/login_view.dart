@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
+import 'package:foodbook_app/data/repository/restaurant_repo.dart';
+import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class login_view extends StatelessWidget {
@@ -39,21 +44,28 @@ class login_view extends StatelessWidget {
                 color: Colors.grey[700],
               ),
             ),
-            Spacer(),
+            const Spacer(),
             // This would be your login or sign up button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 70),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(255, 0, 140, 255), // background (button) color
-                  onPrimary: Colors.white, // foreground (text) color
+                  backgroundColor: const Color.fromARGB(255, 0, 140, 255), // background (button) color
+                  foregroundColor: Colors.white, // foreground (text) color
                   minimumSize: Size(double.infinity, 50), // set the size
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10), // set the border radius
                   ),
                 ),
                 onPressed: () {
-                  // Implement your login functionality
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) {
+                      return BlocProvider<BrowseBloc>(
+                        create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository())..add(LoadRestaurants()),
+                        child: BrowseView(),
+                      );
+                    }),
+                  );
                   print('Continue with Google');
                 },
                 child: Center(

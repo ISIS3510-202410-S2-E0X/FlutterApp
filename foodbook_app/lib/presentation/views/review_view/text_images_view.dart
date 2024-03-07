@@ -61,7 +61,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 2),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextFormField(
@@ -72,7 +72,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                       maxLines: 5,
                     ),
                   ),
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 30),
                   GestureDetector(
                     onTap: getImage,
                     child: Container(
@@ -93,7 +93,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: OutlinedButton(
                       onPressed: getImage,
                       style: OutlinedButton.styleFrom(
@@ -110,7 +110,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 50.0),
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
                     child: OutlinedButton(
                       onPressed: () {
                         Navigator.of(context).pop();
