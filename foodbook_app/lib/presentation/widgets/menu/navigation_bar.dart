@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
+import 'package:foodbook_app/data/repository/restaurant_repo.dart';
+import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
+import 'package:foodbook_app/presentation/views/restaurant_views/for_you_view.dart';
+// Import other views as needed
 
-class CustomNavigationBar extends StatefulWidget {
-  @override
-  _CustomNavigationBarState createState() => _CustomNavigationBarState();
-}
+class CustomNavigationBar extends StatelessWidget {
+  final int selectedIndex;
+  final Function(int) onItemTapped;
 
-class _CustomNavigationBarState extends State<CustomNavigationBar> {
-  int _selectedIndex = 0; // Índice inicial seleccionado
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    // Aquí puedes agregar tu lógica de navegación si es necesario
-  }
+  CustomNavigationBar({
+    Key? key,
+    required this.selectedIndex,
+    required this.onItemTapped,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +29,31 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
           icon: Icon(Icons.star_border),
           label: 'For You',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.bookmark_border),
-          label: 'Bookmarks',
-        ),
+        // Add more items as needed
       ],
-      currentIndex: _selectedIndex, // Índice actual basado en la selección del usuario
+      currentIndex: selectedIndex,
       selectedItemColor: Colors.blue,
-      unselectedItemColor: Colors.grey,
-      onTap: _onItemTapped, // Método que se llama cuando se selecciona un ítem
+      onTap: (index) {
+        // This is where you'd put your navigation logic
+        if (index == 0) {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => BlocProvider<BrowseBloc>(
+              create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository())..add(LoadRestaurants()),
+              child: BrowseView(),
+            ),
+          ));
+        } else if (index == 1) {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => BlocProvider<BrowseBloc>(
+              create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository())..add(LoadRestaurants()),
+              child: ForYouView(),
+            ),
+          ));
+        } // Add else if for other indexes as needed
+        if(onItemTapped != null){
+            onItemTapped(index);
+        }
+      },
     );
   }
 }

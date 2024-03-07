@@ -88,7 +88,17 @@ class BrowseView extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: CustomNavigationBar(),
+      bottomNavigationBar: CustomNavigationBar(
+        selectedIndex: 0, // Set the selected index to 1
+        onItemTapped: (int index) {
+          // Handle navigation to different views
+          if (index == 1) {
+            Navigator.pushNamed(context, 'package:foodbook_app/presentation/views/restaurant_views/login_view.dart');
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/bookmarks');
+          }
+        },
+      ),
     );
   }
 

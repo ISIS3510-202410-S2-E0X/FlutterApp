@@ -6,8 +6,8 @@ import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 
-class BrowseView extends StatelessWidget {
-  BrowseView({Key? key}) : super(key: key);
+class ForYouView extends StatelessWidget {
+  ForYouView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,17 @@ class BrowseView extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: CustomNavigationBar(),
+      bottomNavigationBar: CustomNavigationBar(
+        selectedIndex: 1, // Set the selected index to 1
+        onItemTapped: (int index) {
+          // Handle navigation to different views
+          if (index == 0) {
+            Navigator.pushNamed(context, '/browse');
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/bookmarks');
+          }
+        },
+      ),
     );
   }
 
