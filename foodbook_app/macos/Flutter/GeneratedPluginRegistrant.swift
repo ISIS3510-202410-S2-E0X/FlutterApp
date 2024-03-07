@@ -4,7 +4,12 @@
 
 import FlutterMacOS
 import Foundation
+/**
+import file_selector_macos
 
+func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))
+*/
 import google_sign_in_ios
 import path_provider_foundation
 
