@@ -132,19 +132,19 @@ class CategoriesAndStarsView extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: <Widget>[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 9),
                   const RatingCategory(category: 'Cleanliness', initialRating: 0),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 1),
                   const RatingCategory(category: 'Waiting Time', initialRating: 0),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 1),
                   const RatingCategory(category: 'Service', initialRating: 0),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 1),
                   const RatingCategory(category: 'Food Quality', initialRating: 0),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 5),
                   OutlinedButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const TextAndImagesView()), // Reemplaza NewScreen con tu pantalla destino
+                        MaterialPageRoute(builder: (context) => const TextAndImagesView()),
                       );
                     },
                     style: OutlinedButton.styleFrom(

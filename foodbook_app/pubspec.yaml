@@ -41,7 +41,6 @@ dependencies:
   image_picker: ^0.8.5+3
   bloc:
   equatable:
-  flutter_bloc:
   email_validator:
   google_sign_in:
   google_fonts: ^6.1.0

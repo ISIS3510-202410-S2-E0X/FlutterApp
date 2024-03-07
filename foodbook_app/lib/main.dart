@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
-import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
-import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
-import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
-import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
-import 'package:foodbook_app/data/repository/restaurant_repo.dart';
-import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
-import 'presentation/screens/login_view.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
+// import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
+// import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
+// import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
+// import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
+// import 'package:foodbook_app/data/repository/restaurant_repo.dart';
+// import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
+import 'presentation/views/login_view/login_view.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,10 +30,10 @@ class MyApp extends StatelessWidget {
 //      ),
 //    );
 //  }
-//}
+// }
 //=======
   const MyApp({super.key});
-/**
+/*
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-*/
+**/
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
