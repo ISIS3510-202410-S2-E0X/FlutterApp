@@ -5,6 +5,7 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
+import 'package:foodbook_app/data/models/restaurant.dart';
 
 // Asegúrate de tener todos los imports necesarios aquí
 
@@ -34,7 +35,7 @@ class BrowseView extends StatelessWidget {
         children: [
           Container(
             color: Color.fromARGB(255, 255, 255, 255), // White background color for search bar container
-            padding: const EdgeInsets.symmetric(horizontal: 8.0), // Horizontal padding only
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0), // Horizontal padding only
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search',
@@ -49,10 +50,6 @@ class BrowseView extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            color: Colors.white, // White background color for the SizedBox container
-            child: SizedBox(height: 8), // White space below the search bar
-          ),
           Divider(
             height: 1, // Height of the divider line
             color: Colors.grey[300], // Color of the divider line
@@ -66,8 +63,19 @@ class BrowseView extends StatelessWidget {
                   return ListView.builder(
                     itemCount: state.restaurants.length,
                     itemBuilder: (context, index) {
-                      return RestaurantCard(restaurant: state.restaurants[index]);
-                    },
+                      return GestureDetector(
+                        onTap: () {
+                          // Navigate to another view when the restaurant card is clicked
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AnotherView(restaurant: state.restaurants[index]),
+                            ),
+                          );
+                        },
+                        child: RestaurantCard(restaurant: state.restaurants[index]),
+                      );
+                    }
                   );
                 } else if (state is RestaurantsLoadFailure) {
                   return Center(child: Text('Failed to load restaurants'));
@@ -82,5 +90,32 @@ class BrowseView extends StatelessWidget {
       bottomNavigationBar: CustomNavigationBar(),
     );
   }
+
+
 }
 
+class AnotherView extends StatelessWidget {
+  final Restaurant restaurant;
+
+  const AnotherView({Key? key, required this.restaurant}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(restaurant.name), // Display the restaurant's name in the AppBar
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Display various restaurant details here
+            // For example, an image if available
+            if (restaurant.imagePaths.isNotEmpty)
+              Image.network(restaurant.imagePaths.first),
+            // You can add more details like the restaurant's description, menu, etc.
+          ],
+        ),
+      ),
+    );
+  }
+}
