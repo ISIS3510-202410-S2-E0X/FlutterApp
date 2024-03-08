@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/presentation/views/review_view/restaurant_reviews_view.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
@@ -35,17 +36,17 @@ class BrowseView extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            color: Color.fromARGB(255, 255, 255, 255), // White background color for search bar container
+            color: const Color.fromARGB(255, 255, 255, 255), // White background color for search bar container
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0), // Horizontal padding only
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search',
-                prefixIcon: Icon(Icons.search, color: Colors.black),
+                prefixIcon: const Icon(Icons.search, color: Colors.black),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: EdgeInsets.symmetric(vertical: 5), // Reduced vertical padding to make the search bar thinner
+                contentPadding: const EdgeInsets.symmetric(vertical: 5), // Reduced vertical padding to make the search bar thinner
                 filled: true,
                 fillColor: const Color.fromARGB(255, 197, 197, 197), // Search bar fill color
               ),
@@ -59,7 +60,7 @@ class BrowseView extends StatelessWidget {
             child: BlocBuilder<BrowseBloc, BrowseState>(
               builder: (context, state) {
                 if (state is RestaurantsLoadInProgress) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (state is RestaurantsLoadSuccess) {
                   return ListView.builder(
                     itemCount: state.restaurants.length,
@@ -71,6 +72,7 @@ class BrowseView extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) => AnotherView(restaurant: state.restaurants[index]),
+                              //builder: (context) => ReviewListView(restaurant: state.restaurants[index])
                             ),
                           );
                         },
@@ -79,10 +81,10 @@ class BrowseView extends StatelessWidget {
                     }
                   );
                 } else if (state is RestaurantsLoadFailure) {
-                  return Center(child: Text('Failed to load restaurants'));
+                  return const Center(child: Text('Failed to load restaurants'));
                 }
                 // Si el estado inicial es RestaurantsInitial o cualquier otro estado no esperado
-                return Center(child: Text('Start browsing by applying some filters!'));
+                return const Center(child: Text('Start browsing by applying some filters!'));
               },
             ),
           ),
@@ -101,8 +103,6 @@ class BrowseView extends StatelessWidget {
       ),
     );
   }
-
-
 }
 
 class AnotherView extends StatelessWidget {

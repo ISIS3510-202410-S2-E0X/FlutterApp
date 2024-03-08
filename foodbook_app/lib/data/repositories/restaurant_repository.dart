@@ -1,9 +1,11 @@
 // repository/restaurant_repo.dart
+import 'package:foodbook_app/data/models/review.dart';
+
 import '../models/restaurant.dart';
 
 class RestaurantRepository {
   // This method simulates fetching restaurant data
-  List<Restaurant> _restaurants = [
+  final List<Restaurant> _restaurants = [
     // Ideally, this data would come from an API or a local database
       Restaurant(
         id: '1',
@@ -17,6 +19,36 @@ class RestaurantRepository {
           'lib/presentation/images/divino_pecado_2.jpg',
           'lib/presentation/images/divino_pecado_3.jpg',
           'lib/presentation/images/divino_pecado_1.jpeg',
+        ],
+        reviews: [
+          Review(
+            user: 'Alice Smith',
+            title: 'Delicious Homemade Meals',
+            content: 'The meals had a home-cooked feel that I absolutely loved! The ambiance was cozy and welcoming.',
+            date: DateTime(2024, 1, 20),
+            imageUrl: null, // 'file:///foodbook_app/lib/presentation/images/divino_pecado_1.jpeg',
+            ratings: {
+              RatingsKeys.cleanliness: 5,
+              RatingsKeys.waitingTime: 4,
+              RatingsKeys.service: 5,
+              RatingsKeys.foodQuality: 5,
+            },
+            selectedCategories: 'homemade',
+          ),
+          Review(
+            user: 'Bob Johnson',
+            title: 'Slow Service',
+            content: 'The food was quite good, but the waiting time was longer than expected.',
+            date: DateTime(2024, 1, 22),
+            imageUrl: null, // no image provided for this review
+            ratings: {
+              RatingsKeys.cleanliness: 4,
+              RatingsKeys.waitingTime: 2,
+              RatingsKeys.service: 3,
+              RatingsKeys.foodQuality: 4,
+            },
+            selectedCategories: 'vegan, healthy, salad, juices',
+          ),
         ],
         cleanliness_avg: 81,
         waiting_time_avg: 89,
@@ -38,6 +70,22 @@ class RestaurantRepository {
           'lib/presentation/images/divino_pecado_1.jpeg',
           'lib/presentation/images/divino_pecado_3.jpg',
         ],
+        reviews: [
+          Review(
+            user: 'Carol Williams',
+            title: 'Exceptional Desserts',
+            content: 'Their desserts are out of this world! The perfect ending to our meal.',
+            date: DateTime(2024, 1, 25),
+            imageUrl: 'lib/presentation/images/divino_pecado_2.jpeg',
+            ratings: {
+              RatingsKeys.cleanliness: 5,
+              RatingsKeys.waitingTime: 5,
+              RatingsKeys.service: 5,
+              RatingsKeys.foodQuality: 5,
+            },
+            selectedCategories: 'italian',
+          ),
+        ],
         cleanliness_avg: 81,
         waiting_time_avg: 89,
         service_avg: 92,
@@ -50,8 +98,6 @@ class RestaurantRepository {
     return _restaurants;
   }
   
-
-
   Future<void> toggleBookmark(String restaurantId) async {
     // Encuentra el restaurante por ID y cambia su estado de `bookmarked`
     final index = _restaurants.indexWhere((r) => r.id == restaurantId); // Asegúrate de que tu modelo de restaurante tenga un campo `id`
@@ -65,6 +111,7 @@ class RestaurantRepository {
         distance: restaurant.distance,
         categories: restaurant.categories,
         imagePaths: restaurant.imagePaths,
+        reviews: restaurant.reviews,
         cleanliness_avg: restaurant.cleanliness_avg,
         waiting_time_avg: restaurant.waiting_time_avg,
         service_avg: restaurant.service_avg,
@@ -73,8 +120,4 @@ class RestaurantRepository {
       );
     }
   }
-
-  
 }
-
-
