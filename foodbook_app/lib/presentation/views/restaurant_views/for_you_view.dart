@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/presentation/views/spot_infomation/spot_detail.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
-import 'package:foodbook_app/data/models/restaurant.dart';
 
 class ForYouView extends StatelessWidget {
   ForYouView({Key? key}) : super(key: key);
@@ -46,7 +46,7 @@ class ForYouView extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AnotherView(restaurant: state.restaurants[index]),
+                              builder: (context) => SpotDetail(restaurant: state.restaurants[index]),
                             ),
                           );
                         },
@@ -82,28 +82,3 @@ class ForYouView extends StatelessWidget {
 }
 
 
-class AnotherView extends StatelessWidget {
-  final Restaurant restaurant;
-
-  const AnotherView({Key? key, required this.restaurant}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(restaurant.name), // Display the restaurant's name in the AppBar
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Display various restaurant details here
-            // For example, an image if available
-            if (restaurant.imagePaths.isNotEmpty)
-              Image.network(restaurant.imagePaths.first),
-            // You can add more details like the restaurant's description, menu, etc.
-          ],
-        ),
-      ),
-    );
-  }
-}

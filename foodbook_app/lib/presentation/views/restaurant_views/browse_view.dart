@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
-import 'package:foodbook_app/presentation/views/review_view/restaurant_reviews_view.dart';
+import 'package:foodbook_app/presentation/views/spot_infomation/spot_detail.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
-import 'package:foodbook_app/data/models/restaurant.dart';
 
 // Asegúrate de tener todos los imports necesarios aquí
 
@@ -68,13 +67,12 @@ class BrowseView extends StatelessWidget {
                       return GestureDetector(
                         onTap: () {
                           // Navigate to another view when the restaurant card is clicked
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => AnotherView(restaurant: state.restaurants[index]),
-                          //     //builder: (context) => ReviewListView(restaurant: state.restaurants[index])
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SpotDetail(restaurant: state.restaurants[index]),
+                            ),
+                          );
                         },
                         child: RestaurantCard(restaurant: state.restaurants[index]),
                       );
@@ -103,4 +101,8 @@ class BrowseView extends StatelessWidget {
       ),
     );
   }
+
+
 }
+
+
