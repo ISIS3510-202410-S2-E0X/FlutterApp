@@ -3,14 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
-import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 
-// Asegúrate de tener todos los imports necesarios aquí
-
-class BrowseView extends StatelessWidget {
-  BrowseView({Key? key}) : super(key: key);
+class ForYouView extends StatelessWidget {
+  ForYouView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,38 +16,17 @@ class BrowseView extends StatelessWidget {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white, // Set AppBar background to white
         title: const Text(
-          'Browse',
+          'For You',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.black, // Title color
           ),
         ),
-        // Add the FilterBar widget to the AppBar
-        actions: [
-          FilterBar(),
-        ],
-        elevation: 0, // Remove shadow
+        elevation: 10, // Remove shadow
       ),
       backgroundColor: Colors.grey[200], // Set the background color to grey
       body: Column(
         children: [
-          Container(
-            color: Color.fromARGB(255, 255, 255, 255), // White background color for search bar container
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0), // Horizontal padding only
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search',
-                prefixIcon: Icon(Icons.search, color: Colors.black),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: EdgeInsets.symmetric(vertical: 5), // Reduced vertical padding to make the search bar thinner
-                filled: true,
-                fillColor: const Color.fromARGB(255, 197, 197, 197), // Search bar fill color
-              ),
-            ),
-          ),
           Divider(
             height: 1, // Height of the divider line
             color: Colors.grey[300], // Color of the divider line
@@ -89,11 +65,11 @@ class BrowseView extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: CustomNavigationBar(
-        selectedIndex: 0, // Set the selected index to 1
+        selectedIndex: 1, // Set the selected index to 1
         onItemTapped: (int index) {
           // Handle navigation to different views
-          if (index == 1) {
-            Navigator.pushNamed(context, 'package:foodbook_app/presentation/views/restaurant_views/login_view.dart');
+          if (index == 0) {
+            Navigator.pushNamed(context, '/browse');
           } else if (index == 2) {
             Navigator.pushNamed(context, '/bookmarks');
           }
@@ -104,6 +80,7 @@ class BrowseView extends StatelessWidget {
 
 
 }
+
 
 class AnotherView extends StatelessWidget {
   final Restaurant restaurant;
