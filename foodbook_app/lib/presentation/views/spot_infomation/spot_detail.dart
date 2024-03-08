@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart'; // Make sure to add this package to pubspec.yaml
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
+// Make sure to add this package to pubspec.yaml
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
+import 'package:foodbook_app/presentation/views/review_view/restaurant_reviews_view.dart';
 
 class SpotDetail extends StatelessWidget {
   final Restaurant restaurant;
@@ -11,7 +16,7 @@ class SpotDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(''),
+        title: const Text(''),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -66,7 +71,7 @@ class SpotDetail extends StatelessWidget {
                             ),
                             child: Text(
                               category,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.bold, // Set the text to bold
                               ),
                             ),
@@ -82,7 +87,9 @@ class SpotDetail extends StatelessWidget {
                         const Text('Reviews', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)), // Increase the font size
                         TextButton(
                           onPressed: () {
-                            // TODO: Implement see more functionality
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) => ReviewListView(restaurant: restaurant)),
+                            );
                           },
                           child: const Text('See more', style: TextStyle(color: Colors.blue)),
                         ),
@@ -114,7 +121,23 @@ class SpotDetail extends StatelessWidget {
                         minimumSize: const Size(double.infinity, 50),
                       ),
                       onPressed: () {
-                        // TODO: Implement leave a review functionality
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return MultiBlocProvider(
+                                providers: [
+                                  BlocProvider<FoodCategoryBloc>(
+                                    create: (context) => FoodCategoryBloc(3),
+                                  ),
+                                  BlocProvider<StarsBloc>(
+                                    create: (context) => StarsBloc(),
+                                  ),
+                                ],
+                                child: CategoriesAndStarsView(),
+                              );
+                            },
+                          ),
+                        );
                       },
                       child: const Text('Leave a review', style: TextStyle(color: Colors.white)),
                     ),
@@ -135,7 +158,7 @@ class SpotDetail extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(criteria, style: const TextStyle(fontWeight: FontWeight.bold)),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Row(
             children: [
               Expanded(
@@ -147,12 +170,12 @@ class SpotDetail extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Icon(
                 score >= 50 ? Icons.thumb_up : Icons.thumb_down,
                 color: score >= 50 ? Colors.green : Colors.red,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text('$score%', style: const TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),

@@ -57,18 +57,20 @@ class CategoriesAndStarsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        backgroundColor: Colors.white, // Set AppBar background to white
+        title: const Text(
+          'Review',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black, // Title color
+          ),
+        ),
+        elevation: 0, // Remove shadow
+      ),
       body: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 6),
-            child: Text(
-              'What did you order?',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-              ),
-            ),
-          ),
           const Padding(
             padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24.0),
             child: Text(

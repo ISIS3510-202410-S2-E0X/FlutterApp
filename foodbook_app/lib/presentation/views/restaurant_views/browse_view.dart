@@ -101,8 +101,6 @@ class BrowseView extends StatelessWidget {
       ),
     );
   }
-
-
 }
 
 
