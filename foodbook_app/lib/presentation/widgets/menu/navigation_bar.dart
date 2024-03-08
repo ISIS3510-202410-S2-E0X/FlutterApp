@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/data/repository/restaurant_repo.dart';
+import 'package:foodbook_app/presentation/views/restaurant_views/bookmarks_view.dart';
 import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
 import 'package:foodbook_app/presentation/views/restaurant_views/for_you_view.dart';
 // Import other views as needed
@@ -29,7 +30,7 @@ class CustomNavigationBar extends StatelessWidget {
           icon: Icon(Icons.star_border),
           label: 'For You',
         ),
-        // Add more items as needed
+        BottomNavigationBarItem(icon: Icon(Icons.bookmark_border), label: 'Bookmarks'),
       ],
       currentIndex: selectedIndex,
       selectedItemColor: Colors.blue,
@@ -49,9 +50,13 @@ class CustomNavigationBar extends StatelessWidget {
               child: ForYouView(),
             ),
           ));
-        } // Add else if for other indexes as needed
-        if(onItemTapped != null){
-            onItemTapped(index);
+        } else if (index == 2) {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => BlocProvider<BrowseBloc>(
+              create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository())..add(LoadRestaurants()),
+              child: BookmarksView(),
+            ),
+          ));
         }
       },
     );
