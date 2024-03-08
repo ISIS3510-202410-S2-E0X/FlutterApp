@@ -68,13 +68,13 @@ class BrowseView extends StatelessWidget {
                       return GestureDetector(
                         onTap: () {
                           // Navigate to another view when the restaurant card is clicked
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AnotherView(restaurant: state.restaurants[index]),
-                              //builder: (context) => ReviewListView(restaurant: state.restaurants[index])
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => AnotherView(restaurant: state.restaurants[index]),
+                          //     //builder: (context) => ReviewListView(restaurant: state.restaurants[index])
+                          //   ),
+                          // );
                         },
                         child: RestaurantCard(restaurant: state.restaurants[index]),
                       );
@@ -100,32 +100,6 @@ class BrowseView extends StatelessWidget {
             Navigator.pushNamed(context, '/bookmarks');
           }
         },
-      ),
-    );
-  }
-}
-
-class AnotherView extends StatelessWidget {
-  final Restaurant restaurant;
-
-  const AnotherView({Key? key, required this.restaurant}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(restaurant.name), // Display the restaurant's name in the AppBar
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Display various restaurant details here
-            // For example, an image if available
-            if (restaurant.imagePaths.isNotEmpty)
-              Image.network(restaurant.imagePaths.first),
-            // You can add more details like the restaurant's description, menu, etc.
-          ],
-        ),
       ),
     );
   }
