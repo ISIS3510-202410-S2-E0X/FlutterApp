@@ -18,7 +18,7 @@ class RatingCategory extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(category, style: const TextStyle(fontSize: 18)),
+            child: Text(category, style: const TextStyle(fontSize: 15)),
           ),
           RatingBar.builder(
             initialRating: initialRating,
@@ -26,11 +26,12 @@ class RatingCategory extends StatelessWidget {
             direction: Axis.horizontal,
             allowHalfRating: false,
             itemCount: 5,
-            textDirection: TextDirection.rtl,
+            // textDirection: TextDirection.rtl,
             itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
             itemBuilder: (context, _) => const Icon(
               Icons.star,
               color: Color.fromARGB(255, 22, 49, 255),
+              size: 8,
             ),
             onRatingUpdate: (rating) {
               // Enviar evento al BLoC

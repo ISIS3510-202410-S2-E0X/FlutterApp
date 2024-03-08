@@ -61,12 +61,33 @@ class CategoriesAndStarsView extends StatelessWidget {
         automaticallyImplyLeading: true,
         backgroundColor: Colors.white, // Set AppBar background to white
         title: const Text(
-          'Review',
+          'What did you order?',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.black, // Title color
           ),
         ),
+        actions: [
+          OutlinedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const TextAndImagesView()),
+              );
+            },
+            style: OutlinedButton.styleFrom(
+              side: BorderSide.none,
+              // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),                  
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+            child: const Text(
+              'Next',
+              style: TextStyle(
+                fontSize: 20,
+                color: Color.fromRGBO(0, 122, 255 , 100),
+              ),
+            ),
+          ),
+        ],
         elevation: 0, // Remove shadow
       ),
       body: Column(
@@ -74,7 +95,7 @@ class CategoriesAndStarsView extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24.0),
             child: Text(
-              'Select all that apply. Only the first three choices will be displayed in your review.',
+              'Select at least one and up to three categories',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey,
@@ -132,36 +153,17 @@ class CategoriesAndStarsView extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(height: 9),
-                  const RatingCategory(category: 'Cleanliness', initialRating: 0),
-                  const SizedBox(height: 1),
-                  const RatingCategory(category: 'Waiting Time', initialRating: 0),
-                  const SizedBox(height: 1),
-                  const RatingCategory(category: 'Service', initialRating: 0),
-                  const SizedBox(height: 1),
-                  const RatingCategory(category: 'Food Quality', initialRating: 0),
-                  const SizedBox(height: 5),
-                  OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const TextAndImagesView()),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide.none,
-                      // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),                  
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    child: const Text(
-                      'Next',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Color.fromRGBO(0, 122, 255 , 100),
-                      ),
-                    ),
-                  )
+              child: ListView(
+                children: const <Widget>[
+                  SizedBox(height: 9),
+                  RatingCategory(category: 'Cleanliness', initialRating: 0),
+                  SizedBox(height: 1),
+                  RatingCategory(category: 'Waiting Time', initialRating: 0),
+                  SizedBox(height: 1),
+                  RatingCategory(category: 'Service', initialRating: 0),
+                  SizedBox(height: 1),
+                  RatingCategory(category: 'Food Quality', initialRating: 0),
+                  SizedBox(height: 5),
                 ],
               ),
             ),

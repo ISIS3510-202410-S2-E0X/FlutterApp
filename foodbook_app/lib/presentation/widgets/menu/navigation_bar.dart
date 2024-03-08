@@ -6,7 +6,7 @@ import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_views/bookmarks_view.dart';
 import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
 import 'package:foodbook_app/presentation/views/restaurant_views/for_you_view.dart';
-// Import other views as needed
+
 
 class CustomNavigationBar extends StatelessWidget {
   final int selectedIndex;
@@ -35,7 +35,7 @@ class CustomNavigationBar extends StatelessWidget {
       currentIndex: selectedIndex,
       selectedItemColor: Colors.blue,
       onTap: (index) {
-        // This is where you'd put your navigation logic
+        
         if (index == 0) {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => BlocProvider<BrowseBloc>(

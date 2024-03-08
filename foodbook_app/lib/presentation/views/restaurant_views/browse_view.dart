@@ -7,7 +7,7 @@ import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
 
-// Asegúrate de tener todos los imports necesarios aquí
+
 
 class BrowseView extends StatelessWidget {
   BrowseView({Key? key}) : super(key: key);
@@ -47,7 +47,7 @@ class BrowseView extends StatelessWidget {
                 ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 5), // Reduced vertical padding to make the search bar thinner
                 filled: true,
-                fillColor: const Color.fromARGB(255, 197, 197, 197), // Search bar fill color
+                fillColor: const Color.fromARGB(2192, 217, 219, 225), // Search bar fill color
               ),
             ),
           ),

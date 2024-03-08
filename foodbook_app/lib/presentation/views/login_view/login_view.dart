@@ -4,7 +4,6 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class login_view extends StatelessWidget {
   const login_view({super.key});
@@ -16,27 +15,28 @@ class login_view extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0), // Adjust the value as needed
+            const SizedBox(height: 24),
+            const Padding(
+              padding: EdgeInsets.only(left: 16.0), // Adjust the value as needed
               child: Align(
                 alignment: Alignment.topLeft,
                 child: Text(
                   'foodbook',
-                  style: GoogleFonts.archivoBlack(
+                  style: TextStyle(
                     fontSize: 48,
                     color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
             
             Image.asset(
               'lib/presentation/images/toasty.png',
               height: 300, // Set the image height
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               'Where good people find good food.',
               style: TextStyle(
@@ -47,12 +47,12 @@ class login_view extends StatelessWidget {
             const Spacer(),
             // This would be your login or sign up button
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 70),
+              padding: const EdgeInsets.symmetric(horizontal: 60),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 0, 140, 255), // background (button) color
                   foregroundColor: Colors.white, // foreground (text) color
-                  minimumSize: Size(double.infinity, 50), // set the size
+                  minimumSize: const Size(double.infinity, 50), // set the size
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10), // set the border radius
                   ),
@@ -79,8 +79,8 @@ class login_view extends StatelessWidget {
                           height: 30, // Set the image height
                         ),
                       ),
-                      SizedBox(width: 10), // Add some spacing between the image and text
-                      Center(
+                      const SizedBox(width: 10), // Add some spacing between the image and text
+                      const Center(
                         child: Text('Continue with Google'),
                       ),
                     ],
@@ -88,7 +88,7 @@ class login_view extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
           ],
         ),
       ),

@@ -4,7 +4,7 @@ import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart'; // Importa tu Bloc aquí
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart'; // Importa los eventos de tu Bloc aquí
 import 'package:foodbook_app/presentation/widgets/restaurant_card/category_section.dart';
-//Importar imagesdisplay
+
 import 'package:foodbook_app/presentation/widgets/restaurant_card/images_display.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/title_section.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/subtitle_section.dart';
@@ -45,8 +45,6 @@ class RestaurantCard extends StatelessWidget {
                     BookmarkIcon(
                       restaurant: restaurant,
                       onBookmarkPressed: () {
-                        // Aquí manejas el evento de presión del ícono de marcador.
-                        // Por ejemplo, despachar un evento de Bloc:
                         BlocProvider.of<BrowseBloc>(context).add(ToggleBookmark(restaurant.id));
                       },
                     ),

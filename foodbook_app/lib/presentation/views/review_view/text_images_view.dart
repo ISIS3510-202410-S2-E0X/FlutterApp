@@ -1,5 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
+import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
+import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
 import 'package:image_picker/image_picker.dart';
 
 class TextAndImagesView extends StatefulWidget {
@@ -36,6 +41,31 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
             color: Colors.black, // Title color
           ),
         ),
+        actions: [
+          OutlinedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) {
+                  return BlocProvider<BrowseBloc>(
+                    create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository())..add(LoadRestaurants()),
+                    child: BrowseView(),
+                  );
+                }),
+              );
+            },
+            style: OutlinedButton.styleFrom(
+              side: BorderSide.none,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+            child: const Text(
+              'Done',
+              style: TextStyle(
+                fontSize: 20,
+                color: Color.fromRGBO(0, 122, 255 , 100),
+              ),
+            ),
+          ),
+        ],
         elevation: 0, // Remove shadow
       ),
       body: Column(
@@ -104,25 +134,6 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                       ),
                       child: const Text(
                         'Add a photo',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Color.fromRGBO(0, 122, 255 , 100),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: OutlinedButton(
-                      onPressed: () {
-                        // TO-DO: Add the review to the database
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide.none,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                      ),
-                      child: const Text(
-                        'Done',
                         style: TextStyle(
                           fontSize: 20,
                           color: Color.fromRGBO(0, 122, 255 , 100),

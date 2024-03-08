@@ -8,7 +8,6 @@ import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
 
 
-// Asegúrate de tener todos los imports necesarios aquí
 
 class BookmarksView extends StatelessWidget {
   BookmarksView({Key? key}) : super(key: key);
@@ -26,7 +25,6 @@ class BookmarksView extends StatelessWidget {
             color: Colors.black, // Title color
           ),
         ),
-        // Add the FilterBar widget to the AppBar
         actions: [
           FilterBar(),
         ],
@@ -84,7 +82,7 @@ class BookmarksView extends StatelessWidget {
                 } else if (state is RestaurantsLoadFailure) {
                   return Center(child: Text('Failed to load restaurants'));
                 }
-                // Si el estado inicial es RestaurantsInitial o cualquier otro estado no esperado
+                
                 return Center(child: Text('Start browsing by applying some filters!'));
               },
             ),

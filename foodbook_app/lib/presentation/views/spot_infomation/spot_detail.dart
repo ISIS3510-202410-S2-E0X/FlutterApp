@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
-// Make sure to add this package to pubspec.yaml
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
 import 'package:foodbook_app/presentation/views/review_view/restaurant_reviews_view.dart';

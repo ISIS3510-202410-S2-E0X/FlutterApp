@@ -45,7 +45,7 @@ class _FilterBarState extends State<FilterBar> {
                       ),
                     ),
                     
-                    // Tus widgets de filtro aquí
+                    
                     ListTile(
                       title: Text('Price Range'),
                       trailing: Switch(

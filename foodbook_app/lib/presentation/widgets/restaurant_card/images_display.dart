@@ -16,19 +16,18 @@ class ImagesDisplay extends StatelessWidget {
         case 1:
           return Center(
             child: Container(
-              width: double.infinity, // Ensure the container tries to expand to fill all available width.
-              height: double.infinity, // Ensure the container tries to expand to fill all available height.
+              width: double.infinity,
+              height: double.infinity, 
               decoration: BoxDecoration(
                 // Define the border and border radius here
                 border: Border.all(
                   color: Colors.white, // White border
                   width: 3, // Border width
                 ),
-                borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                borderRadius: BorderRadius.circular(5), 
               ),
               child: ClipRRect(
-                // If you want rounded corners, otherwise just remove the ClipRRect
-                borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                borderRadius: BorderRadius.circular(8), 
                 child: Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover),
               ),
             ),
@@ -39,19 +38,18 @@ class ImagesDisplay extends StatelessWidget {
               imageCount,
               (index) => Expanded(
                 child: Container(
-                  width: double.infinity, // Ensure the container tries to expand to fill all available width.
-                  height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                  width: double.infinity, 
+                  height: double.infinity, 
                   decoration: BoxDecoration(
-                    // Define the border and border radius here
+                    
                     border: Border.all(
                       color: Colors.white, // White border
                       width: 3, // Border width
                     ),
-                    borderRadius: BorderRadius.circular(5), // Adjust the radius to your preference
+                    borderRadius: BorderRadius.circular(5), 
                   ),
                   child: ClipRRect(
-                    // If you want rounded corners, otherwise just remove the ClipRRect
-                    borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
+                    borderRadius: BorderRadius.circular(8), 
                     child: Image.asset(restaurant.imagePaths[index], fit: BoxFit.cover),
                   ),
                 ),
@@ -88,8 +86,8 @@ class ImagesDisplay extends StatelessWidget {
                     imageCount - 1,
                     (index) => Expanded(
                       child: Container(
-                        width: double.infinity, // Ensure the container tries to expand to fill all available width.
-                        height: double.infinity, // Ensure the container tries to expand to fill all available height.
+                        width: double.infinity, 
+                        height: double.infinity, 
                         decoration: BoxDecoration(
                           // Define the border and border radius here
                           border: Border.all(

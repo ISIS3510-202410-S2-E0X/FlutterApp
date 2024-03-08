@@ -19,7 +19,7 @@ class ReviewItem extends StatelessWidget {
           color: Colors.amber,
           size: 20.0,
         );
-      }).reversed.toList(),
+      }),
     );
   }
 
