@@ -18,3 +18,22 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+// class MyApp extends StatelessWidget {
+//   MyApp({super.key});
+
+//   final ReviewBloc reviewBloc = ReviewBloc(ReviewRepository());
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'MiCaserrito Reviews',
+//       home: BlocProvider(
+//         create: (context) => reviewBloc,
+//         child: ReviewList(),
+//       ),
+//     );
+//   }
+// }
+

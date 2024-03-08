@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodbook_app/data/repository/restaurant_repo.dart';
+import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';

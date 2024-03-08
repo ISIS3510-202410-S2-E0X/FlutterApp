@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-import 'package:foodbook_app/presentation/widgets/multi_select_chip_widget.dart';
-import 'package:foodbook_app/presentation/widgets/review_category_widget.dart';
+import 'package:foodbook_app/presentation/widgets/reviews_creation/multi_select_chip_widget.dart';
+import 'package:foodbook_app/presentation/widgets/reviews_creation/review_category_widget.dart';
 
 import 'package:foodbook_app/presentation/views/review_view/text_images_view.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
