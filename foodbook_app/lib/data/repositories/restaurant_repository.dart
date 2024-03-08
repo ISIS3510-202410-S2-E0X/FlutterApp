@@ -52,7 +52,7 @@ class RestaurantRepository {
         ],
         cleanliness_avg: 81,
         waiting_time_avg: 89,
-        service_avg: 92,
+        service_avg: 45,
         food_quality_avg: 94,
         bookmarked: true,
       ),
@@ -76,7 +76,7 @@ class RestaurantRepository {
             title: 'Exceptional Desserts',
             content: 'Their desserts are out of this world! The perfect ending to our meal.',
             date: DateTime(2024, 1, 25),
-            imageUrl: 'lib/presentation/images/divino_pecado_2.jpeg',
+            imageUrl: null, // 'lib/presentation/images/divino_pecado_2.jpeg',
             ratings: {
               RatingsKeys.cleanliness: 5,
               RatingsKeys.waitingTime: 5,

@@ -26,22 +26,24 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        backgroundColor: Colors.white, // Set AppBar background to white
+        title: const Text(
+          'Leave a comment',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black, // Title color
+          ),
+        ),
+        elevation: 0, // Remove shadow
+      ),
       body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(30.0, 40.0, 30.0, 10),
-                  child: Text(
-                    'Leave a comment',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    ),
-                  ),
-                ),
                 const Padding(
                   padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24.0),
                   child: Text(
@@ -57,7 +59,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     child: TextFormField(
                       decoration: const InputDecoration(
                         labelText: 'Title',
-                        hintText: 'Optional',
+                        hintText: '',
                       ),
                     ),
                   ),
@@ -113,14 +115,14 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     padding: const EdgeInsets.symmetric(vertical: 20.0),
                     child: OutlinedButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        // TO-DO: Add the review to the database
                       },
                       style: OutlinedButton.styleFrom(
                         side: BorderSide.none,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
                       child: const Text(
-                        'Back to categories and stars',
+                        'Done',
                         style: TextStyle(
                           fontSize: 20,
                           color: Color.fromRGBO(0, 122, 255 , 100),
