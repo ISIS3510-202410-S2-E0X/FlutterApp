@@ -1,0 +1,13 @@
+{
+  "name": "flutter devcontainer",
+  "dockerFile": "Dockerfile",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "dart-code.flutter",
+    "dart-code.dart-code"
+  ],
+  // // "forwardPorts": [8080],
+  // "workspaceMount": "source=/workspaces/flutter-devcontainer/.devcontainer/devsource,target=/workspace"
+}
