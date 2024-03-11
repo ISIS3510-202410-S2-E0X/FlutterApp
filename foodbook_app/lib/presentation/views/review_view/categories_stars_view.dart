@@ -123,30 +123,30 @@ class CategoriesAndStarsView extends StatelessWidget {
           Expanded(
             child: BlocBuilder<FoodCategoryBloc, FoodCategoryState>(
               builder: (context, state) {
-                return MasonryGridView.builder(
-                  padding: const EdgeInsets.all(8),
-                  gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    // Añade tus valores de espaciado aquí si es necesario
-                  ),
-                  itemCount: _categories.length,
-                  itemBuilder: (context, index) {
-                    final category = _categories[index];
-
-                    // El widget MultiSelectChip no debería ser const si su estado puede cambiar
-                    return MultiSelectChip(
-                      [category],
-                      onSelectionChanged: (selectedCategories) {
-                        if (selectedCategories.contains(category)) {
-                          BlocProvider.of<FoodCategoryBloc>(context).add(SelectCategoryEvent(category));
-                        } else {
-                          BlocProvider.of<FoodCategoryBloc>(context).add(DeselectCategoryEvent(category));
-                        }
-                      },
-                      maxSelection: 3,
-                    );
-                  },
-                );
+                if (state is FoodCategoryLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is FoodCategoryLoaded) {
+                  return MasonryGridView.builder(
+                    gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                    ),
+                    itemCount: state.data.length,
+                    itemBuilder: (context, index) {
+                      final category = state.data[index];
+                      return MultiSelectChip(
+                        [category.name],
+                        onSelectionChanged: (selectedCategories) {
+                          // TO-DO: actions when selected categories change
+                        },
+                        maxSelection: 3,
+                      );
+                    },
+                  );
+                } else if (state is FoodCategoryError) {
+                  return const Center(child: Text('Failed to load categories'));
+                } else {
+                  return const Center(child: Text('Please wait...'));
+                }
               },
             ),
           ),

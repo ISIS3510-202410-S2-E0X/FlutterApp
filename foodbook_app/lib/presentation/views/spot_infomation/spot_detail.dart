@@ -126,7 +126,7 @@ class SpotDetail extends StatelessWidget {
                               return MultiBlocProvider(
                                 providers: [
                                   BlocProvider<FoodCategoryBloc>(
-                                    create: (context) => FoodCategoryBloc(3),
+                                    create: (context) => FoodCategoryBloc(maxSelection: 3),
                                   ),
                                   BlocProvider<StarsBloc>(
                                     create: (context) => StarsBloc(),

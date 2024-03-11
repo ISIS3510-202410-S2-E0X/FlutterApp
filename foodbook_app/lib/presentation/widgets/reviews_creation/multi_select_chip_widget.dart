@@ -13,37 +13,37 @@ class MultiSelectChip extends StatefulWidget {
   const MultiSelectChip(this.categoriesList, {super.key, this.onSelectionChanged, this.onMaxSelected, this.maxSelection});
 
   @override
-  // ignore: library_private_types_in_public_api
   _MultiSelectChipState createState() => _MultiSelectChipState();
 }
 
 class _MultiSelectChipState extends State<MultiSelectChip> {
-  _buildChoiceList() {
-    return widget.categoriesList.map((item) {
-      return BlocBuilder<FoodCategoryBloc, FoodCategoryState>(
-        builder: (context, state) {
-          final isSelected = state.selectedCategories.contains(item);
-
-          return ChoiceChip(
-            label: Text(item),
-            selected: isSelected,
-            onSelected: (selected) {
-              if (isSelected) {
-                BlocProvider.of<FoodCategoryBloc>(context).add(DeselectCategoryEvent(item));
-              } else {
-                BlocProvider.of<FoodCategoryBloc>(context).add(SelectCategoryEvent(item));
-              }
-            },
-          );
-        },
-      );
-    }).toList();
-  }
+  List<String> selectedCategories = [];
 
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      children: _buildChoiceList(),
+      children: widget.categoriesList.map((item) {
+        return ChoiceChip(
+          label: Text(item),
+          selected: selectedCategories.contains(item),
+          onSelected: (selected) {
+            setState(() {
+              if (selected) {
+                if (!selectedCategories.contains(item)) {
+                  selectedCategories.add(item);
+                  BlocProvider.of<FoodCategoryBloc>(context).add(SelectCategoryEvent(item));
+                }
+              } else {
+                selectedCategories.remove(item);
+                BlocProvider.of<FoodCategoryBloc>(context).add(DeselectCategoryEvent(item));
+              }
+            });
+
+            widget.onSelectionChanged?.call(selectedCategories);
+          },
+        );
+      }).toList(),
     );
   }
 }
+
