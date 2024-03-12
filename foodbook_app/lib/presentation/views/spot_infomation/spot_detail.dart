@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/data/repositories/category_repository.dart';
 import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
 import 'package:foodbook_app/presentation/views/review_view/restaurant_reviews_view.dart';
 
@@ -126,7 +127,10 @@ class SpotDetail extends StatelessWidget {
                               return MultiBlocProvider(
                                 providers: [
                                   BlocProvider<FoodCategoryBloc>(
-                                    create: (context) => FoodCategoryBloc(maxSelection: 3),
+                                    create: (context) => FoodCategoryBloc(
+                                      categoryRepository: CategoryRepository(),
+                                      maxSelection: 3
+                                    ),
                                   ),
                                   BlocProvider<StarsBloc>(
                                     create: (context) => StarsBloc(),

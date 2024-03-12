@@ -18,25 +18,22 @@ class CategoryRepository {
   //   }
   // }
 
-  Future<List<CategoryModel>> getAllCategories() async {
+    Future<List<CategoryModel>> getAllCategories() async {
     List<CategoryModel> categoryList = [];
-
     try {
-      final category = await FirebaseFirestore.instance.collection("categories").get();
-      print(category);
-      category.docs.forEach((element) {
-        return categoryList.add(CategoryModel.fromJson(element.data()));
-      });
-
-      return categoryList;
-    } on FirebaseException catch (e) {
-      if (kDebugMode) {
-        print("Failed with error '${e.code}': ${e.message}");
+      final categorySnapshot = await FirebaseFirestore.instance.collection("categories").get();
+      for (var doc in categorySnapshot.docs) {
+        print(CategoryModel.fromJson(doc.data()));
+        categoryList.add(CategoryModel.fromJson(doc.data()));
       }
 
       return categoryList;
+    } on FirebaseException catch (e) {
+      print("FirebaseException: ${e.code} - ${e.message}");
+      throw Exception("Error loading categories: ${e.code}");
     } catch (e) {
-      throw Exception(e.toString());
+      print("General Exception: $e");
+      throw Exception("Error loading categories");
     }
   }
 }
