@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
+import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/presentation/views/login_view/login_confirm.dart';
+import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
 
 class SignInView extends StatefulWidget {
   @override
@@ -82,10 +86,15 @@ class _SignInViewState extends State<SignInView> {
         ),
         onPressed: () {
           BlocProvider.of<AuthBloc>(context).add(GoogleSignInRequested());
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginConfirmPage()),
-          );
+          Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) {
+                      return BlocProvider<BrowseBloc>(
+                        create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository())..add(LoadRestaurants()),
+                        child: BrowseView(),
+                      );
+                     }
+                    ),
+            );
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
