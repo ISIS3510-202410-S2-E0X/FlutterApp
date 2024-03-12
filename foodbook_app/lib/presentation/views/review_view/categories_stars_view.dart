@@ -76,7 +76,7 @@ class CategoriesAndStarsView extends StatelessWidget {
             },
             style: OutlinedButton.styleFrom(
               side: BorderSide.none,
-              // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),                  
+              // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             child: const Text(
@@ -127,6 +127,8 @@ class CategoriesAndStarsView extends StatelessWidget {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is FoodCategoryLoaded) {
                   return MasonryGridView.builder(
+                    // padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.fromLTRB(30, 10, 0, 10),
                     gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                     ),
