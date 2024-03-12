@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodbook_app/bloc/auth_bloc.dart';
+import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 import 'package:foodbook_app/data/repository/auth_repository.dart';
 import 'package:foodbook_app/presentation/views/login_view/signin_view.dart';
 import 'package:firebase_core/firebase_core.dart';

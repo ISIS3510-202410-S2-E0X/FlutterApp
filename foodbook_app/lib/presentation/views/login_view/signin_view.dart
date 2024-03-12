@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodbook_app/bloc/auth_bloc.dart';
+import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 import 'package:foodbook_app/presentation/views/login_view/login_confirm.dart';
 
 class SignInView extends StatefulWidget {

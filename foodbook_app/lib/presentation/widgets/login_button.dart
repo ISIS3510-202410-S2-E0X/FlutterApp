@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodbook_app/bloc/auth_bloc.dart';
+import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 
 class LoginBtn extends StatefulWidget {
   const LoginBtn({super.key});
