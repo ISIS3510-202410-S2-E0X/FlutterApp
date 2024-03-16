@@ -34,7 +34,8 @@ class ReviewItem extends StatelessWidget {
           children: [
             Text(review.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
-            Text('by ${review.user} - ${DateFormat('dd/MM/yyyy').format(review.date)}'),
+            // Text('by ${review.user} - ${DateFormat('dd/MM/yyyy').format(review.date)}'),
+            Text('by ${review.user} - ${review.date}'),
             const SizedBox(height: 10),
             Text(review.content),
             const SizedBox(height: 10),
@@ -67,7 +68,8 @@ class ReviewItem extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             // Asumiendo que selectedCategories es una cadena de texto que contiene categorías separadas por comas
-            Text('Categories: ${review.selectedCategories}'),
+            // Text('Categories: ${review.selectedCategories}'),
+            Text('Categories: ${review.selectedCategories.map((c) => c.name).join(', ')}'),
           ],
         ),
       ),

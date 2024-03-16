@@ -1,4 +1,5 @@
 // repository/restaurant_repo.dart
+import 'package:foodbook_app/data/models/category.dart';
 import 'package:foodbook_app/data/models/review.dart';
 
 import '../models/restaurant.dart';
@@ -25,7 +26,7 @@ class RestaurantRepository {
             user: 'Alice Smith',
             title: 'Delicious Homemade Meals',
             content: 'The meals had a home-cooked feel that I absolutely loved! The ambiance was cozy and welcoming.',
-            date: DateTime(2024, 1, 20),
+            date: '20-01-2024', // DateTime(2024, 1, 20),
             imageUrl: null, // 'file:///foodbook_app/lib/presentation/images/divino_pecado_1.jpeg',
             ratings: {
               RatingsKeys.cleanliness: 5,
@@ -33,13 +34,13 @@ class RestaurantRepository {
               RatingsKeys.service: 5,
               RatingsKeys.foodQuality: 5,
             },
-            selectedCategories: 'homemade',
+            selectedCategories: [CategoryModel(name: 'homemade')],
           ),
           Review(
             user: 'Bob Johnson',
             title: 'Slow Service',
             content: 'The food was quite good, but the waiting time was longer than expected.',
-            date: DateTime(2024, 1, 22),
+            date: '20-01-2024', // DateTime(2024, 1, 22),
             imageUrl: null, // no image provided for this review
             ratings: {
               RatingsKeys.cleanliness: 4,
@@ -47,7 +48,12 @@ class RestaurantRepository {
               RatingsKeys.service: 3,
               RatingsKeys.foodQuality: 4,
             },
-            selectedCategories: 'vegan, healthy, salad, juices',
+            selectedCategories: [
+              CategoryModel(name: 'vegan'),
+              CategoryModel(name: 'healthy'),
+              CategoryModel(name: 'salad'),
+              CategoryModel(name: 'juices'),
+            ],
           ),
         ],
         cleanliness_avg: 81,
@@ -75,7 +81,7 @@ class RestaurantRepository {
             user: 'Carol Williams',
             title: 'Exceptional Desserts',
             content: 'Their desserts are out of this world! The perfect ending to our meal.',
-            date: DateTime(2024, 1, 25),
+            date: '20-01-2024', //  DateTime(2024, 1, 25),
             imageUrl: null, // 'lib/presentation/images/divino_pecado_2.jpeg',
             ratings: {
               RatingsKeys.cleanliness: 5,
@@ -83,7 +89,7 @@ class RestaurantRepository {
               RatingsKeys.service: 5,
               RatingsKeys.foodQuality: 5,
             },
-            selectedCategories: 'italian',
+            selectedCategories: [CategoryModel(name: 'italian')],
           ),
         ],
         cleanliness_avg: 81,

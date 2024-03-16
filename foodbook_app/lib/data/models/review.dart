@@ -1,11 +1,13 @@
+import 'package:foodbook_app/data/models/category.dart';
+
 class Review {
   final String user;
   final String title;
   final String content;
-  final DateTime date;
+  final String date; // does firebase accept dateTimes?
   final String? imageUrl;
   final Map<String, int> ratings;
-  final String selectedCategories; // makes sense to change the data type to Category
+  final List<CategoryModel> selectedCategories;
 
   Review({
     required this.user,
