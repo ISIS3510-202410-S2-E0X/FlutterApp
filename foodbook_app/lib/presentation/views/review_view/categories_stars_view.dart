@@ -7,52 +7,51 @@ import 'package:foodbook_app/presentation/widgets/reviews_creation/review_catego
 
 import 'package:foodbook_app/presentation/views/review_view/text_images_view.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
-import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
 
 class CategoriesAndStarsView extends StatelessWidget {
   // TO-DO: Change this to a list of categories from Firebase
-  final List<String> _categories = [
-    'Vegan',
-    'Italian',
-    'Fast',
-    'Healthy',
-    'Homemade',
-    'Poultry',
-    'Meat',
-    'Dessert',
-    'Vegetarian',
-    'Gluten-free',
-    'Low-Carb',
-    'Salad',
-    'Fruit',
-    'Organic',
-    'Coffee',
-    'Dairy-free',
-    'Thailandese',
-    'Asian',
-    'Colombian',
-    'Kosher',
-    'Chocolate',
-    'Spicy',
-    'Traditional',
-    'Beef',
-    'Group-portion',
-    'Japanese',
-    'Sushi',
-    'Poke',
-    'Chinese',
-    'Rice',
-    'Noodles',
-    'Burger',
-    'Fries',
-    'Sandwich',
-    'Bowl',
-    'Candy',
-    'Pizza',
-  ];
+  // final List<String> _categories = [
+  //   'Vegan',
+  //   'Italian',
+  //   'Fast',
+  //   'Healthy',
+  //   'Homemade',
+  //   'Poultry',
+  //   'Meat',
+  //   'Dessert',
+  //   'Vegetarian',
+  //   'Gluten-free',
+  //   'Low-Carb',
+  //   'Salad',
+  //   'Fruit',
+  //   'Organic',
+  //   'Coffee',
+  //   'Dairy-free',
+  //   'Thailandese',
+  //   'Asian',
+  //   'Colombian',
+  //   'Kosher',
+  //   'Chocolate',
+  //   'Spicy',
+  //   'Traditional',
+  //   'Beef',
+  //   'Group-portion',
+  //   'Japanese',
+  //   'Sushi',
+  //   'Poke',
+  //   'Chinese',
+  //   'Rice',
+  //   'Noodles',
+  //   'Burger',
+  //   'Fries',
+  //   'Sandwich',
+  //   'Bowl',
+  //   'Candy',
+  //   'Pizza',
+  // ];
 
-  CategoriesAndStarsView({super.key});
+  const CategoriesAndStarsView({super.key});
 
   @override
   Widget build(BuildContext context) {
