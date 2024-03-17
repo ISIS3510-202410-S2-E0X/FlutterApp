@@ -67,7 +67,6 @@ class ReviewItem extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            // Asumiendo que selectedCategories es una cadena de texto que contiene categorías separadas por comas
             // Text('Categories: ${review.selectedCategories}'),
             Text('Categories: ${review.selectedCategories.map((c) => c.name).join(', ')}'),
           ],
