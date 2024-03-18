@@ -36,7 +36,7 @@ class RatingCategory extends StatelessWidget {
             onRatingUpdate: (rating) {
               // Enviar evento al BLoC
               print('UPDATED!');
-              context.read<StarsBloc>().add(ReviewRatingChanged(category, rating));
+              context.read<StarsBloc>().add(ReviewRatingChanged(category.toLowerCase(), rating));
             },
           ),
         ],

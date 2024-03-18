@@ -68,7 +68,7 @@ class ReviewItem extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             // Text('Categories: ${review.selectedCategories}'),
-            Text('Categories: ${review.selectedCategories.map((c) => c.name).join(', ')}'),
+            Text('Categories: ${review.selectedCategories.map((c) => c).join(', ')}'),
           ],
         ),
       ),

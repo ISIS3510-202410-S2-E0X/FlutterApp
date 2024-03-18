@@ -1,4 +1,5 @@
 import 'package:foodbook_app/data/dtos/category_dto.dart';
+import 'package:foodbook_app/data/models/category.dart';
 import 'package:foodbook_app/data/models/review.dart';
 // import 'package:intl/intl.dart'; 
 
@@ -9,7 +10,7 @@ class ReviewDTO {
   final String date;
   final String? imageUrl;
   final Map<String, double> ratings;
-  final List<CategoryDTO> selectedCategoriesDTOs;
+  final List<String> selectedCategories;
 
   ReviewDTO({
     required this.user,
@@ -18,7 +19,7 @@ class ReviewDTO {
     required this.date,
     this.imageUrl,
     required this.ratings,
-    required this.selectedCategoriesDTOs,
+    required this.selectedCategories,
   });
 
   factory ReviewDTO.fromModel(Review review) {
@@ -30,7 +31,7 @@ class ReviewDTO {
       date: review.date,
       imageUrl: review.imageUrl,
       ratings: review.ratings,
-      selectedCategoriesDTOs: review.selectedCategories.map((cat) => CategoryDTO.fromModel(cat)).toList(),
+      selectedCategories: review.selectedCategories,
     );
   }
 
@@ -43,7 +44,7 @@ class ReviewDTO {
       date: date,
       imageUrl: imageUrl,
       ratings: ratings,
-      selectedCategories: selectedCategoriesDTOs.map((dto) => dto.toModel()).toList(),
+      selectedCategories: selectedCategories,
     );
   }
 
@@ -55,7 +56,7 @@ class ReviewDTO {
       'date': date,
       'imageUrl': imageUrl,
       'ratings': ratings,
-      'selectedCategories': selectedCategoriesDTOs.map((dto) => dto.toJson()).toList(),
+      'selectedCategories': selectedCategories.map((category) => category).toList(),
     };
   }
 
@@ -68,7 +69,7 @@ class ReviewDTO {
       date: json['date'] as String,
       imageUrl: json['imageUrl'] as String?,
       ratings: Map<String, double>.from(json['ratings']),
-      selectedCategoriesDTOs: selectedCategoriesJson.map((catJson) => CategoryDTO.fromJson(catJson)).toList(),
+      selectedCategories: selectedCategoriesJson.map((catJson) => CategoryDTO.fromJson(catJson).toString()).toList(),
     );
   }
 }

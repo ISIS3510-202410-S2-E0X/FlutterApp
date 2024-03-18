@@ -41,8 +41,10 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   
     final startBloc = BlocProvider.of<StarsBloc>(context);
     final stars = startBloc.newRatings;
-    print('Selected categories: $selectedCategories');
+
+    final selectedCategoriesString = selectedCategories.map((category) => category.name).toList();
     print('Stars: $stars');
+    print('Selected categories: $selectedCategoriesString');
     ReviewDTO newReview = ReviewDTO(
       user:
           "userID", // TO-DO: change to the actual user ID, you can get it from FirebaseAuth
@@ -54,7 +56,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
       imageUrl: _image
           ?.path, // TO-DO: upload the image to Firebase Storage and get the URL
       ratings: stars,
-      selectedCategoriesDTOs: selectedCategories,
+      selectedCategories: selectedCategoriesString,
     );
 
     try {
@@ -121,7 +123,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     padding:
                         EdgeInsets.only(left: 16.0, right: 16.0, bottom: 24.0),
                     child: Text(
-                      'Write what you thought of the restaurant, and add some images to show your experience!',
+                      'Write what you thought of the restaurant! (add some images to show your experience!)',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey,
@@ -131,7 +133,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextFormField(
-                      controller: _titleController, // Vincula el TextEditingController aquí
+                      controller: _titleController,
                       decoration: const InputDecoration(
                         labelText: 'Title',
                         hintText: '',
