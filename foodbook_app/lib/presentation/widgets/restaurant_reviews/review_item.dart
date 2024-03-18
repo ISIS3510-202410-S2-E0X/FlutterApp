@@ -32,12 +32,12 @@ class ReviewItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(review.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(review.title!, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
             // Text('by ${review.user} - ${DateFormat('dd/MM/yyyy').format(review.date)}'),
             Text('by ${review.user} - ${review.date}'),
             const SizedBox(height: 10),
-            Text(review.content),
+            Text(review.content!),
             const SizedBox(height: 10),
             // ignore: avoid_print
             if (review.imageUrl != null) Image.asset(review.imageUrl!, fit: BoxFit.cover),

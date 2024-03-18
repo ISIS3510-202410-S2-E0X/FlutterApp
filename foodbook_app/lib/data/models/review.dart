@@ -2,8 +2,8 @@ import 'package:foodbook_app/data/models/category.dart';
 
 class Review {
   final String user;
-  final String title;
-  final String content;
+  final String? title;
+  final String? content;
   final String date; // does firebase accept dateTimes?
   final String? imageUrl;
   final Map<String, double> ratings;

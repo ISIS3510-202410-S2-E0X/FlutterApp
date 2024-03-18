@@ -131,6 +131,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextFormField(
+                      controller: _titleController, // Vincula el TextEditingController aquí
                       decoration: const InputDecoration(
                         labelText: 'Title',
                         hintText: '',
@@ -141,6 +142,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextFormField(
+                      controller: _commentController, // Y aquí
                       decoration: const InputDecoration(
                         labelText: 'Comment',
                         hintText: 'Your review',

@@ -4,8 +4,8 @@ import 'package:foodbook_app/data/models/review.dart';
 
 class ReviewDTO {
   final String user;
-  final String title;
-  final String content;
+  final String? title;
+  final String? content;
   final String date;
   final String? imageUrl;
   final Map<String, double> ratings;
