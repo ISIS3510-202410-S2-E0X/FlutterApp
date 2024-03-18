@@ -5,13 +5,13 @@ import 'package:foodbook_app/data/dtos/category_dto.dart'; // Asegúrate de impo
 class CategoryRepository {
   final _fireCloud = FirebaseFirestore.instance.collection("categories");
 
-  Future<List<CategoryModel>> getAllCategories() async {
-    List<CategoryModel> categoryList = [];
+  Future<List<CategoryDTO>> getAllCategories() async {
+    List<CategoryDTO> categoryList = [];
     try {
       final categorySnapshot = await _fireCloud.get();
       for (var doc in categorySnapshot.docs) {
         var dto = CategoryDTO.fromJson(doc.data());
-        categoryList.add(dto.toModel());
+        categoryList.add(dto);
       }
 
       return categoryList;

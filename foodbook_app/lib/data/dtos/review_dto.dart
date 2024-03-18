@@ -8,7 +8,7 @@ class ReviewDTO {
   final String content;
   final String date;
   final String? imageUrl;
-  final Map<String, int> ratings;
+  final Map<String, double> ratings;
   final List<CategoryDTO> selectedCategoriesDTOs;
 
   ReviewDTO({
@@ -67,7 +67,7 @@ class ReviewDTO {
       content: json['content'] as String,
       date: json['date'] as String,
       imageUrl: json['imageUrl'] as String?,
-      ratings: Map<String, int>.from(json['ratings']),
+      ratings: Map<String, double>.from(json['ratings']),
       selectedCategoriesDTOs: selectedCategoriesJson.map((catJson) => CategoryDTO.fromJson(catJson)).toList(),
     );
   }

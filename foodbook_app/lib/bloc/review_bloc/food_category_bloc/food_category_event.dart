@@ -1,6 +1,9 @@
+
 abstract class FoodCategoryEvent {}
 
 class LoadCategoriesEvent extends FoodCategoryEvent {}
+
+class LoadSelectedCategoriesEvent extends FoodCategoryEvent {}
 
 class SelectCategoryEvent extends FoodCategoryEvent {
   final String category;

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
-import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
+import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 
 class LogInView extends StatelessWidget {
   const LogInView({super.key});

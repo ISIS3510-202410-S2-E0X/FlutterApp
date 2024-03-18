@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
-import 'package:foodbook_app/presentation/views/restaurant_views/bookmarks_view.dart';
-import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
-import 'package:foodbook_app/presentation/views/restaurant_views/for_you_view.dart';
+import 'package:foodbook_app/presentation/views/restaurant_view/bookmarks_view.dart';
+import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
+import 'package:foodbook_app/presentation/views/restaurant_view/for_you_view.dart';
 
 
 class CustomNavigationBar extends StatelessWidget {

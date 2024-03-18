@@ -6,7 +6,7 @@ class Review {
   final String content;
   final String date; // does firebase accept dateTimes?
   final String? imageUrl;
-  final Map<String, int> ratings;
+  final Map<String, double> ratings;
   final List<CategoryModel> selectedCategories;
 
   Review({

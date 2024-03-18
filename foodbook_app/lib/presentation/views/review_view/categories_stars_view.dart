@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_event.dart';
 
 import 'package:foodbook_app/presentation/widgets/reviews_creation/multi_select_chip_widget.dart';
 import 'package:foodbook_app/presentation/widgets/reviews_creation/review_category_widget.dart';
@@ -124,6 +125,8 @@ class CategoriesAndStarsView extends StatelessWidget {
               builder: (context, state) {
                 if (state is FoodCategoryLoading) {
                   return const Center(child: CircularProgressIndicator());
+                } else if (state is FoodCategoryError) {
+                  return const Center(child: Text('Failed to load categories'));
                 } else if (state is FoodCategoryLoaded) {
                   return MasonryGridView.builder(
                     // padding: const EdgeInsets.all(10),
@@ -136,6 +139,7 @@ class CategoriesAndStarsView extends StatelessWidget {
                       final category = state.data[index];
                       return MultiSelectChip(
                         [category.name],
+                        const [''],
                         onSelectionChanged: (selectedCategories) {
                           // TO-DO: actions when selected categories change
                         },
@@ -143,8 +147,39 @@ class CategoriesAndStarsView extends StatelessWidget {
                       );
                     },
                   );
-                } else if (state is FoodCategoryError) {
-                  return const Center(child: Text('Failed to load categories'));
+                } else if (state is FoodCategorySelected) {
+                  return MasonryGridView.builder(
+                    // padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.fromLTRB(30, 10, 0, 10),
+                    gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                    ),
+                    itemCount: state.allCategories.length,
+                    itemBuilder: (context, index) {
+                      final category = state.allCategories[index];
+                      final categoriesSelected = state.selectedCategories;
+                      return MultiSelectChip(
+                        [category.name],
+                        categoriesSelected.map((e) => e.name).toList(),
+                        onSelectionChanged: (selectedCategories) {
+                          // TO-DO: actions when selected categories change
+                        },
+                        maxSelection: 3,
+                      );
+                    },
+                  );
+                } else if (state is FoodCategoryMaxSelectionReached) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    const snackBar = SnackBar(
+                      content: Text('Max categories selected. Returning to selection...'),
+                      duration: Duration(seconds: 2),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    
+                    context.read<FoodCategoryBloc>().add(LoadSelectedCategoriesEvent());
+                  });
+
+                  return const Center(child: CircularProgressIndicator());
                 } else {
                   return const Center(child: Text('Please wait...'));
                 }
