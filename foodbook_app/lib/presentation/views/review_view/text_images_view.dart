@@ -38,7 +38,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     // Accede al FoodCategoryBloc para obtener las categorías seleccionadas
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
     final selectedCategories = foodCategoryBloc.selectedCategories;
-
+  
     final startBloc = BlocProvider.of<StarsBloc>(context);
     final stars = startBloc.newRatings;
     print('Selected categories: $selectedCategories');

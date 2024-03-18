@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_event.dart';
+import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 
 import 'package:foodbook_app/presentation/widgets/reviews_creation/multi_select_chip_widget.dart';
 import 'package:foodbook_app/presentation/widgets/reviews_creation/review_category_widget.dart';
@@ -70,8 +71,19 @@ class CategoriesAndStarsView extends StatelessWidget {
         actions: [
           OutlinedButton(
             onPressed: () {
+              final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
+              final starsBloc = BlocProvider.of<StarsBloc>(context);
+
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const TextAndImagesView()),
+                MaterialPageRoute(
+                  builder: (_) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider.value(value: foodCategoryBloc),
+                      BlocProvider.value(value: starsBloc),
+                    ],
+                    child: const TextAndImagesView(),
+                  ),
+                ),
               );
             },
             style: OutlinedButton.styleFrom(
