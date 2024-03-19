@@ -13,6 +13,8 @@ class Restaurant {
   final int waiting_time_avg;
   final int service_avg;
   final int food_quality_avg;
+  final double latitude;
+  final double longitude;
   bool bookmarked;
 
   Restaurant({
@@ -28,6 +30,8 @@ class Restaurant {
     required this.waiting_time_avg,
     required this.service_avg,
     required this.food_quality_avg,
+    required this.latitude,
+    required this.longitude,
     required this.bookmarked,
   });
 
@@ -46,6 +50,8 @@ class Restaurant {
       waiting_time_avg: json['waiting_time_avg'],
       service_avg: json['service_avg'],
       food_quality_avg: json['food_quality_avg'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
       bookmarked: false,
     );
   }
@@ -65,6 +71,8 @@ class Restaurant {
       'waiting_time_avg': waiting_time_avg,
       'service_avg': service_avg,
       'food_quality_avg': food_quality_avg,
+      'latitude': latitude,
+      'longitude': longitude,
       'bookmarked': bookmarked,
     };
   }
