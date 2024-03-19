@@ -41,11 +41,12 @@ dependencies:
   bloc:
   equatable:
   email_validator:
-  google_sign_in:
+  google_sign_in: 
   #google_fonts: ^6.1.0
-  intl: ^0.19.0
-  cloud_firestore: ^4.14.0
-  firebase_core: ^2.27.0
+  intl: ^0.19.0 
+  firebase_core: ^2.25.5
+  firebase_auth: ^4.17.6
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +58,13 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: 
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "lib/presentation/images/logo-1.png"
+  min_sdk_android:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
