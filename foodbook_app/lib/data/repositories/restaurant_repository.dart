@@ -54,6 +54,8 @@ class RestaurantRepository {
         waiting_time_avg: 89,
         service_avg: 45,
         food_quality_avg: 94,
+        latitude: 37.7749,
+        longitude: -122.4194,
         bookmarked: true,
       ),
       Restaurant(
@@ -90,6 +92,8 @@ class RestaurantRepository {
         waiting_time_avg: 89,
         service_avg: 92,
         food_quality_avg: 94,
+        latitude: 37.7749,
+        longitude: -122.4194,
         bookmarked: false,
       ),
   ];
@@ -116,6 +120,8 @@ class RestaurantRepository {
         waiting_time_avg: restaurant.waiting_time_avg,
         service_avg: restaurant.service_avg,
         food_quality_avg: restaurant.food_quality_avg,
+        latitude: restaurant.latitude,
+        longitude: restaurant.longitude,
         bookmarked: !restaurant.bookmarked,
       );
     }

@@ -5,6 +5,7 @@ import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
 import 'package:foodbook_app/presentation/views/review_view/restaurant_reviews_view.dart';
+import 'package:foodbook_app/presentation/views/spot_infomation/spot_map.dart';
 
 class SpotDetail extends StatelessWidget {
   final Restaurant restaurant;
@@ -15,7 +16,12 @@ class SpotDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(''),
+        title: Text(
+          restaurant.name,
+          style: TextStyle(
+            fontWeight: FontWeight.bold, 
+          ),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -23,128 +29,127 @@ class SpotDetail extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SingleChildScrollView(
+      body: Container(
+        color: Color.fromARGB(255, 238, 238, 238),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
-              child: Text(
-                restaurant.name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24.0,
-                ),
-              ),
-            ),
-            const Divider(color: Colors.grey, thickness: 1),
-            Container(
-              color: Colors.grey[200], // Set the background color to grey for the section below the divider
-              child: Column(
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: Image.asset(
-                      'lib/presentation/images/google_maps.jpeg',
-                      fit: BoxFit.cover,
-                      height: 200, // Set the desired height
-                      width: double.infinity, // Set the width to stretch horizontally
-                    ),
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
+                    color: Colors.grey[200], 
+                    child: Column(
                       children: [
-                        // Add your categories here
-                        for (final category in restaurant.categories)
-                          Container(
-                            margin: const EdgeInsets.all(8.0),
-                            padding: const EdgeInsets.all(8.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white, // Set the background color to white
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            child: Text(
-                              category,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold, // Set the text to bold
-                              ),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: SpotMap(restaurant: restaurant), 
+                          height: 200, 
+                          width: double.infinity,
+                        ),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Row(
+                              children: [
+                                // Add your categories here
+                                for (final category in restaurant.categories)
+                                  Container(
+                                    margin: const EdgeInsets.all(8.0),
+                                    padding: const EdgeInsets.all(8.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white, // Set the background color to white
+                                      border: Border.all(color: Colors.grey),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    child: Text(
+                                      category,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold, // Set the text to bold
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Reviews', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)), // Increase the font size
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => ReviewListView(restaurant: restaurant)),
-                            );
-                          },
-                          child: const Text('See more', style: TextStyle(color: Colors.blue)),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('   Reviews', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)), // Increase the font size
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (context) => ReviewListView(restaurant: restaurant)),
+                                  );
+                                },
+                                child: const Text('See more', style: TextStyle(color: Colors.blue)),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white, // Set the background color to white
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          margin: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: Column(
+                            children: [
+                              _buildReviewCriteria('Cleanliness', restaurant.cleanliness_avg, context),
+                              _buildReviewCriteria('Waiting Time', restaurant.waiting_time_avg, context),
+                              _buildReviewCriteria('Service', restaurant.service_avg, context),
+                              _buildReviewCriteria('Food Quality', restaurant.food_quality_avg, context),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white, // Set the background color to white
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    margin: const EdgeInsets.all(8.0),
-                    padding: const EdgeInsets.all(4.0),
-                    child: Column(
-                      children: [
-                        _buildReviewCriteria('Cleanliness', restaurant.cleanliness_avg, context),
-                        _buildReviewCriteria('Waiting Time', restaurant.waiting_time_avg, context),
-                        _buildReviewCriteria('Service', restaurant.service_avg, context),
-                        _buildReviewCriteria('Food Quality', restaurant.food_quality_avg, context),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        minimumSize: const Size(double.infinity, 50),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return MultiBlocProvider(
-                                providers: [
-                                  BlocProvider<FoodCategoryBloc>(
-                                    create: (context) => FoodCategoryBloc(3),
-                                  ),
-                                  BlocProvider<StarsBloc>(
-                                    create: (context) => StarsBloc(),
-                                  ),
-                                ],
-                                child: CategoriesAndStarsView(),
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: const Text('Leave a review', style: TextStyle(color: Colors.white)),
-                    ),
-                  ),
                 ],
+                ),
               ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        color: Colors.grey[200], // Grey background for the bottom bar
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue, // Button color
+            minimumSize: const Size(double.infinity, 50),
+          ),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  return MultiBlocProvider(
+                    providers: [
+                      BlocProvider<FoodCategoryBloc>(
+                        create: (context) => FoodCategoryBloc(3),
+                      ),
+                      BlocProvider<StarsBloc>(
+                        create: (context) => StarsBloc(),
+                      ),
+                    ],
+                    child: CategoriesAndStarsView(),
+                  );
+                },
+              ),
+            );
+          },
+          child: const Text('Leave a review', style:TextStyle(color:Colors.white)),
         ),
       ),
     );
