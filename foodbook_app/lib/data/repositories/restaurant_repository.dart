@@ -1,5 +1,4 @@
 // repository/restaurant_repo.dart
-import 'package:foodbook_app/data/models/category.dart';
 import 'package:foodbook_app/data/models/review.dart';
 
 import '../models/restaurant.dart';
