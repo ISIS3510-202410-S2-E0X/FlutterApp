@@ -4,7 +4,6 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
-import 'package:foodbook_app/presentation/views/login_view/login_confirm.dart';
 import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
 
 class SignInView extends StatefulWidget {

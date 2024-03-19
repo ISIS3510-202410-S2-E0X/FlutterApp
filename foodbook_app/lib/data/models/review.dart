@@ -1,11 +1,11 @@
 class Review {
   final String user;
-  final String title;
-  final String content;
-  final DateTime date;
+  final String? title;
+  final String? content;
+  final String date; // does firebase accept dateTimes?
   final String? imageUrl;
-  final Map<String, int> ratings;
-  final String selectedCategories; // makes sense to change the data type to Category
+  final Map<String, double> ratings;
+  final List<String> selectedCategories;
 
   Review({
     required this.user,
