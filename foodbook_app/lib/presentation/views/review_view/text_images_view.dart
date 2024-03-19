@@ -11,6 +11,26 @@ import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 import 'package:image_picker/image_picker.dart';
 
+String _formatCurrentDate() {
+  DateTime now = DateTime.now().toUtc().subtract(Duration(hours: 5));
+  int hour = now.hour % 12;
+  hour = hour == 0 ? 12 : hour; // Convert 0 hour to 12 for 12-hour format
+
+  String period = now.hour >= 12 && now.hour < 24 ? 'p.m.' : 'a.m.';
+
+  return '${now.day} de ${_getMonthName(now.month)} de ${now.year}, '
+         '${hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} '
+         '$period UTC-5';
+}
+
+String _getMonthName(int month) {
+  const monthsInSpanish = [
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+  ];
+  return monthsInSpanish[month - 1];
+}
+
 class TextAndImagesView extends StatefulWidget {
   const TextAndImagesView({super.key});
 
@@ -45,6 +65,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     final selectedCategoriesString = selectedCategories.map((category) => category.name).toList();
     print('Stars: $stars');
     print('Selected categories: $selectedCategoriesString');
+    
     ReviewDTO newReview = ReviewDTO(
       user:
           "userID", // TO-DO: change to the actual user ID, you can get it from FirebaseAuth
@@ -52,7 +73,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           .text,
       content:
           _commentController.text,
-      date: DateTime.now().toString(),
+      date: _formatCurrentDate(), // TO-DO: change to an actual date data-type
       imageUrl: _image
           ?.path, // TO-DO: upload the image to Firebase Storage and get the URL
       ratings: stars,
