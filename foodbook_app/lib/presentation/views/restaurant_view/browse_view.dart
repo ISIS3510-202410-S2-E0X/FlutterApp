@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
-import 'package:foodbook_app/presentation/views/spot_infomation/spot_detail.dart';
+import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
 
 
 
-class BookmarksView extends StatelessWidget {
-  BookmarksView({Key? key}) : super(key: key);
+class BrowseView extends StatelessWidget {
+  BrowseView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +19,13 @@ class BookmarksView extends StatelessWidget {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white, // Set AppBar background to white
         title: const Text(
-          'Bookmarks',
+          'Browse',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.black, // Title color
           ),
         ),
+        // Add the FilterBar widget to the AppBar
         actions: [
           FilterBar(),
         ],
@@ -34,19 +35,19 @@ class BookmarksView extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            color: Color.fromARGB(255, 255, 255, 255), // White background color for search bar container
+            color: const Color.fromARGB(255, 255, 255, 255), // White background color for search bar container
             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0), // Horizontal padding only
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search',
-                prefixIcon: Icon(Icons.search, color: Colors.black),
+                prefixIcon: const Icon(Icons.search, color: Colors.black),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: EdgeInsets.symmetric(vertical: 5), // Reduced vertical padding to make the search bar thinner
+                contentPadding: const EdgeInsets.symmetric(vertical: 5), // Reduced vertical padding to make the search bar thinner
                 filled: true,
-                fillColor: const Color.fromARGB(255, 197, 197, 197), // Search bar fill color
+                fillColor: const Color.fromARGB(2192, 217, 219, 225), // Search bar fill color
               ),
             ),
           ),
@@ -58,52 +59,48 @@ class BookmarksView extends StatelessWidget {
             child: BlocBuilder<BrowseBloc, BrowseState>(
               builder: (context, state) {
                 if (state is RestaurantsLoadInProgress) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (state is RestaurantsLoadSuccess) {
                   return ListView.builder(
-                    itemCount: state.restaurants.where((restaurant) => restaurant.bookmarked).length,
+                    itemCount: state.restaurants.length,
                     itemBuilder: (context, index) {
-                      final bookmarkedRestaurants = state.restaurants.where((restaurant) => restaurant.bookmarked).toList();
-                      final restaurant = bookmarkedRestaurants[index];
                       return GestureDetector(
                         onTap: () {
                           // Navigate to another view when the restaurant card is clicked
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SpotDetail(restaurant: restaurant),
+                              builder: (context) => SpotDetail(restaurant: state.restaurants[index]),
                             ),
                           );
                         },
-                        child: RestaurantCard(restaurant: restaurant),
+                        child: RestaurantCard(restaurant: state.restaurants[index]),
                       );
-                    },
+                    }
                   );
                 } else if (state is RestaurantsLoadFailure) {
-                  return Center(child: Text('Failed to load restaurants'));
+                  return const Center(child: Text('Failed to load restaurants'));
                 }
-                
-                return Center(child: Text('Start browsing by applying some filters!'));
+                // Si el estado inicial es RestaurantsInitial o cualquier otro estado no esperado
+                return const Center(child: Text('Start browsing by applying some filters!'));
               },
             ),
           ),
         ],
       ),
       bottomNavigationBar: CustomNavigationBar(
-        selectedIndex: 2, // Set the selected index to 1
+        selectedIndex: 0, // Set the selected index to 1
         onItemTapped: (int index) {
           // Handle navigation to different views
-          if (index == 0) {
-            Navigator.pushNamed(context, '/browse');
-          } else if (index == 1) {
-            Navigator.pushNamed(context, '/for_you');
+          if (index == 1) {
+            Navigator.pushNamed(context, 'package:foodbook_app/presentation/views/restaurant_views/login_view.dart');
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/bookmarks');
           }
         },
       ),
     );
   }
-
-
 }
 
 

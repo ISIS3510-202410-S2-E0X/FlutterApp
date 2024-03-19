@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
-import 'package:foodbook_app/presentation/views/restaurant_views/browse_view.dart';
+import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 
-class login_view extends StatelessWidget {
-  const login_view({super.key});
+class LogInView extends StatelessWidget {
+  const LogInView({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

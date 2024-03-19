@@ -1,58 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_event.dart';
+import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 
 import 'package:foodbook_app/presentation/widgets/reviews_creation/multi_select_chip_widget.dart';
 import 'package:foodbook_app/presentation/widgets/reviews_creation/review_category_widget.dart';
 
 import 'package:foodbook_app/presentation/views/review_view/text_images_view.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
-import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
 
 class CategoriesAndStarsView extends StatelessWidget {
   // TO-DO: Change this to a list of categories from Firebase
-  final List<String> _categories = [
-    'Vegan',
-    'Italian',
-    'Fast',
-    'Healthy',
-    'Homemade',
-    'Poultry',
-    'Meat',
-    'Dessert',
-    'Vegetarian',
-    'Gluten-free',
-    'Low-Carb',
-    'Salad',
-    'Fruit',
-    'Organic',
-    'Coffee',
-    'Dairy-free',
-    'Thailandese',
-    'Asian',
-    'Colombian',
-    'Kosher',
-    'Chocolate',
-    'Spicy',
-    'Traditional',
-    'Beef',
-    'Group-portion',
-    'Japanese',
-    'Sushi',
-    'Poke',
-    'Chinese',
-    'Rice',
-    'Noodles',
-    'Burger',
-    'Fries',
-    'Sandwich',
-    'Bowl',
-    'Candy',
-    'Pizza',
-  ];
+  // final List<String> _categories = [
+  //   'Vegan',
+  //   'Italian',
+  //   'Fast',
+  //   'Healthy',
+  //   'Homemade',
+  //   'Poultry',
+  //   'Meat',
+  //   'Dessert',
+  //   'Vegetarian',
+  //   'Gluten-free',
+  //   'Low-Carb',
+  //   'Salad',
+  //   'Fruit',
+  //   'Organic',
+  //   'Coffee',
+  //   'Dairy-free',
+  //   'Thailandese',
+  //   'Asian',
+  //   'Colombian',
+  //   'Kosher',
+  //   'Chocolate',
+  //   'Spicy',
+  //   'Traditional',
+  //   'Beef',
+  //   'Group-portion',
+  //   'Japanese',
+  //   'Sushi',
+  //   'Poke',
+  //   'Chinese',
+  //   'Rice',
+  //   'Noodles',
+  //   'Burger',
+  //   'Fries',
+  //   'Sandwich',
+  //   'Bowl',
+  //   'Candy',
+  //   'Pizza',
+  // ];
 
-  CategoriesAndStarsView({super.key});
+  const CategoriesAndStarsView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,13 +71,24 @@ class CategoriesAndStarsView extends StatelessWidget {
         actions: [
           OutlinedButton(
             onPressed: () {
+              final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
+              final starsBloc = BlocProvider.of<StarsBloc>(context);
+
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const TextAndImagesView()),
+                MaterialPageRoute(
+                  builder: (_) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider.value(value: foodCategoryBloc),
+                      BlocProvider.value(value: starsBloc),
+                    ],
+                    child: const TextAndImagesView(),
+                  ),
+                ),
               );
             },
             style: OutlinedButton.styleFrom(
               side: BorderSide.none,
-              // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),                  
+              // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             child: const Text(
@@ -123,30 +135,66 @@ class CategoriesAndStarsView extends StatelessWidget {
           Expanded(
             child: BlocBuilder<FoodCategoryBloc, FoodCategoryState>(
               builder: (context, state) {
-                return MasonryGridView.builder(
-                  padding: const EdgeInsets.all(8),
-                  gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    // Añade tus valores de espaciado aquí si es necesario
-                  ),
-                  itemCount: _categories.length,
-                  itemBuilder: (context, index) {
-                    final category = _categories[index];
-
-                    // El widget MultiSelectChip no debería ser const si su estado puede cambiar
-                    return MultiSelectChip(
-                      [category],
-                      onSelectionChanged: (selectedCategories) {
-                        if (selectedCategories.contains(category)) {
-                          BlocProvider.of<FoodCategoryBloc>(context).add(SelectCategoryEvent(category));
-                        } else {
-                          BlocProvider.of<FoodCategoryBloc>(context).add(DeselectCategoryEvent(category));
-                        }
-                      },
-                      maxSelection: 3,
+                if (state is FoodCategoryLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is FoodCategoryError) {
+                  return const Center(child: Text('Failed to load categories'));
+                } else if (state is FoodCategoryLoaded) {
+                  return MasonryGridView.builder(
+                    // padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.fromLTRB(30, 10, 0, 10),
+                    gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                    ),
+                    itemCount: state.data.length,
+                    itemBuilder: (context, index) {
+                      final category = state.data[index];
+                      return MultiSelectChip(
+                        [category.name],
+                        const [''],
+                        onSelectionChanged: (selectedCategories) {
+                          // TO-DO: actions when selected categories change
+                        },
+                        maxSelection: 3,
+                      );
+                    },
+                  );
+                } else if (state is FoodCategorySelected) {
+                  return MasonryGridView.builder(
+                    // padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.fromLTRB(30, 10, 0, 10),
+                    gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                    ),
+                    itemCount: state.allCategories.length,
+                    itemBuilder: (context, index) {
+                      final category = state.allCategories[index];
+                      final categoriesSelected = state.selectedCategories;
+                      return MultiSelectChip(
+                        [category.name],
+                        categoriesSelected.map((e) => e.name).toList(),
+                        onSelectionChanged: (selectedCategories) {
+                          // TO-DO: actions when selected categories change
+                        },
+                        maxSelection: 3,
+                      );
+                    },
+                  );
+                } else if (state is FoodCategoryMaxSelectionReached) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    const snackBar = SnackBar(
+                      content: Text('Max categories selected. Returning to selection...'),
+                      duration: Duration(seconds: 2),
                     );
-                  },
-                );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    
+                    context.read<FoodCategoryBloc>().add(LoadSelectedCategoriesEvent());
+                  });
+
+                  return const Center(child: CircularProgressIndicator());
+                } else {
+                  return const Center(child: Text('Please wait...'));
+                }
               },
             ),
           ),
