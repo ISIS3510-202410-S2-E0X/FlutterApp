@@ -18,9 +18,8 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]); // Set up background message handler
-   // Request location permission
-  await requestLocationPermission();
   NotificationService.init(); // Initialize notification service
+  await requestLocationPermission();   // Request location permission
   initializeBackgroundTask(); // Initialize background task
   runApp(const MyApp());
 }

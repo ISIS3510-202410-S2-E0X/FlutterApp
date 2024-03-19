@@ -15,8 +15,8 @@ void callbackDispatcher() {
     if (distance > 1000) {
        NotificationService.showNotification(
          id: 0,
-         title: 'Distance Succesfully Calculated',
-         body: 'Testing notification',
+         title: 'Hungry?',
+         body: "Choose what you will eat today and leave a review!",
        );
      }
     return Future.value(true);
@@ -34,24 +34,26 @@ void initializeBackgroundTask() {
   Duration initialDelay = nextMidday.difference(now);
   print("initial delay: $initialDelay");
   Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-  Workmanager().registerOneOffTask("DistanceBasedTest", "NotificationDisplayDistGLOCTest");
-  // Workmanager().registerPeriodicTask(
-  //   "DailyTaskEliminationTest", 
-  //   "DailyElimTest3", 
-  //   // When no frequency is provided the default 15 minutes is set.
-  //   // Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
-  //   frequency: const Duration(days: 1),
-  //   initialDelay: const Duration(seconds: 10),
-  //  );
-  // Workmanager().registerPeriodicTask(
-  //    'dailyEating_notification',
-  //    'show_daily_notification',
-  //    frequency: const Duration(days: 1),
-  //    initialDelay: initialDelay,
-  //    constraints: Constraints(
-  //      networkType: NetworkType.connected,
-  //   ),
-  // );
+  //Workmanager().registerOneOffTask("DistanceBasedTest", "NotificationDisplayDistGLOCTest");
+  Workmanager workmanager = Workmanager();
+  workmanager.cancelByUniqueName("RecurringlocatiionUsageTest2");
+  workmanager.cancelByUniqueName("dailyEatingTest_notification");
+  Workmanager().registerPeriodicTask(
+    "RecurringlocatiionUsageTest3", 
+    "RepLocTest", 
+    //  When no frequency is provided the default 15 minutes is set.
+    //  Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
+    frequency: const Duration(hours: 2),
+  );
+   Workmanager().registerPeriodicTask(
+     'dailyEatingTest_notification',
+     'show_daily_notification',
+     frequency: const Duration(days: 1),
+     initialDelay: initialDelay,
+     constraints: Constraints(
+       networkType: NetworkType.connected,
+     ),
+  );
   print("background task initialized");
 }
 
