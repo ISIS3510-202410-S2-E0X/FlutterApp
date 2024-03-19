@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "168193050245-9vjnjqlc7ivl6108kms8u2dnbcr3vedk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.foodbook_app",
+            "certificate_hash": "de0e7fea2cd754da937dbfc4e5cbc0edd0c60292"
+          }
+        },
+        {
           "client_id": "168193050245-83n9eem4i0d620oalgghr7js90ed6p2v.apps.googleusercontent.com",
           "client_type": 3
         }

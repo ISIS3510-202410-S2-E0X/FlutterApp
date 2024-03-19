@@ -5,6 +5,9 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
+import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
+import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
+import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
@@ -62,13 +65,20 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     final startBloc = BlocProvider.of<StarsBloc>(context);
     final stars = startBloc.newRatings;
 
+    final userBloc = BlocProvider.of<UserBloc>(context);
+    context.read<UserBloc>().add(GetCurrentUser());
+    String userEmail = '';
+    if (userBloc.state is AuthenticatedUserState) {
+      userEmail = (userBloc.state as AuthenticatedUserState).email;
+    }
+
     final selectedCategoriesString = selectedCategories.map((category) => category.name).toList();
     print('Stars: $stars');
     print('Selected categories: $selectedCategoriesString');
     
     ReviewDTO newReview = ReviewDTO(
       user:
-          "userID", // TO-DO: change to the actual user ID, you can get it from FirebaseAuth
+          userEmail,
       title: _titleController
           .text,
       content:
