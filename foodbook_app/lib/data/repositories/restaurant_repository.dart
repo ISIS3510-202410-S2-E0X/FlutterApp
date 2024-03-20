@@ -26,6 +26,44 @@ class RestaurantRepository {
       return restaurants;
     }
   }
+
+  Future<void> addReviewToRestaurant(String restaurantId, String reviewId) async {
+    try {
+      print('RESTAURANT ID: $restaurantId');
+      DocumentReference restaurantRef = FirebaseFirestore.instance.collection('spots').doc(restaurantId);
+      
+      DocumentReference reviewRef = FirebaseFirestore.instance.collection('reviews').doc(reviewId);
+      
+      await restaurantRef.update({
+        'reviewData.userReviews': FieldValue.arrayUnion([reviewRef])
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print("Failed to add review to restaurant: $e");
+      }
+      rethrow;
+    }
+  }
+
+  Future<String?> findRestaurantIdByName(String name) async {
+    try {
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('spots')
+          .where('name', isEqualTo: name)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.id;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error al buscar el restaurante: $e");
+      return null;
+    }
+  }
+
 }
 
 

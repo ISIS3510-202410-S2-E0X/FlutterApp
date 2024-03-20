@@ -9,14 +9,18 @@ class InitialState extends ReviewState {
   List<Object> get props => [];
 }
 
-class ReviewAdding extends ReviewState {
+class ReviewLoading extends ReviewState {
   @override
   List<Object> get props => [];
 }
 
-class ReviewAdded extends ReviewState {
+class ReviewCreateSuccess extends ReviewState {
+  final String reviewId;
+
+  ReviewCreateSuccess(this.reviewId);
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [reviewId];
 }
 
 class ReviewError extends ReviewState {
