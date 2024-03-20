@@ -1,13 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:foodbook_app/data/dtos/category_dto.dart';
 import 'package:foodbook_app/data/models/category.dart';
 import 'package:foodbook_app/data/models/review.dart';
+import 'package:intl/intl.dart';
 // import 'package:intl/intl.dart'; 
 
 class ReviewDTO {
   final String user;
-  final String? title;
-  final String? content;
-  final String date;
+  final String title;
+  final String content;
+  final Timestamp date;
   final String? imageUrl;
   final Map<String, double> ratings;
   final List<String> selectedCategories;
@@ -17,7 +19,7 @@ class ReviewDTO {
     required this.title,
     required this.content,
     required this.date,
-    this.imageUrl,
+    required this.imageUrl,
     required this.ratings,
     required this.selectedCategories,
   });
@@ -40,8 +42,8 @@ class ReviewDTO {
       user: user,
       title: title,
       content: content,
-      // date: DateFormat('yyyy-MM-dd').parse(this.date),
       date: date,
+      // date: date,
       imageUrl: imageUrl,
       ratings: ratings,
       selectedCategories: selectedCategories,
@@ -66,8 +68,8 @@ class ReviewDTO {
       user: json['user'] as String,
       title: json['title'] as String,
       content: json['content'] as String,
-      date: json['date'] as String,
-      imageUrl: json['imageUrl'] as String?,
+      date: json['date'],
+      imageUrl: json['imageUrl'] as String,
       ratings: Map<String, double>.from(json['ratings']),
       selectedCategories: selectedCategoriesJson.map((catJson) => CategoryDTO.fromJson(catJson).toString()).toList(),
     );
