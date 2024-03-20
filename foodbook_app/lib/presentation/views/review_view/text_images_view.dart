@@ -29,8 +29,8 @@ String _formatCurrentDate() {
 
 String _getMonthName(int month) {
   const monthsInSpanish = [
-    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    'january', 'february', 'march', 'april', 'may', 'june',
+    'july', 'august', 'september', 'october', 'november', 'december'
   ];
   return monthsInSpanish[month - 1];
 }
