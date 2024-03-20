@@ -30,6 +30,7 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
     try {
       final restaurants = await restaurantRepository.fetchRestaurants();
       final filteredRestaurants = _applyFilters(
+        event.name,       // Nullable type
         event.price,       // Nullable type
         //event.distance,    // Nullable type
         event.category,    // Nullable type
@@ -42,18 +43,19 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
   }
 
   List<Restaurant> _applyFilters(
+    String? name,       // Nullable type
     String? price,       // Nullable type
-    //double? distance,    // Nullable type
     String? category,    // Nullable type
     List<Restaurant> restaurants,
   ) {
     // Add your filtering logic here, making sure to check for nulls
     // Example:
     return restaurants.where((restaurant) {
+      final matchesName = name == null || restaurant.name.toLowerCase().contains(name.toLowerCase());
       final matchesPrice = price == null || restaurant.priceRange == price;
       //final withinDistance = distance == null || restaurant.distance <= distance;
       final matchesCategory = category == null || restaurant.categories.contains(category);
-      return matchesPrice && matchesCategory;
+      return matchesName && matchesPrice && matchesCategory;
     }).toList();
   }
 
