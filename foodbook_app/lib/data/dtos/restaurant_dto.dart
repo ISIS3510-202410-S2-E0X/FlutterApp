@@ -8,7 +8,7 @@ class RestaurantDTO {
   final List<double> location;
   final Map<String, dynamic> waitTime;
   final String price;
-  final Map<String, double> stats;
+  final Map<String, num> stats;
   //final List<String> userReviews;
 
   RestaurantDTO({
@@ -32,7 +32,7 @@ class RestaurantDTO {
       //reviews: userReviews.map((review) => ReviewDTO.fromJson(review).toModel()).toList(),
       reviews: [],
       cleanliness_avg: (stats['cleanliness']! * 20).toInt(),
-      waiting_time_avg: (stats['waitingTime']! * 20).toInt(),
+      waiting_time_avg: (stats['waitTime']! * 20).toInt(),
       service_avg: (stats['service']! * 20).toInt(),
       food_quality_avg: (stats['foodQuality']! * 20).toInt(),
       waitTimeMin: waitTime['min'],
@@ -51,7 +51,8 @@ class RestaurantDTO {
   var waitTime = Map<String, dynamic>.from(json['waitTime'] ?? {});
 
   var reviewData = json['reviewData'] as Map<String, dynamic>? ?? {};
-  var stats = Map<String, double>.from(reviewData['stats'] as Map<String, dynamic>? ?? {});
+  var stats = Map<String, num>.from(reviewData['stats'] as Map<String, dynamic>? ?? {});
+
   
   // Para userReviews, extraemos las referencias como List<String>
   // Asumiendo que son referencias de Firestore en formato de String
