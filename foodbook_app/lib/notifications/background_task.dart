@@ -38,13 +38,14 @@ void initializeBackgroundTask() {
   Workmanager workmanager = Workmanager();
   workmanager.cancelByUniqueName("RecurringlocatiionUsageTest2");
   workmanager.cancelByUniqueName("dailyEatingTest_notification");
-  Workmanager().registerPeriodicTask(
-    "RecurringlocatiionUsageTest3", 
-    "RepLocTest", 
-    //  When no frequency is provided the default 15 minutes is set.
-    //  Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
-    frequency: const Duration(hours: 2),
-  );
+  // Workmanager().registerPeriodicTask(
+  //   "RecurringlocatiionUsageTest3", 
+  //   "RepLocTest", 
+  //   //  When no frequency is provided the default 15 minutes is set.
+  //   //  Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
+  //   frequency: const Duration(hours: 2),
+  //   initialDelay: const Duration(minutes: 2),
+  // );
    Workmanager().registerPeriodicTask(
      'dailyEatingTest_notification',
      'show_daily_notification',
