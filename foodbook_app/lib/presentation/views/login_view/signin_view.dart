@@ -4,7 +4,7 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
-import 'package:foodbook_app/notifications/notification_service.dart';
+import 'package:foodbook_app/notifications/background_review_reminder.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 
 
@@ -86,7 +86,7 @@ class _SignInViewState extends State<SignInView> {
           ),
         ),
         onPressed: () {
-          NotificationService.schedulePeriodicNotification();
+          initializeBackgroundTaskReminder();
           BlocProvider.of<AuthBloc>(context).add(GoogleSignInRequested());
           Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) {

@@ -47,6 +47,8 @@ static Future<void> schedulePeriodicNotification() async {
   );
   print("periodic notification scheduled");
 }
+
+
   static Future<void> scheduleNotification() async {
     const int id = 2 ;
     const String title = 'We miss you...';
