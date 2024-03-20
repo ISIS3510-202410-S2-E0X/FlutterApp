@@ -1,9 +1,15 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_event.dart';
+import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_state.dart';
+import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
@@ -11,11 +17,11 @@ import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
-import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
 import 'package:foodbook_app/notifications/notification_service.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 String _formatCurrentDate() {
   DateTime now = DateTime.now().toUtc().subtract(Duration(hours: 5));
@@ -48,17 +54,80 @@ class TextAndImagesView extends StatefulWidget {
 
 class _TextAndImagesViewState extends State<TextAndImagesView> {
   File? _image;
+  int _times = 0;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
 
-  Future getImage() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.camera);
-    if (image == null) return;
+  Future<void> getImage() async {
+    final ImagePicker _picker = ImagePicker();
 
-    final imageTemporary = File(image.path);
-    setState(() {
-      _image = imageTemporary;
-    });
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                  leading: Icon(Icons.photo_library),
+                  title: Text('Gallery'),
+                  onTap: () async {
+                    Navigator.of(context).pop(); // Cierra el modal
+                    var storageStatus = await Permission.storage.status; // Para Android
+                    if (!storageStatus.isGranted) {
+                      await Permission.storage.request(); // Para Android
+                    }
+                    storageStatus = await Permission.storage.status; // Actualiza el estado para Android
+                    if (storageStatus.isGranted) {
+                      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                      if (pickedFile != null) {
+                        setState(() {
+                          _image = File(pickedFile.path);
+                        });
+                      }
+                    }
+                  storageStatus = await Permission.camera.status;                    
+                    if (storageStatus.isPermanentlyDenied) {
+                      openAppSettings();
+                    }
+                  }),
+              ListTile(
+                leading: Icon(Icons.photo_camera),
+                title: Text('Camera'),
+                onTap: () async {
+                  Navigator.of(context).pop(); // Cierra el modal
+                  var cameraStatus = await Permission.camera.status;
+                  if (!cameraStatus.isGranted) {
+                    await Permission.camera.request();
+                  }
+                  cameraStatus = await Permission.camera.status;
+                  if (cameraStatus.isGranted) {
+                    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+                    if (pickedFile != null) {
+                      setState(() {
+                        _image = File(pickedFile.path);
+                      });
+                    }
+                  }
+                  cameraStatus = await Permission.camera.status;                  
+                  if (cameraStatus.isPermanentlyDenied) {
+                      openAppSettings();
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String? _email;
+  String? _uploadedImageUrl;
+  Future saveImage() async {
+    print('Saving image...');
+    if (_image == null) return; 
+    final imageUploadBloc = BlocProvider.of<ImageUploadBloc>(context);
+    imageUploadBloc.add(ImageUploadRequested(_image!));
   }
 
   @override
@@ -79,6 +148,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
             onPressed: () => {
 
               context.read<UserBloc>().add(GetCurrentUser()),
+              saveImage(),
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) {
                   return BlocProvider<BrowseBloc>(
@@ -105,16 +175,39 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
         ],
         elevation: 0,
       ),
-      body: BlocListener<UserBloc, UserState>(
-        listener: (context, state) {
-          if (state is AuthenticatedUserState) {
-            createReview(state.email);
-            cancelSingleTask("reviewReminder");
-            NotificationService.schedulePeriodicNotification();
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<UserBloc, UserState>(
+            listener: (context, state) {
+              if (state is AuthenticatedUserState) {
+                _email = state.email;
+                if (_image == null && _times == 0) {
+                  print('No image to upload, creating review...');
+                  createReview(_email!, null);
+                  cancelSingleTask("reviewReminder");
+                  initializeBackgroundTaskReminder();
+                }
+                
           } else if (state is UnauthenticatedUserState) {
-            print('Usuario no autenticado. Por favor, inicia sesión.');
-          }
-        },
+                print('Usuario no autenticado. Por favor, inicia sesión.');
+              }
+            },
+          ),
+          BlocListener<ImageUploadBloc, ImageUploadState>(
+            listener: (context, state) {  
+              if (state is ImageUploadSuccess) {
+                _uploadedImageUrl = state.imageUrl;
+                if (context.read<UserBloc>().state is AuthenticatedUserState && _times == 0) {
+                  print('NO DEBERÍA ENTRAR ACÁ');
+                  createReview(_email!, _uploadedImageUrl!);
+                }
+              } else if (state is ImageUploadFailure) {
+                // Manejo del error
+                print('Error al subir imagen: ${state.error}');
+              }
+            },
+          ),
+        ],
         child: buildForm(),
       ),
     );
@@ -176,16 +269,24 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: OutlinedButton(
-                    onPressed: getImage,
+                    onPressed: () {
+                      if (_image != null) {
+                        setState(() {
+                          _image = null;
+                        });
+                      } else {
+                        getImage();
+                      }
+                    },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide.none,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: const Text(
-                      'Add a photo',
+                    child: Text(
+                      _image != null ? 'Remove image' : 'Add image',
                       style: TextStyle(
                         fontSize: 20,
-                        color: Color.fromRGBO(0, 122, 255, 100),
+                        color: _image != null ? Color.fromRGBO(255, 0, 0, 0.612) : Color.fromRGBO(0, 122, 255, 100),
                       ),
                     ),
                   ),
@@ -198,7 +299,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
-  void createReview(String userEmail) async {
+  void createReview(String userEmail, String? uploadedImageUrl) async {
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
     final starsBloc = BlocProvider.of<StarsBloc>(context);
 
@@ -211,18 +312,31 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
       user: userEmail.replaceFirst("@gmail.com", ""),
       title: _titleController.text,
       content: _commentController.text,
-      date: _formatCurrentDate(),
-      imageUrl: _image?.path,
+      date: Timestamp.fromDate(DateTime.now()), // _formatCurrentDate(),
+      imageUrl: uploadedImageUrl,
       ratings: stars,
       selectedCategories: selectedCategoriesString,
     );
 
     try {
-      final reviewRepository = ReviewRepository();
-      await reviewRepository.create(review: newReview);
+      print('Creating review...');
+      BlocProvider.of<ReviewBloc>(context).add(CreateReviewEvent(newReview, widget.restaurant.name));
+      _resetFormAndImage();
+      _times = 1;
       // TO-DO: show a success message
     } catch (e) {
       // TO-DO: show an error message
     }
+  }
+
+  void _resetFormAndImage() {
+    _titleController.clear();
+    _commentController.clear();
+    _image = null; // Asegúrate de que la imagen se resetea correctamente
+    _uploadedImageUrl = null; // Resetear la URL de la imagen subida
+    setState(() {
+      _image = null; // Asegúrate de que la imagen se resetea correctamente
+      _uploadedImageUrl = null; // Resetear la URL de la imagen subida
+    });
   }
 }

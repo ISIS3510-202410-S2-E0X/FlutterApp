@@ -19,6 +19,10 @@ class RatingCategory extends StatelessWidget {
 
     String result = words.join('');
 
+    if (result.startsWith("Waiting")) {
+      result = "wait${result.substring("Waiting".length)}";
+    }
+
     return result[0].toLowerCase() + result.substring(1);
   }
 
