@@ -214,7 +214,10 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
 
     try {
       final reviewRepository = ReviewRepository();
-      await reviewRepository.create(review: newReview);
+      final restaurantRepository = RestaurantRepository();
+      String reviewId = await reviewRepository.create(review: newReview);
+      String? restaurantId = await restaurantRepository.findRestaurantIdByName(widget.restaurant.name);
+      await restaurantRepository.addReviewToRestaurant(restaurantId!, reviewId);
       // TO-DO: show a success message
     } catch (e) {
       // TO-DO: show an error message
