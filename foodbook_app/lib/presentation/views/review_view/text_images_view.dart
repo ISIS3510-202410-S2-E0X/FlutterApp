@@ -7,6 +7,7 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_event.dart';
+import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
@@ -62,8 +63,9 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     });
   }
 
+  String? _email;
+  String? _uploadedImageUrl;
   Future saveImage() async {
-    // TO-DO: save the image to firebase storage
     final image = _image;
     if (image == null) return;
     final imageUploadBloc = BlocProvider.of<ImageUploadBloc>(context);
@@ -114,14 +116,31 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
         ],
         elevation: 0,
       ),
-      body: BlocListener<UserBloc, UserState>(
-        listener: (context, state) {
-          if (state is AuthenticatedUserState) {
-            createReview(state.email);
-          } else if (state is UnauthenticatedUserState) {
-            print('Usuario no autenticado. Por favor, inicia sesión.');
-          }
-        },
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<UserBloc, UserState>(
+            listener: (context, state) {
+              if (state is AuthenticatedUserState) {
+                _email = state.email;
+              } else if (state is UnauthenticatedUserState) {
+                print('Usuario no autenticado. Por favor, inicia sesión.');
+              }
+            },
+          ),
+          BlocListener<ImageUploadBloc, ImageUploadState>(
+            listener: (context, state) {
+              if (state is ImageUploadSuccess) {
+                _uploadedImageUrl = state.imageUrl;
+                if (context.read<UserBloc>().state is AuthenticatedUserState) {
+                  createReview(_email!, _uploadedImageUrl!);
+                }
+              } else if (state is ImageUploadFailure) {
+                // Manejo del error
+                print('Error al subir imagen: ${state.error}');
+              }
+            },
+          ),
+        ],
         child: buildForm(),
       ),
     );
@@ -205,7 +224,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
-  void createReview(String userEmail) async {
+  void createReview(String userEmail, String uploadedImageUrl) async {
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
     final starsBloc = BlocProvider.of<StarsBloc>(context);
 
@@ -219,7 +238,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
       title: _titleController.text,
       content: _commentController.text,
       date: _formatCurrentDate(),
-      imageUrl: _image?.path,
+      imageUrl: uploadedImageUrl,
       ratings: stars,
       selectedCategories: selectedCategoriesString,
     );
