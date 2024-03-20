@@ -5,7 +5,6 @@ abstract class BrowseState {}
 class RestaurantsInitial extends BrowseState {}
 
 class RestaurantsLoadInProgress extends BrowseState {
-  @override
   List<Object> get props => [];
 }
 
@@ -14,8 +13,15 @@ class RestaurantsLoadSuccess extends BrowseState {
 
   RestaurantsLoadSuccess(this.restaurants);
 
-  @override
   List<Object> get props => [restaurants];
+}
+
+class RestaurantsRecommendationLoadSuccess extends BrowseState {
+  final List<Restaurant> recommendedRestaurants;
+
+  RestaurantsRecommendationLoadSuccess(this.recommendedRestaurants);
+
+  List<Object> get props => [recommendedRestaurants];
 }
 
 class RestaurantsLoadFailure extends BrowseState {
