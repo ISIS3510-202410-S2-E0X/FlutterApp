@@ -18,7 +18,6 @@ import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
-import 'package:foodbook_app/notifications/notification_service.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
