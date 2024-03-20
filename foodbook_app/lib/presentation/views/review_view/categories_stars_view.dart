@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_event.dart';
+import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/data/repositories/review_repository.dart';
 
 import 'package:foodbook_app/presentation/widgets/reviews_creation/multi_select_chip_widget.dart';
 import 'package:foodbook_app/presentation/widgets/reviews_creation/review_category_widget.dart';
@@ -45,6 +47,7 @@ class CategoriesAndStarsView extends StatelessWidget {
                       BlocProvider.value(value: foodCategoryBloc),
                       BlocProvider.value(value: starsBloc),
                       BlocProvider.value(value: userBloc),
+                      BlocProvider(create: (context) => ImageUploadBloc(ReviewRepository())),
                     ],
                     child: TextAndImagesView(restaurant: restaurant),
                   ),

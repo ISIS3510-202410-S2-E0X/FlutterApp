@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
@@ -59,6 +62,14 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     });
   }
 
+  Future saveImage() async {
+    // TO-DO: save the image to firebase storage
+    final image = _image;
+    if (image == null) return;
+    final imageUploadBloc = BlocProvider.of<ImageUploadBloc>(context);
+    imageUploadBloc.add(ImageUploadRequested(image));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,6 +87,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           OutlinedButton(
             onPressed: () => {
               context.read<UserBloc>().add(GetCurrentUser()),
+              saveImage(),
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) {
                   return BlocProvider<BrowseBloc>(
