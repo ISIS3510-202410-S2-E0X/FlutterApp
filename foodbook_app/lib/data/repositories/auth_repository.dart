@@ -6,9 +6,11 @@ class AuthRepository {
   final AuthServiceAdapter _authServiceAdapter = AuthServiceAdapter();
 
   Future<UserCredential> signInWithGoogle() async {
-    return _authServiceAdapter.signInWithGoogle();
+    UserCredential uc = await _authServiceAdapter.signInWithGoogle();
+    print('USUARIO: $uc.user?');
+    return uc;
   }
   Future<void> signOut() async {
-    return _authServiceAdapter.signOut();
+    return await _authServiceAdapter.signOut();
   }
 }

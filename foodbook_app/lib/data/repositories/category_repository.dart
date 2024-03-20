@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:foodbook_app/data/models/category.dart';
-import 'package:foodbook_app/data/dtos/category_dto.dart'; // Asegúrate de importar el DTO aquí.
+import 'package:foodbook_app/data/dtos/category_dto.dart';
 
 class CategoryRepository {
   final _fireCloud = FirebaseFirestore.instance.collection("categories");

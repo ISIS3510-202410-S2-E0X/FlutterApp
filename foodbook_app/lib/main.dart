@@ -14,7 +14,7 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]); // Set up background message handler
@@ -65,18 +65,25 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepositoryProvider(
       create: (context) => AuthRepository(),
-      child: BlocProvider(
-        create: (context) => AuthBloc(
-          authRepository: RepositoryProvider.of<AuthRepository>(context),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthBloc>(
+            create: (context) => AuthBloc(
+              authRepository: RepositoryProvider.of<AuthRepository>(context),
+            ),
           ),
+          BlocProvider<UserBloc>(
+            create: (context) => UserBloc(),
+          ),
+        ],
         child: MaterialApp(
           title: 'FoodBook',
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
           home: SignInView(),
-          ),
         ),
+      ),
     );
   }
 }
