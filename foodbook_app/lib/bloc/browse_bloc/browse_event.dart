@@ -6,11 +6,13 @@ class LoadRestaurants extends BrowseEvent {
 
 // browse_event.dart
 class FilterRestaurants extends BrowseEvent {
+  final String? name;       // Nullable type
   final String? price;       // Nullable type
   final double? distance;    // Nullable type
   final String? category;    // Nullable type
 
   FilterRestaurants({
+    this.name,       // Nullable type
     this.price,       // Nullable type
     this.distance,    // Nullable type
     this.category,    // Nullable type
