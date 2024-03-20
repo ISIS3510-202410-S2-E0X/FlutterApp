@@ -17,6 +17,8 @@ import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
+import 'package:foodbook_app/notifications/background_review_reminder.dart';
+import 'package:foodbook_app/notifications/notification_service.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -144,6 +146,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
         actions: [
           OutlinedButton(
             onPressed: () => {
+
               context.read<UserBloc>().add(GetCurrentUser()),
               saveImage(),
               Navigator.of(context).push(
@@ -181,8 +184,11 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                 if (_image == null && _times == 0) {
                   print('No image to upload, creating review...');
                   createReview(_email!, null);
+                  cancelSingleTask("reviewReminder");
+                  initializeBackgroundTaskReminder();
                 }
-              } else if (state is UnauthenticatedUserState) {
+                
+          } else if (state is UnauthenticatedUserState) {
                 print('Usuario no autenticado. Por favor, inicia sesión.');
               }
             },
