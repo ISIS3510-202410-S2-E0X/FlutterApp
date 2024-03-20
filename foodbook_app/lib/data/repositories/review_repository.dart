@@ -11,7 +11,7 @@ class ReviewRepository {
   Future<String> create({ required ReviewDTO review }) async {
     try {
       DocumentReference reviewRef = await _fireCloud.add(review.toJson());
-      return reviewRef.id; // Esto siempre retorna un String, lo cual es correcto.
+      return reviewRef.id;
     } on FirebaseException catch (e) {
       if (kDebugMode) {
         print("Failed with error '${e.code}': ${e.message}");

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
@@ -8,6 +7,9 @@ import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_b
 import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_state.dart';
+import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_event.dart';
+import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
@@ -50,6 +52,7 @@ class TextAndImagesView extends StatefulWidget {
 
 class _TextAndImagesViewState extends State<TextAndImagesView> {
   File? _image;
+  int _times = 0;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
 
@@ -66,10 +69,10 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   String? _email;
   String? _uploadedImageUrl;
   Future saveImage() async {
-    final image = _image;
-    if (image == null) return;
+    print('Saving image...');
+    if (_image == null) return; 
     final imageUploadBloc = BlocProvider.of<ImageUploadBloc>(context);
-    imageUploadBloc.add(ImageUploadRequested(image));
+    imageUploadBloc.add(ImageUploadRequested(_image!));
   }
 
   @override
@@ -122,16 +125,21 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
             listener: (context, state) {
               if (state is AuthenticatedUserState) {
                 _email = state.email;
+                if (_image == null && _times == 0) {
+                  print('No image to upload, creating review...');
+                  createReview(_email!, null);
+                }
               } else if (state is UnauthenticatedUserState) {
                 print('Usuario no autenticado. Por favor, inicia sesión.');
               }
             },
           ),
           BlocListener<ImageUploadBloc, ImageUploadState>(
-            listener: (context, state) {
+            listener: (context, state) {  
               if (state is ImageUploadSuccess) {
                 _uploadedImageUrl = state.imageUrl;
-                if (context.read<UserBloc>().state is AuthenticatedUserState) {
+                if (context.read<UserBloc>().state is AuthenticatedUserState && _times == 0) {
+                  print('NO DEBERÍA ENTRAR ACÁ');
                   createReview(_email!, _uploadedImageUrl!);
                 }
               } else if (state is ImageUploadFailure) {
@@ -224,7 +232,8 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
-  void createReview(String userEmail, String uploadedImageUrl) async {
+  void createReview(String userEmail, String? uploadedImageUrl) async {
+    print('HOLA ME LLAMARON');
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
     final starsBloc = BlocProvider.of<StarsBloc>(context);
 
@@ -232,7 +241,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     final stars = starsBloc.newRatings;
 
     final selectedCategoriesString = selectedCategories.map((category) => category.name).toList();
-    
+    print('MIRA MIRA ESTO: $uploadedImageUrl');
     ReviewDTO newReview = ReviewDTO(
       user: userEmail.replaceFirst("@gmail.com", ""),
       title: _titleController.text,
@@ -244,14 +253,24 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
 
     try {
-      final reviewRepository = ReviewRepository();
-      final restaurantRepository = RestaurantRepository();
-      String reviewId = await reviewRepository.create(review: newReview);
-      String? restaurantId = await restaurantRepository.findRestaurantIdByName(widget.restaurant.name);
-      await restaurantRepository.addReviewToRestaurant(restaurantId!, reviewId);
+      print('Creating review...');
+      BlocProvider.of<ReviewBloc>(context).add(CreateReviewEvent(newReview, widget.restaurant.name));
+      _resetFormAndImage();
+      _times = 1;
       // TO-DO: show a success message
     } catch (e) {
       // TO-DO: show an error message
     }
+  }
+
+  void _resetFormAndImage() {
+    _titleController.clear();
+    _commentController.clear();
+    _image = null; // Asegúrate de que la imagen se resetea correctamente
+    _uploadedImageUrl = null; // Resetear la URL de la imagen subida
+    setState(() {
+      _image = null; // Asegúrate de que la imagen se resetea correctamente
+      _uploadedImageUrl = null; // Resetear la URL de la imagen subida
+    });
   }
 }
