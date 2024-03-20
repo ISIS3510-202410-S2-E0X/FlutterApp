@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
+import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/bookmarks_view.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
@@ -45,8 +46,15 @@ class CustomNavigationBar extends StatelessWidget {
           ));
         } else if (index == 1) {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => BlocProvider<BrowseBloc>(
-              create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository())..add(LoadRestaurants()),
+            builder: (context) => MultiBlocProvider(
+              providers: [
+                BlocProvider<BrowseBloc>(
+                  create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository()),
+                ),
+                BlocProvider<UserBloc>(
+                  create: (context) => UserBloc(),
+                ),
+              ],
               child: ForYouView(),
             ),
           ));

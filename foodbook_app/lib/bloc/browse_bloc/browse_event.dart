@@ -4,7 +4,12 @@ class LoadRestaurants extends BrowseEvent {
   LoadRestaurants();
 }
 
-// browse_event.dart
+class FetchRecommendedRestaurants extends BrowseEvent {
+  final String username;
+
+  FetchRecommendedRestaurants(this.username);
+}
+
 class FilterRestaurants extends BrowseEvent {
   final String? name;       // Nullable type
   final String? price;       // Nullable type

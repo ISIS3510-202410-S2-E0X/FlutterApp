@@ -10,6 +10,7 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
   BrowseBloc({required this.restaurantRepository}) : super(RestaurantsInitial()) {
     on<LoadRestaurants>(_onLoadRestaurants);
     on<FilterRestaurants>(_onFilterRestaurants);
+    on<FetchRecommendedRestaurants>(_onFetchRecommendedRestaurants);
     //on<ToggleBookmark>(_onToggleBookmark);
   }
 
@@ -17,9 +18,8 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
     emit(RestaurantsLoadInProgress());
     await Future.delayed(Duration(seconds: 1)); 
     try {
-      final restaurants = restaurantRepository.fetchRestaurants();
-      List<Restaurant> restaurantList = await restaurants;
-      emit(RestaurantsLoadSuccess(restaurantList));
+      final restaurants = await restaurantRepository.fetchRestaurants();
+      emit(RestaurantsLoadSuccess(restaurants));
     } catch (error) {
       emit(RestaurantsLoadFailure(error.toString()));
     }
@@ -30,10 +30,9 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
     try {
       final restaurants = await restaurantRepository.fetchRestaurants();
       final filteredRestaurants = _applyFilters(
-        event.name,       // Nullable type
-        event.price,       // Nullable type
-        //event.distance,    // Nullable type
-        event.category,    // Nullable type
+        event.name,
+        event.price,
+        event.category,
         restaurants,
       );
       emit(RestaurantsLoadSuccess(filteredRestaurants));
@@ -42,35 +41,35 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
     }
   }
 
+  void _onFetchRecommendedRestaurants(FetchRecommendedRestaurants event, Emitter<BrowseState> emit) async {
+    emit(RestaurantsLoadInProgress());
+    try {
+      final ids = await restaurantRepository.getRestaurantsIdsFromIntAPI(event.username);
+      List<Restaurant> recommendedRestaurants = [];
+      for (var id in ids) {
+          var restaurant = await restaurantRepository.fetchRestaurantById(id);
+          if (restaurant != null) {
+            print('RESTAURANT: ${restaurant.name}');
+            recommendedRestaurants.add(restaurant);
+          }
+      }
+      emit(RestaurantsRecommendationLoadSuccess(recommendedRestaurants));
+    } catch (error) {
+      emit(RestaurantsLoadFailure(error.toString()));
+    }
+  }
+
   List<Restaurant> _applyFilters(
-    String? name,       // Nullable type
-    String? price,       // Nullable type
-    String? category,    // Nullable type
+    String? name,
+    String? price,
+    String? category,
     List<Restaurant> restaurants,
   ) {
-    // Add your filtering logic here, making sure to check for nulls
-    // Example:
     return restaurants.where((restaurant) {
       final matchesName = name == null || restaurant.name.toLowerCase().contains(name.toLowerCase());
       final matchesPrice = price == null || restaurant.priceRange == price;
-      //final withinDistance = distance == null || restaurant.distance <= distance;
       final matchesCategory = category == null || restaurant.categories.contains(category);
       return matchesName && matchesPrice && matchesCategory;
     }).toList();
   }
-
-
-  // void _onToggleBookmark(ToggleBookmark event, Emitter<BrowseState> emit) async {
-  //   emit(RestaurantsLoadInProgress()); // Show loading while processing the bookmark toggle
-  //   try {
-  //     await restaurantRepository.toggleBookmark(event.restaurantId);
-  //     final restaurants = await restaurantRepository.fetchRestaurants(); // Re-fetch the updated list of restaurants
-  //     emit(RestaurantsLoadSuccess(restaurants));
-  //   } catch (error) {
-  //     emit(RestaurantsLoadFailure(error.toString()));
-  //   }
-  // }
-
-  
 }
-

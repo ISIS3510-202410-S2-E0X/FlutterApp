@@ -1,24 +1,22 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:foodbook_app/data/dtos/restaurant_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 
 class RestaurantRepository {
 
   Future<List<Restaurant>> fetchRestaurants() async {
-
     List<Restaurant> restaurants = [];
-
     try {
-
       final pro = await FirebaseFirestore.instance.collection('spots').get();
-
       pro.docs.forEach((element) {
         restaurants.add(RestaurantDTO.fromJson(element.data()).toModel());
       });
 
       return restaurants;
-
     } on FirebaseException catch (e) {
       if (kDebugMode) {
         print("Failed to fetch restaurants with error '${e.code}': ${e.message}");
@@ -64,6 +62,33 @@ class RestaurantRepository {
     }
   }
 
+  Future<List<dynamic>> getRestaurantsIdsFromIntAPI(String username) async {
+    final response = await http.get(Uri.parse('https://foodbook-app-backend.2.us-1.fl0.io/recommendation/$username'));
+    if (response.statusCode != 200) {
+      throw Exception('Failed to fetch recommended restaurants');
+    }
+
+    final jsonResponse = jsonDecode(response.body);
+    print('JSON RESPONSE: ${jsonResponse}');
+    return jsonResponse['spots'];
+  }
+
+  Future<Restaurant?> fetchRestaurantById(String restaurantId) async {
+    try {
+      DocumentSnapshot restaurantSnapshot = await FirebaseFirestore.instance.collection('spots').doc(restaurantId).get();
+      
+      if (restaurantSnapshot.exists) {
+        return RestaurantDTO.fromJson(restaurantSnapshot.data() as Map<String, dynamic>).toModel();
+      } else {
+        return null;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error al buscar el restaurante por ID: $e");
+      }
+      return null;
+    }
+  }
 }
 
 
