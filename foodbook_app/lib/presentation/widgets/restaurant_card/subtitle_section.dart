@@ -13,7 +13,7 @@ class SubtitleSection extends StatelessWidget {
         Icon(Icons.access_time, size: 16, color: Color.fromARGB(255, 0, 0, 0)),
         SizedBox(width: 4),
         Text(
-          '${restaurant.timeRange} · ',
+          '${restaurant.waitTimeMin}-${restaurant.waitTimeMax} · ',
           style: TextStyle(
             fontSize: 14,
             color: Color.fromARGB(255, 53, 53, 53),
@@ -22,7 +22,7 @@ class SubtitleSection extends StatelessWidget {
         Icon(Icons.location_on, size: 16, color: Color.fromARGB(255, 0, 0, 0)),
         SizedBox(width: 4),
         Text(
-          '${restaurant.distance.toStringAsFixed(1)} km',
+          '0 km',
           style: TextStyle(
             fontSize: 14,
             color: Color.fromARGB(255, 53, 53, 53),

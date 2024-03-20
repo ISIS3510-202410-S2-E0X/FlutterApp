@@ -6,6 +6,8 @@ import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/category_repository.dart';
 import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
 import 'package:foodbook_app/presentation/views/review_view/restaurant_reviews_view.dart';
+import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_map.dart';
+
 
 class SpotDetail extends StatelessWidget {
   final Restaurant restaurant;
@@ -16,7 +18,12 @@ class SpotDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(''),
+        title: Text(
+          restaurant.name,
+          style: TextStyle(
+            fontWeight: FontWeight.bold, 
+          ),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -24,9 +31,9 @@ class SpotDetail extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SingleChildScrollView(
+      body: Container(
+        color: Color.fromARGB(255, 238, 238, 238),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
@@ -136,7 +143,7 @@ class SpotDetail extends StatelessWidget {
                                     create: (context) => StarsBloc(),
                                   ),
                                 ],
-                                child: CategoriesAndStarsView(restaurant: restaurant),
+                                child: const CategoriesAndStarsView(),
                               );
                             },
                           ),

@@ -6,6 +6,7 @@ import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 
+
 class SignInView extends StatefulWidget {
   @override
   _SignInViewState createState() => _SignInViewState();
