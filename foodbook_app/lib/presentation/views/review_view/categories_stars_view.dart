@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
+import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
+import 'package:foodbook_app/data/models/restaurant.dart';
 
 import 'package:foodbook_app/presentation/widgets/reviews_creation/multi_select_chip_widget.dart';
 import 'package:foodbook_app/presentation/widgets/reviews_creation/review_category_widget.dart';
@@ -12,48 +14,9 @@ import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_b
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
 
 class CategoriesAndStarsView extends StatelessWidget {
-  // TO-DO: Change this to a list of categories from Firebase
-  // final List<String> _categories = [
-  //   'Vegan',
-  //   'Italian',
-  //   'Fast',
-  //   'Healthy',
-  //   'Homemade',
-  //   'Poultry',
-  //   'Meat',
-  //   'Dessert',
-  //   'Vegetarian',
-  //   'Gluten-free',
-  //   'Low-Carb',
-  //   'Salad',
-  //   'Fruit',
-  //   'Organic',
-  //   'Coffee',
-  //   'Dairy-free',
-  //   'Thailandese',
-  //   'Asian',
-  //   'Colombian',
-  //   'Kosher',
-  //   'Chocolate',
-  //   'Spicy',
-  //   'Traditional',
-  //   'Beef',
-  //   'Group-portion',
-  //   'Japanese',
-  //   'Sushi',
-  //   'Poke',
-  //   'Chinese',
-  //   'Rice',
-  //   'Noodles',
-  //   'Burger',
-  //   'Fries',
-  //   'Sandwich',
-  //   'Bowl',
-  //   'Candy',
-  //   'Pizza',
-  // ];
+  final Restaurant restaurant;
 
-  const CategoriesAndStarsView({super.key});
+  const CategoriesAndStarsView({Key? key, required this.restaurant}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +36,7 @@ class CategoriesAndStarsView extends StatelessWidget {
             onPressed: () {
               final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
               final starsBloc = BlocProvider.of<StarsBloc>(context);
+              final userBloc = BlocProvider.of<UserBloc>(context);
 
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -80,8 +44,9 @@ class CategoriesAndStarsView extends StatelessWidget {
                     providers: [
                       BlocProvider.value(value: foodCategoryBloc),
                       BlocProvider.value(value: starsBloc),
+                      BlocProvider.value(value: userBloc),
                     ],
-                    child: const TextAndImagesView(),
+                    child: TextAndImagesView(restaurant: restaurant),
                   ),
                 ),
               );

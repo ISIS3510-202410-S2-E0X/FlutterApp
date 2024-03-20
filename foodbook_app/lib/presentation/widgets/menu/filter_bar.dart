@@ -35,6 +35,7 @@ class _FilterBarState extends State<FilterBar> {
                       child: ElevatedButton(
                         onPressed: () {
                           context.read<BrowseBloc>().add(FilterRestaurants(
+                            name: null,
                             price: isPriceFilterEnabled ? selectedPrice : null,
                             distance: isDistanceFilterEnabled ? selectedDistance : null,
                             category: isCategoryFilterEnabled ? selectedCategory : null,
@@ -81,36 +82,36 @@ class _FilterBarState extends State<FilterBar> {
                             ),
                           )
                         : Container(),
-                    ListTile(
-                      title: Text('Distance (km)'),
-                      trailing: Switch(
-                        value: isDistanceFilterEnabled,
-                        onChanged: (bool value) {
-                          setState(() {
-                            isDistanceFilterEnabled = value;
-                          });
-                        },
-                      ),
-                      onTap: () {
-                        setState(() {
-                          isDistanceFilterEnabled = !isDistanceFilterEnabled;
-                        });
-                      },
-                    ),
-                    isDistanceFilterEnabled
-                        ? Slider(
-                            min: 0.0,
-                            max: 20.0,
-                            divisions: 20,
-                            label: '${selectedDistance.toStringAsFixed(1)} km',
-                            value: selectedDistance,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedDistance = value;
-                              });
-                            },
-                          )
-                        : Container(),
+                    // ListTile(
+                    //   title: Text('Distance (km)'),
+                    //   trailing: Switch(
+                    //     value: isDistanceFilterEnabled,
+                    //     onChanged: (bool value) {
+                    //       setState(() {
+                    //         isDistanceFilterEnabled = value;
+                    //       });
+                    //     },
+                    //   ),
+                    //   onTap: () {
+                    //     setState(() {
+                    //       isDistanceFilterEnabled = !isDistanceFilterEnabled;
+                    //     });
+                    //   },
+                    // ),
+                    // isDistanceFilterEnabled
+                    //     ? Slider(
+                    //         min: 0.0,
+                    //         max: 20.0,
+                    //         divisions: 20,
+                    //         label: '${selectedDistance.toStringAsFixed(1)} km',
+                    //         value: selectedDistance,
+                    //         onChanged: (value) {
+                    //           setState(() {
+                    //             selectedDistance = value;
+                    //           });
+                    //         },
+                    //       )
+                    //     : Container(),
                     ListTile(
                       title: Text('Category'),
                       trailing: Switch(

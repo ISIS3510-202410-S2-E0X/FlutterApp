@@ -148,7 +148,7 @@ class SpotDetail extends StatelessWidget {
                         create: (context) => StarsBloc(),
                       ),
                     ],
-                    child: CategoriesAndStarsView(),
+                    child: CategoriesAndStarsView(restaurant: restaurant),
                   );
                 },
               ),

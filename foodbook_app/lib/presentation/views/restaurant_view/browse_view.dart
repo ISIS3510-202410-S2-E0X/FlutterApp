@@ -5,6 +5,7 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
+import 'package:foodbook_app/presentation/widgets/menu/search_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
 
 
@@ -34,23 +35,7 @@ class BrowseView extends StatelessWidget {
       backgroundColor: Colors.grey[200], // Set the background color to grey
       body: Column(
         children: [
-          Container(
-            color: const Color.fromARGB(255, 255, 255, 255), // White background color for search bar container
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0), // Horizontal padding only
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search',
-                prefixIcon: const Icon(Icons.search, color: Colors.black),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 5), // Reduced vertical padding to make the search bar thinner
-                filled: true,
-                fillColor: const Color.fromARGB(2192, 217, 219, 225), // Search bar fill color
-              ),
-            ),
-          ),
+          RestaurantSearchBar(browseBloc: BlocProvider.of<BrowseBloc>(context)),
           Divider(
             height: 1, // Height of the divider line
             color: Colors.grey[300], // Color of the divider line

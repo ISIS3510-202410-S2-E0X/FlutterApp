@@ -45,7 +45,7 @@ class RestaurantCard extends StatelessWidget {
                     BookmarkIcon(
                       restaurant: restaurant,
                       onBookmarkPressed: () {
-                        BlocProvider.of<BrowseBloc>(context).add(ToggleBookmark(restaurant.id));
+                        //BlocProvider.of<BrowseBloc>(context).add(ToggleBookmark(restaurant.id));
                       },
                     ),
 
