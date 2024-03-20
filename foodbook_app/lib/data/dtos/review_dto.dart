@@ -7,8 +7,8 @@ import 'package:intl/intl.dart';
 
 class ReviewDTO {
   final String user;
-  final String? title;
-  final String? content;
+  final String title;
+  final String content;
   final Timestamp date;
   final String? imageUrl;
   final Map<String, double> ratings;
@@ -19,7 +19,7 @@ class ReviewDTO {
     required this.title,
     required this.content,
     required this.date,
-    this.imageUrl,
+    required this.imageUrl,
     required this.ratings,
     required this.selectedCategories,
   });
@@ -69,7 +69,7 @@ class ReviewDTO {
       title: json['title'] as String,
       content: json['content'] as String,
       date: json['date'],
-      imageUrl: json['imageUrl'] as String?,
+      imageUrl: json['imageUrl'] as String,
       ratings: Map<String, double>.from(json['ratings']),
       selectedCategories: selectedCategoriesJson.map((catJson) => CategoryDTO.fromJson(catJson).toString()).toList(),
     );
