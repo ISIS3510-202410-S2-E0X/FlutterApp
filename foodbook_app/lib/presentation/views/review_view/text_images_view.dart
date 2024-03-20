@@ -12,6 +12,7 @@ import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
+import 'package:foodbook_app/notifications/notification_service.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -75,6 +76,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
         actions: [
           OutlinedButton(
             onPressed: () => {
+
               context.read<UserBloc>().add(GetCurrentUser()),
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) {
@@ -106,6 +108,8 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
         listener: (context, state) {
           if (state is AuthenticatedUserState) {
             createReview(state.email);
+            NotificationService.cancelNotification(1);
+            NotificationService.schedulePeriodicNotification();
           } else if (state is UnauthenticatedUserState) {
             print('Usuario no autenticado. Por favor, inicia sesión.');
           }
