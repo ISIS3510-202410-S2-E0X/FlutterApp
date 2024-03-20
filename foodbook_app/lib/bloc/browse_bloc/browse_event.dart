@@ -1,6 +1,8 @@
 abstract class BrowseEvent {}
 
-class LoadRestaurants extends BrowseEvent {}
+class LoadRestaurants extends BrowseEvent {
+  LoadRestaurants();
+}
 
 // browse_event.dart
 class FilterRestaurants extends BrowseEvent {
@@ -15,9 +17,9 @@ class FilterRestaurants extends BrowseEvent {
   });
 }
 
-class ToggleBookmark extends BrowseEvent {
-  final String restaurantId;
+// class ToggleBookmark extends BrowseEvent {
+//   final String restaurantId;
 
-  ToggleBookmark(this.restaurantId);
-}
+//   ToggleBookmark(this.restaurantId);
+// }
 

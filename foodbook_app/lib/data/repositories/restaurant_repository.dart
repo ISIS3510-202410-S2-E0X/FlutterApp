@@ -1,22 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:foodbook_app/data/dtos/restaurant_dto.dart';
+import 'package:foodbook_app/data/models/restaurant.dart';
 
 class RestaurantRepository {
-  final _fireCloud = FirebaseFirestore.instance.collection("spots");
 
-  Future<void> create({ required RestaurantDTO restaurant }) async {
+  Future<List<Restaurant>> fetchRestaurants() async {
+
+    List<Restaurant> restaurants = [];
+
     try {
-      await _fireCloud.add(restaurant.toJson());
+
+      final pro = await FirebaseFirestore.instance.collection('spots').get();
+
+      pro.docs.forEach((element) {
+        restaurants.add(RestaurantDTO.fromJson(element.data()).toModel());
+      });
+
+      return restaurants;
+
     } on FirebaseException catch (e) {
       if (kDebugMode) {
-        print("Failed with error '${e.code}': ${e.message}");
+        print("Failed to fetch restaurants with error '${e.code}': ${e.message}");
       }
-    } catch (e) {
-      throw Exception(e.toString());
+      return restaurants;
     }
   }
-
 }
 
 
