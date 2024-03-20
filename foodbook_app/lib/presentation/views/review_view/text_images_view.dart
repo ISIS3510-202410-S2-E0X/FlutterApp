@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
@@ -9,7 +10,6 @@ import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_eve
 import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_event.dart';
-import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
@@ -17,9 +17,9 @@ import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
-import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 String _formatCurrentDate() {
   DateTime now = DateTime.now().toUtc().subtract(Duration(hours: 5));
@@ -56,14 +56,67 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
 
-  Future getImage() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.camera);
-    if (image == null) return;
+  Future<void> getImage() async {
+    final ImagePicker _picker = ImagePicker();
 
-    final imageTemporary = File(image.path);
-    setState(() {
-      _image = imageTemporary;
-    });
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                  leading: Icon(Icons.photo_library),
+                  title: Text('Gallery'),
+                  onTap: () async {
+                    Navigator.of(context).pop(); // Cierra el modal
+                    var storageStatus = await Permission.storage.status; // Para Android
+                    if (!storageStatus.isGranted) {
+                      await Permission.storage.request(); // Para Android
+                    }
+                    storageStatus = await Permission.storage.status; // Actualiza el estado para Android
+                    if (storageStatus.isGranted) {
+                      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+                      if (pickedFile != null) {
+                        setState(() {
+                          _image = File(pickedFile.path);
+                        });
+                      }
+                    }
+                  storageStatus = await Permission.camera.status;                    
+                    if (storageStatus.isPermanentlyDenied) {
+                      openAppSettings();
+                    }
+                  }),
+              ListTile(
+                leading: Icon(Icons.photo_camera),
+                title: Text('Camera'),
+                onTap: () async {
+                  Navigator.of(context).pop(); // Cierra el modal
+                  var cameraStatus = await Permission.camera.status;
+                  if (!cameraStatus.isGranted) {
+                    await Permission.camera.request();
+                  }
+                  cameraStatus = await Permission.camera.status;
+                  if (cameraStatus.isGranted) {
+                    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+                    if (pickedFile != null) {
+                      setState(() {
+                        _image = File(pickedFile.path);
+                      });
+                    }
+                  }
+                  cameraStatus = await Permission.camera.status;                  
+                  if (cameraStatus.isPermanentlyDenied) {
+                      openAppSettings();
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   String? _email;
@@ -210,16 +263,24 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: OutlinedButton(
-                    onPressed: getImage,
+                    onPressed: () {
+                      if (_image != null) {
+                        setState(() {
+                          _image = null;
+                        });
+                      } else {
+                        getImage();
+                      }
+                    },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide.none,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: const Text(
-                      'Add a photo',
+                    child: Text(
+                      _image != null ? 'Remove image' : 'Add image',
                       style: TextStyle(
                         fontSize: 20,
-                        color: Color.fromRGBO(0, 122, 255, 100),
+                        color: _image != null ? Color.fromRGBO(255, 0, 0, 0.612) : Color.fromRGBO(0, 122, 255, 100),
                       ),
                     ),
                   ),
@@ -233,7 +294,6 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   }
 
   void createReview(String userEmail, String? uploadedImageUrl) async {
-    print('HOLA ME LLAMARON');
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
     final starsBloc = BlocProvider.of<StarsBloc>(context);
 
@@ -241,12 +301,12 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     final stars = starsBloc.newRatings;
 
     final selectedCategoriesString = selectedCategories.map((category) => category.name).toList();
-    print('MIRA MIRA ESTO: $uploadedImageUrl');
+    
     ReviewDTO newReview = ReviewDTO(
       user: userEmail.replaceFirst("@gmail.com", ""),
       title: _titleController.text,
       content: _commentController.text,
-      date: _formatCurrentDate(),
+      date: Timestamp.fromDate(DateTime.now()), // _formatCurrentDate(),
       imageUrl: uploadedImageUrl,
       ratings: stars,
       selectedCategories: selectedCategoriesString,

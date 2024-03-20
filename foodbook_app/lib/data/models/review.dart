@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Review {
   final String user;
   final String? title;
   final String? content;
-  final String date; // does firebase accept dateTimes?
+  final Timestamp date;
   final String? imageUrl;
   final Map<String, double> ratings;
   final List<String> selectedCategories;
@@ -20,7 +22,7 @@ class Review {
 
 class RatingsKeys {
   static const String cleanliness = 'cleanliness';
-  static const String waitingTime = 'waitingTime';
+  static const String waitingTime = 'waitTime';
   static const String service = 'service';
   static const String foodQuality = 'foodQuality';
 }
