@@ -21,20 +21,20 @@ class NotificationService {
   }
 static Future<void> schedulePeriodicNotification() async {
   print("scheduling periodic notification");
-  const int id = 1;
+  const int id = 4;
   const String title = 'We miss you...';
   const String body = 'You haven\'t left a review in a while.';
 
   // Set up the notification details
-  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+  const AndroidNotificationDetails androidPlatformChannelSpecificsR =
       AndroidNotificationDetails(
-    'foodbookNotifChannel',
+    'Reviewchannel',
     'your channel name',
     importance: Importance.max,
     priority: Priority.high,
   );
   const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
+      NotificationDetails(android: androidPlatformChannelSpecificsR);
 
   // Schedule the periodic notification
   await _flutterLocalNotificationsPlugin.periodicallyShow(
@@ -50,24 +50,24 @@ static Future<void> schedulePeriodicNotification() async {
 
 
   static Future<void> scheduleNotification() async {
-    const int id = 2 ;
+    const int id = 4 ;
     const String title = 'We miss you...';
     const String body = 'This notification was scheduled four days ago';
 
     // Calculate the date and time four days from now
     final now = DateTime.now();
-    final scheduledDate = now.add(const Duration(days: 4));
+    final scheduledDate = now.add(const Duration(minutes: 5));
 
     // Set up the notification details
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    const AndroidNotificationDetails androidPlatformChannelSpecificsR =
         AndroidNotificationDetails(
-      'foodbookNotifChannel',
+      'RevChannel',
       'your channel name',
       importance: Importance.max,
       priority: Priority.high,
     );
     const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecificsR);
 
     // Schedule the notification
     await _flutterLocalNotificationsPlugin.zonedSchedule(
@@ -85,8 +85,10 @@ static Future<void> schedulePeriodicNotification() async {
     await _flutterLocalNotificationsPlugin.cancel(id);
   }
 
-  static Future<void> showNotification({var id= 0, required String title, required String body, var payload,}) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+  static Future<void> showNotification({required int id, required String title, required String body, var payload,}) async {
+    print("showing notification_$id");
+
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'foodbookNotifChannel',
       'your channel name',
@@ -94,7 +96,7 @@ static Future<void> schedulePeriodicNotification() async {
       priority: Priority.high,
     );
 
-    const NotificationDetails platformChannelSpecifics =
+    final NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await _flutterLocalNotificationsPlugin.show(
