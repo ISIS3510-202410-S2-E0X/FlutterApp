@@ -66,32 +66,41 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
               final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
               if (foodCategoryBloc.selectedCategories.isEmpty) {
                 const snackBar = SnackBar(
-                  content: Text('Please select at least one category.'),
+                  content: Text('Please select at least one category!'),
                   duration: Duration(seconds: 2),
                 );
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               } else {
                 final starsBloc = BlocProvider.of<StarsBloc>(context);
-                final userBloc = BlocProvider.of<UserBloc>(context);
+                if (starsBloc.newRatings.isEmpty || starsBloc.newRatings.values.contains(0.0) || starsBloc.newRatings.length != 4) {
+                  const snackBar = SnackBar(
+                    content: Text('Please rate all stats!'),
+                    duration: Duration(seconds: 2),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  return;
+                } else {
+                  final userBloc = BlocProvider.of<UserBloc>(context);
 
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => MultiBlocProvider(
-                      providers: [
-                        BlocProvider.value(value: foodCategoryBloc),
-                        BlocProvider.value(value: starsBloc),
-                        BlocProvider.value(value: userBloc),
-                        BlocProvider(create: (context) => ImageUploadBloc(ReviewRepository())),
-                        BlocProvider(create: (context) => ReviewBloc(
-                            reviewRepository: ReviewRepository(),
-                            restaurantRepository: RestaurantRepository()
-                          )
-                        ),
-                      ],
-                      child: TextAndImagesView(restaurant: widget.restaurant),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider.value(value: foodCategoryBloc),
+                          BlocProvider.value(value: starsBloc),
+                          BlocProvider.value(value: userBloc),
+                          BlocProvider(create: (context) => ImageUploadBloc(ReviewRepository())),
+                          BlocProvider(create: (context) => ReviewBloc(
+                              reviewRepository: ReviewRepository(),
+                              restaurantRepository: RestaurantRepository()
+                            )
+                          ),
+                        ],
+                        child: TextAndImagesView(restaurant: widget.restaurant),
+                      ),
                     ),
-                  ),
-                );
+                  );
+                }
               }
             },
             style: OutlinedButton.styleFrom(
