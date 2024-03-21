@@ -22,3 +22,11 @@ class MaxSelectionReachedEvent extends FoodCategoryEvent {
 
   MaxSelectionReachedEvent(this.selectedCategories);
 }
+
+class SearchCategoriesEvent extends FoodCategoryEvent {
+  final String searchTerm;
+
+  SearchCategoriesEvent(this.searchTerm);
+
+  List<Object> get props => [searchTerm];
+}

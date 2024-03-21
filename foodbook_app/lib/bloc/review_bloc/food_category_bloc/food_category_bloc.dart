@@ -15,6 +15,7 @@ class FoodCategoryBloc extends Bloc<FoodCategoryEvent, FoodCategoryState> {
     on<DeselectCategoryEvent>(_onDeselectCategory);
     on<LoadCategoriesEvent>(_onLoadCategories);
     on<LoadSelectedCategoriesEvent>(_onLoadSelectedCategories);
+    on<SearchCategoriesEvent>(_onSearchCategories);
     
     add(LoadCategoriesEvent());
   }
@@ -55,6 +56,19 @@ class FoodCategoryBloc extends Bloc<FoodCategoryEvent, FoodCategoryState> {
       selectedCategories.removeAt(indexToRemove);
       final categories = await categoryRepository.getAllCategories();
       emit(FoodCategorySelected(categories, selectedCategories));
+    }
+  }
+
+  Future<void> _onSearchCategories(SearchCategoriesEvent event, Emitter<FoodCategoryState> emit) async {
+    emit(FoodCategoryLoading());
+    try {
+      final categories = await categoryRepository.getAllCategories();
+      final filteredCategories = categories.where((category) => 
+        category.name.toLowerCase().contains(event.searchTerm.toLowerCase())
+      ).toList();
+      emit(FoodCategoryLoaded(filteredCategories)); 
+    } catch (e) {
+      emit(FoodCategoryError(e.toString())); 
     }
   }
 }
