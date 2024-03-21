@@ -148,6 +148,7 @@ class SpotDetail extends StatelessWidget {
                         create: (context) => FoodCategoryBloc(
                           categoryRepository: CategoryRepository(),
                           maxSelection: 3,
+                          minSelection: 1,
                         ),
                       ),
                       BlocProvider<StarsBloc>(
