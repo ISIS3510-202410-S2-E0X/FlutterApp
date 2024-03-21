@@ -29,7 +29,7 @@ class BookmarksView extends StatelessWidget {
               ),
             ),
             actions: [
-              FilterBar(),
+              //FilterBar(),
             ],
             elevation: 0, // Remove shadow
           ),
