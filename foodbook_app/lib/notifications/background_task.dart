@@ -4,21 +4,48 @@ import 'package:workmanager/workmanager.dart';
 
 @pragma('vm:entry-point')
 void callbackDispatcher() {
-  
   Workmanager().executeTask((task, inputData) async {
-    // Perform your task here
-    Position userLocation = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    print("user location: $userLocation.latitude, $userLocation.longitude");
-    var userLatitude = userLocation.latitude;
-    var userLongitude = userLocation.longitude;
-    double distance = Geolocator.distanceBetween(userLatitude, userLongitude, 4.6028679, -74.0649262);
-    if (distance > 1000) {
-       NotificationService.showNotification(
-         id: 1,
-         title: 'Hungry?',
-         body: "Choose what you will eat today and leave a review!",
-       );
-     }
+    switch (task) {
+      case 'RepLocTest':
+        Position userLocation = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        print("user location: $userLocation.latitude, $userLocation.longitude");
+        var userLatitude = userLocation.latitude;
+        var userLongitude = userLocation.longitude;
+        double distance = Geolocator.distanceBetween(userLatitude, userLongitude, 4.6028679, -74.0649262);
+        if (distance > 1000) {
+          NotificationService.showNotification(
+            id: 1,
+            title: 'Hungry?',
+            body: "Choose what you will eat today and leave a review!",
+          );
+        }
+        return Future.value(true);
+      case 'show_daily_notification':
+        Position userLocation = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        print("user location: $userLocation.latitude, $userLocation.longitude");
+        var userLatitude = userLocation.latitude;
+        var userLongitude = userLocation.longitude;
+        double distance = Geolocator.distanceBetween(userLatitude, userLongitude, 4.6028679, -74.0649262);
+        if (distance > 1000) {
+          NotificationService.showNotification(
+            id: 1,
+            title: 'Hungry?',
+            body: "Choose what you will eat today and leave a review!",
+          );
+        }
+        return Future.value(true);
+      case 'show_review_reminder_notification':
+        NotificationService.showNotification(
+          id: 2,
+          title: "We miss you...",
+          body: "you haven't left a review in a while."
+          
+          );
+        return Future.value(true);
+      default:
+        print("Task no reconocida: $task");
+        break;
+    }
     return Future.value(true);
   });
 }
@@ -38,6 +65,7 @@ void initializeBackgroundTask() {
   Workmanager workmanager = Workmanager();
   workmanager.cancelByUniqueName("RecurringlocatiionUsageTest3");
   workmanager.cancelByUniqueName("dailyEatingTest_notification");
+  workmanager.cancelByUniqueName("reviewReminder");
   Workmanager().registerPeriodicTask(
      "RecurringlocatiionUsageTest3", 
    "RepLocTest", 
@@ -53,6 +81,12 @@ void initializeBackgroundTask() {
      constraints: Constraints(
        networkType: NetworkType.connected,
      ),
+  );
+  Workmanager().registerPeriodicTask(
+    'reviewReminder',
+    'show_review_reminder_notification',
+    frequency: const Duration(days: 4),
+    initialDelay: const Duration(minutes: 2),
   );
   print("background task initialized");
 }

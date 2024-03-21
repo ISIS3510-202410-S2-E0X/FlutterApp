@@ -22,7 +22,7 @@ Future<void> main() async {
   ]); // Set up background message handler
   NotificationService.init(); // Initialize notification service
   await requestLocationPermission();   // Request location permission
-  initializeBackgroundTaskReminder(); // Initialize background task for review reminder
+  // initializeBackgroundTaskReminder(); // Initialize background task for review reminder
   initializeBackgroundTask(); // Initialize background task
   runApp(const MyApp());
 }
