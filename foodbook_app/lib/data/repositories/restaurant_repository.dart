@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:foodbook_app/data/dtos/review_dto.dart';
+import 'package:foodbook_app/data/models/review.dart';
 import 'package:http/http.dart' as http;
 import 'package:foodbook_app/data/dtos/restaurant_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
@@ -12,16 +14,27 @@ class RestaurantRepository {
     List<Restaurant> restaurants = [];
     try {
       final pro = await FirebaseFirestore.instance.collection('spots').get();
-      pro.docs.forEach((element) {
-        restaurants.add(RestaurantDTO.fromJson(element.data()).toModel());
-      });
-
-      return restaurants;
-    } on FirebaseException catch (e) {
-      if (kDebugMode) {
-        print("Failed to fetch restaurants with error '${e.code}': ${e.message}");
+      for (var element in pro.docs) {
+        var restaurantData = element.data();
+        var restaurantDTO = RestaurantDTO.fromJson(restaurantData);
+        Restaurant restaurant = restaurantDTO.toModel();
+        var reviewReferences = restaurantData['reviewData']['userReviews'] as List<dynamic>?;
+        if (reviewReferences != null) {
+          List<Review> reviews = [];
+          for (var reviewRef in reviewReferences) {
+            DocumentSnapshot reviewSnapshot = await (reviewRef as DocumentReference).get();
+            if (reviewSnapshot.exists) {
+              reviews.add(ReviewDTO.fromJson(reviewSnapshot.data() as Map<String, dynamic>).toModel());
+            }
+          }
+          restaurant.reviews = reviews;
+        }
+        restaurants.add(restaurant);
       }
       return restaurants;
+    } on FirebaseException catch (e) {
+        print("Failed to fetch restaurants with error '${e.code}': ${e.message}");
+        return [];
     }
   }
 
@@ -74,17 +87,31 @@ class RestaurantRepository {
   }
 
   Future<Restaurant?> fetchRestaurantById(String restaurantId) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
     try {
-      DocumentSnapshot restaurantSnapshot = await FirebaseFirestore.instance.collection('spots').doc(restaurantId).get();
-      
-      if (restaurantSnapshot.exists) {
-        return RestaurantDTO.fromJson(restaurantSnapshot.data() as Map<String, dynamic>).toModel();
-      } else {
-        return null;
+      DocumentSnapshot<Map<String, dynamic>> restaurantSnapshot = await db.collection('spots').doc(restaurantId).get();
+      if (restaurantSnapshot.exists && restaurantSnapshot.data() != null) {
+        var restaurantDTO = RestaurantDTO.fromJson(restaurantSnapshot.data()!);
+        Restaurant restaurant = restaurantDTO.toModel();
+
+        List<dynamic>? reviewRefs = restaurantSnapshot.data()?['reviewData']['userReviews'];
+        if (reviewRefs is List<dynamic>) {
+        List<Review> reviews = [];
+        for (DocumentReference reviewRef in reviewRefs) {
+          DocumentSnapshot<Map<String, dynamic>> reviewSnapshot = await reviewRef.get() as DocumentSnapshot<Map<String, dynamic>>;
+          if (reviewSnapshot.exists && reviewSnapshot.data() != null) {
+            reviews.add(ReviewDTO.fromJson(reviewSnapshot.data()!).toModel());
+          }
+        }
+        restaurant.reviews = reviews;
+        }
+        print('O: ${restaurant.reviews}');
+        return restaurant;
       }
+      return null;
     } catch (e) {
       if (kDebugMode) {
-        print("Error al buscar el restaurante por ID: $e");
+        print("Error fetching restaurant by ID: $e");
       }
       return null;
     }

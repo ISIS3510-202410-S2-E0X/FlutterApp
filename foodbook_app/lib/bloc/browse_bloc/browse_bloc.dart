@@ -3,11 +3,13 @@ import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/data/repositories/review_repository.dart';
 
 class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
   final RestaurantRepository restaurantRepository;
+  final ReviewRepository reviewRepository;
 
-  BrowseBloc({required this.restaurantRepository}) : super(RestaurantsInitial()) {
+  BrowseBloc({required this.restaurantRepository, required this.reviewRepository}) : super(RestaurantsInitial()) {
     on<LoadRestaurants>(_onLoadRestaurants);
     on<FilterRestaurants>(_onFilterRestaurants);
     on<FetchRecommendedRestaurants>(_onFetchRecommendedRestaurants);
@@ -16,7 +18,7 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
 
   void _onLoadRestaurants(LoadRestaurants event, Emitter<BrowseState> emit) async {
     emit(RestaurantsLoadInProgress());
-    await Future.delayed(Duration(seconds: 1)); 
+    await Future.delayed(const Duration(seconds: 1));
     try {
       final restaurants = await restaurantRepository.fetchRestaurants();
       emit(RestaurantsLoadSuccess(restaurants));
@@ -44,15 +46,20 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
   void _onFetchRecommendedRestaurants(FetchRecommendedRestaurants event, Emitter<BrowseState> emit) async {
     emit(RestaurantsLoadInProgress());
     try {
-      final ids = await restaurantRepository.getRestaurantsIdsFromIntAPI(event.username);
+      var ids = [];
+      if (ids.isEmpty) {
+        while (ids.isEmpty) {
+          ids = await restaurantRepository.getRestaurantsIdsFromIntAPI(event.username);
+        }
+      }
       List<Restaurant> recommendedRestaurants = [];
       for (var id in ids) {
-          var restaurant = await restaurantRepository.fetchRestaurantById(id);
-          if (restaurant != null) {
-            print('RESTAURANT: ${restaurant.name}');
-            recommendedRestaurants.add(restaurant);
-          }
+        var restaurant = await restaurantRepository.fetchRestaurantById(id);
+        if (restaurant != null) {
+          recommendedRestaurants.add(restaurant);
+        }
       }
+      
       emit(RestaurantsRecommendationLoadSuccess(recommendedRestaurants));
     } catch (error) {
       emit(RestaurantsLoadFailure(error.toString()));

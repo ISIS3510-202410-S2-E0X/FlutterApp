@@ -4,6 +4,7 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
+import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/bookmarks_view.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/for_you_view.dart';
@@ -40,7 +41,7 @@ class CustomNavigationBar extends StatelessWidget {
         if (index == 0) {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => BlocProvider<BrowseBloc>(
-              create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository())..add(LoadRestaurants()),
+              create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(LoadRestaurants()),
               child: BrowseView(),
             ),
           ));
@@ -49,7 +50,7 @@ class CustomNavigationBar extends StatelessWidget {
             builder: (context) => MultiBlocProvider(
               providers: [
                 BlocProvider<BrowseBloc>(
-                  create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository()),
+                  create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository()),
                 ),
                 BlocProvider<UserBloc>(
                   create: (context) => UserBloc(),
@@ -61,7 +62,7 @@ class CustomNavigationBar extends StatelessWidget {
         } else if (index == 2) {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => BlocProvider<BrowseBloc>(
-              create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository())..add(LoadRestaurants()),
+              create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(LoadRestaurants()),
               child: BookmarksView(),
             ),
           ));

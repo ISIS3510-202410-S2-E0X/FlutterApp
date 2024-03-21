@@ -16,7 +16,9 @@ import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/data/models/review.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
+import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 import 'package:image_picker/image_picker.dart';
@@ -152,7 +154,10 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                 MaterialPageRoute(builder: (context) {
                   return BlocProvider<BrowseBloc>(
                     create: (context) =>
-                        BrowseBloc(restaurantRepository: RestaurantRepository())
+                        BrowseBloc(
+                            restaurantRepository: RestaurantRepository(),
+                            reviewRepository: ReviewRepository(),
+                          )
                           ..add(LoadRestaurants()),
                     child: BrowseView(),
                   );
@@ -309,8 +314,8 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     
     ReviewDTO newReview = ReviewDTO(
       user: userEmail.replaceFirst("@gmail.com", ""),
-      title: _titleController.text,
-      content: _commentController.text,
+      title: _titleController.text.isNotEmpty ? _titleController.text : null,
+      content: _commentController.text.isNotEmpty ? _commentController.text : null,
       date: Timestamp.fromDate(DateTime.now()), // _formatCurrentDate(),
       imageUrl: uploadedImageUrl,
       ratings: stars,

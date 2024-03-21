@@ -9,7 +9,6 @@ import 'package:foodbook_app/presentation/widgets/menu/search_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
 
 
-
 class BrowseView extends StatelessWidget {
   BrowseView({Key? key}) : super(key: key);
 

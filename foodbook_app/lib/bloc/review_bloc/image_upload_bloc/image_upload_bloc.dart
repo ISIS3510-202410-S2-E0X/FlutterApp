@@ -9,14 +9,24 @@ class ImageUploadBloc extends Bloc<ImageUploadEvent, ImageUploadState> {
 
   ImageUploadBloc(this.reviewRepository) : super(ImageUploadInitial()) {
     on<ImageUploadRequested>(_onImageUploadRequested);
+    on<ImageRequested>(_onImageRequested);
   }
 
-  FutureOr<void> _onImageUploadRequested(
-      ImageUploadRequested event, Emitter<ImageUploadState> emit) async {
+  FutureOr<void> _onImageUploadRequested(ImageUploadRequested event, Emitter<ImageUploadState> emit) async {
     try {
       emit(ImageUploadInProgress());
       final imageUrl = await reviewRepository.saveImage(event.image);
       emit(ImageUploadSuccess(imageUrl));
+    } catch (error) {
+      emit(ImageUploadFailure(error.toString()));
+    }
+  }
+
+  FutureOr<void> _onImageRequested(ImageRequested event, Emitter<ImageUploadState> emit) async {
+    try {
+      emit(ImageUploadInProgress());
+      final imageUrl = await reviewRepository.getImageUrl(event.imagePath);
+      emit(ImageRetrievalSuccess(imageUrl)); // Un nuevo estado para manejar el éxito
     } catch (error) {
       emit(ImageUploadFailure(error.toString()));
     }

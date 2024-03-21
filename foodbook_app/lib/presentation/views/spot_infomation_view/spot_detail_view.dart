@@ -12,7 +12,7 @@ import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_map.da
 class SpotDetail extends StatelessWidget {
   final Restaurant restaurant;
 
-  const SpotDetail({Key? key, required this.restaurant}) : super(key: key);
+  const SpotDetail({super.key, required this.restaurant});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class SpotDetail extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           restaurant.name,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold, 
           ),
         ),
@@ -32,7 +32,7 @@ class SpotDetail extends StatelessWidget {
         ),
       ),
       body: Container(
-        color: Color.fromARGB(255, 238, 238, 238),
+        color: const Color.fromARGB(255, 238, 238, 238),
         child: Column(
           children: [
             Expanded(
@@ -48,10 +48,10 @@ class SpotDetail extends StatelessWidget {
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: SpotMap(restaurant: restaurant), 
+                          ), 
                           height: 200, 
                           width: double.infinity,
+                          child: SpotMap(restaurant: restaurant),
                         ),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
@@ -85,7 +85,13 @@ class SpotDetail extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('   Reviews', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)), // Increase the font size
+                              const Padding(
+                                padding: EdgeInsets.all(12.0),
+                                child: Text(
+                                  'Reviews',
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+                                ),
+                              ),
                               TextButton(
                                 onPressed: () {
                                   Navigator.of(context).push(

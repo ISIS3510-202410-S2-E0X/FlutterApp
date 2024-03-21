@@ -6,7 +6,7 @@ class Restaurant {
   final List<String> imagePaths;
   final double latitude;
   final double longitude;
-  final List<Review> reviews;
+  List<Review> reviews;
   final int cleanliness_avg;
   final int waiting_time_avg;
   final int service_avg;

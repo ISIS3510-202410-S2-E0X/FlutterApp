@@ -20,6 +20,15 @@ class ImageUploadSuccess extends ImageUploadState {
   List<Object> get props => [imageUrl];
 }
 
+class ImageRetrievalSuccess extends ImageUploadState {
+  final String imageUrl;
+
+  const ImageRetrievalSuccess(this.imageUrl);
+
+  @override
+  List<Object> get props => [imageUrl];
+}
+
 class ImageUploadFailure extends ImageUploadState {
   final String error;
 
