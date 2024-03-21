@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/repositories/auth_repository.dart';
+import 'package:foodbook_app/notifications/background_review_reminder.dart';
 import 'package:foodbook_app/notifications/background_task.dart';
 import 'package:foodbook_app/notifications/notification_service.dart';
 import 'package:foodbook_app/presentation/views/login_view/signin_view.dart';
@@ -21,6 +22,7 @@ Future<void> main() async {
   ]); // Set up background message handler
   NotificationService.init(); // Initialize notification service
   await requestLocationPermission();   // Request location permission
+  initializeBackgroundTaskReminder(); // Initialize background task for review reminder
   initializeBackgroundTask(); // Initialize background task
   runApp(const MyApp());
 }

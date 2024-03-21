@@ -11,10 +11,10 @@ void callbackDispatcher() {
     print("user location: $userLocation.latitude, $userLocation.longitude");
     var userLatitude = userLocation.latitude;
     var userLongitude = userLocation.longitude;
-    double distance = Geolocator.distanceBetween(userLatitude, userLongitude, 6.5244, 3.3792);
+    double distance = Geolocator.distanceBetween(userLatitude, userLongitude, 4.6028679, -74.0649262);
     if (distance > 1000) {
        NotificationService.showNotification(
-         id: 0,
+         id: 1,
          title: 'Hungry?',
          body: "Choose what you will eat today and leave a review!",
        );
@@ -36,16 +36,15 @@ void initializeBackgroundTask() {
   Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
   //Workmanager().registerOneOffTask("DistanceBasedTest", "NotificationDisplayDistGLOCTest");
   Workmanager workmanager = Workmanager();
-  workmanager.cancelByUniqueName("RecurringlocatiionUsageTest2");
+  workmanager.cancelByUniqueName("RecurringlocatiionUsageTest3");
   workmanager.cancelByUniqueName("dailyEatingTest_notification");
-  // Workmanager().registerPeriodicTask(
-  //   "RecurringlocatiionUsageTest3", 
-  //   "RepLocTest", 
-  //   //  When no frequency is provided the default 15 minutes is set.
-  //   //  Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
-  //   frequency: const Duration(hours: 2),
-  //   initialDelay: const Duration(minutes: 2),
-  // );
+  Workmanager().registerPeriodicTask(
+     "RecurringlocatiionUsageTest3", 
+   "RepLocTest", 
+   //  When no frequency is provided the default 15 minutes is set.
+     //  Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
+     initialDelay: const Duration(minutes: 1),
+   );
    Workmanager().registerPeriodicTask(
      'dailyEatingTest_notification',
      'show_daily_notification',

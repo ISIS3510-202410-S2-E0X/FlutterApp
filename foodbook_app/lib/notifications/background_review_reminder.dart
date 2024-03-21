@@ -1,12 +1,17 @@
 import 'package:foodbook_app/notifications/notification_service.dart';
 import 'package:workmanager/workmanager.dart';
 
-@pragma('vm:entry-point')
-void callbackDispatcherRem() {
+
+void callbackDispatcherRem(task) {
   
   Workmanager().executeTask((task, inputData) async {
     // Perform your task here
-    NotificationService.showNotification(title: "We miss you...", body: "you haven't left a review in a while.");
+    NotificationService.showNotification(
+      id: 2,
+      title: "We miss you...",
+      body: "you haven't left a review in a while."
+      
+      );
     return Future.value(true);
   });
 }
@@ -20,10 +25,7 @@ void initializeBackgroundTaskReminder() {
     'reviewReminder',
     'show review reminder notification',
     frequency: const Duration(days: 4),
-    initialDelay: const Duration(days: 4),
-    constraints: Constraints(
-      networkType: NetworkType.connected,
-    ),
+    initialDelay: const Duration(minutes: 3),
   );
   //  Workmanager().registerPeriodicTask(
   //    'reviewReminder',
@@ -34,10 +36,11 @@ void initializeBackgroundTaskReminder() {
   //      networkType: NetworkType.connected,
   //    ),
   // );
-  print("background task initialized");
+  print("background reminder task initialized");
 }
 
 void cancelSingleTask(String id) {
+  NotificationService.cancelNotification(2);
   Workmanager().cancelByUniqueName(id);
 }
 

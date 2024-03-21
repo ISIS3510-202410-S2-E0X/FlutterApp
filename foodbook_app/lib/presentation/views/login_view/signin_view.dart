@@ -103,7 +103,7 @@ class _SignInViewState extends State<SignInView> {
           ),
         ),
         onPressed: () {
-          initializeBackgroundTaskReminder();
+          //initializeBackgroundTaskReminder();
           BlocProvider.of<AuthBloc>(context).add(GoogleSignInRequested());
         },
         child: Row(
