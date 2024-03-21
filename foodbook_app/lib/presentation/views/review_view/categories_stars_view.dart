@@ -20,7 +20,7 @@ import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_s
 class CategoriesAndStarsView extends StatefulWidget {
   final Restaurant restaurant;
 
-  const CategoriesAndStarsView({Key? key, required this.restaurant}) : super(key: key);
+  const CategoriesAndStarsView({super.key, required this.restaurant});
 
   @override
   State<CategoriesAndStarsView> createState() => _CategoriesAndStarsViewState();
