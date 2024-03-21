@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/review.dart';
 
@@ -17,13 +18,11 @@ class ReviewRepository {
       if (kDebugMode) {
         print("Failed with error '${e.code}': ${e.message}");
       }
-      // En vez de retornar un string vacío, lanzamos una excepción para mantener la consistencia.
       throw FirebaseException(
-        plugin: 'cloud_firestore', 
+        plugin: 'cloud_firestore',
         message: "Failed to add review: '${e.code}': ${e.message}"
       );
     } catch (e) {
-      // Esto captura cualquier otro tipo de excepción que no sea FirebaseException.
       throw Exception(e.toString());
     }
   }
@@ -37,7 +36,7 @@ class ReviewRepository {
         print("Failed with error '${e.code}': ${e.message}");
       }
       throw FirebaseException(
-        plugin: 'cloud_firestore', 
+        plugin: 'cloud_firestore',
         message: "Failed to get review: '${e.code}': ${e.message}"
       );
     } catch (e) {
@@ -62,13 +61,18 @@ class ReviewRepository {
   Future<String> saveImage(File image) async {
     Reference referenceRoot = FirebaseStorage.instance.ref();
     Reference referenceDirImages = referenceRoot.child('reviewImages');
-    
+
     String uniqueFileName = "${DateTime.now().millisecondsSinceEpoch}.jpg";
     Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
 
+    SettableMetadata metadata = SettableMetadata(
+      contentType: 'image/jpeg',
+    );
+
     try {
-      await referenceImageToUpload.putFile(File(image.path));
-      return await referenceImageToUpload.getDownloadURL();
+      await referenceImageToUpload.putFile(File(image.path), metadata);
+      String path = await referenceImageToUpload.getDownloadURL();
+      return path;
     } catch(error) {
       if (kDebugMode) {
         print("Failed to save image with error: $error");
@@ -77,9 +81,9 @@ class ReviewRepository {
     }
   }
 
-  Future<String> getImageUrl(String filePath) async {
-    Reference storageReference = FirebaseStorage.instance.ref().child(filePath);
-    String downloadUrl = await storageReference.getDownloadURL();
-    return downloadUrl;
+  Future<ImageProvider> getImage(String fullPath) async {
+    final ref = FirebaseStorage.instance.ref().child(fullPath);
+    final String downloadUrl = await ref.getDownloadURL();
+    return NetworkImage(downloadUrl);
   }
 }
