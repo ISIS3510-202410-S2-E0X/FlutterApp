@@ -29,7 +29,7 @@ class BrowseView extends StatelessWidget {
           ),
           // Add the FilterBar widget to the AppBar
           actions: [
-            FilterBar(),
+            //FilterBar(),
           ],
           elevation: 0, // Remove shadow
         ),
