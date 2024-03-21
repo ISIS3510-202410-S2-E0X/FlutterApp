@@ -27,80 +27,83 @@ class _ForYouViewState extends State<ForYouView> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-    listeners: [
-      BlocListener<UserBloc, UserState>(
-        listener: (context, state) {
-          if (state is AuthenticatedUserState) {
-            BlocProvider.of<BrowseBloc>(context).add(FetchRecommendedRestaurants(state.email.replaceFirst("@gmail.com", "")));
-          }
-        },
-      ),
-    ],
-    child: Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        title: const Text(
-          'For You',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        elevation: 10,
-      ),
-      backgroundColor: Colors.grey[200],
-      body: Column(
-        children: [
-          Divider(
-            height: 1,
-            color: Colors.grey[300],
-          ),
-          Expanded(
-            child: BlocBuilder<BrowseBloc, BrowseState>(
-              builder: (context, state) {
-                if (state is RestaurantsLoadInProgress) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is RestaurantsRecommendationLoadSuccess) {
-                  if (state.recommendedRestaurants.isEmpty) {
-                    return const Center(child: Text('No restaurants to show'));
-                  }
-                  return ListView.builder(
-                    itemCount: state.recommendedRestaurants.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SpotDetail(restaurant: state.recommendedRestaurants[index]),
-                            ),
-                          );
-                        },
-                        child: RestaurantCard(restaurant: state.recommendedRestaurants[index]),
-                      );
-                    },
-                  );
-                } else if (state is RestaurantsLoadFailure) {
-                  return const Center(child: Text('Failed to load restaurants'));
-                }
-                return const Center(child: Text('No restaurants to show'));
-              },
-            ),
+    return PopScope(
+      canPop: false,
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<UserBloc, UserState>(
+            listener: (context, state) {
+              if (state is AuthenticatedUserState) {
+                BlocProvider.of<BrowseBloc>(context).add(FetchRecommendedRestaurants(state.email.replaceFirst("@gmail.com", "")));
+              }
+            },
           ),
         ],
-      ),
-      bottomNavigationBar: CustomNavigationBar(
-        selectedIndex: 1,
-        onItemTapped: (int index) {
-          if (index == 0) {
-            Navigator.pushNamed(context, '/browse');
-          } else if (index == 2) {
-            Navigator.pushNamed(context, '/bookmarks');
-          }
-        },
-      )),
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.white,
+            title: const Text(
+              'For You',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            elevation: 10,
+          ),
+          backgroundColor: Colors.grey[200],
+          body: Column(
+            children: [
+              Divider(
+                height: 1,
+                color: Colors.grey[300],
+              ),
+              Expanded(
+                child: BlocBuilder<BrowseBloc, BrowseState>(
+                  builder: (context, state) {
+                    if (state is RestaurantsLoadInProgress) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is RestaurantsRecommendationLoadSuccess) {
+                      if (state.recommendedRestaurants.isEmpty) {
+                        return const Center(child: Text('No restaurants to show'));
+                      }
+                      return ListView.builder(
+                        itemCount: state.recommendedRestaurants.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SpotDetail(restaurant: state.recommendedRestaurants[index]),
+                                ),
+                              );
+                            },
+                            child: RestaurantCard(restaurant: state.recommendedRestaurants[index]),
+                          );
+                        },
+                      );
+                    } else if (state is RestaurantsLoadFailure) {
+                      return const Center(child: Text('Failed to load restaurants'));
+                    }
+                    return const Center(child: Text('No restaurants to show'));
+                  },
+                ),
+              ),
+            ],
+          ),
+          bottomNavigationBar: CustomNavigationBar(
+            selectedIndex: 1,
+            onItemTapped: (int index) {
+              if (index == 0) {
+                Navigator.pushNamed(context, '/browse');
+              } else if (index == 2) {
+                Navigator.pushNamed(context, '/bookmarks');
+              }
+            },
+          )),
+        )
     );
   }
 }
