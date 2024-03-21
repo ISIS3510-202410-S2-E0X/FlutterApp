@@ -17,10 +17,35 @@ import 'package:foodbook_app/presentation/views/review_view/text_images_view.dar
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
 
-class CategoriesAndStarsView extends StatelessWidget {
+class CategoriesAndStarsView extends StatefulWidget {
   final Restaurant restaurant;
 
-  const CategoriesAndStarsView({Key? key, required this.restaurant}) : super(key: key);
+  const CategoriesAndStarsView({super.key, required this.restaurant});
+
+  @override
+  State<CategoriesAndStarsView> createState() => _CategoriesAndStarsViewState();
+}
+
+class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    // Dispara el evento de búsqueda.
+    BlocProvider.of<FoodCategoryBloc>(context).add(SearchCategoriesEvent(_searchController.text));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +81,7 @@ class CategoriesAndStarsView extends StatelessWidget {
                         )
                       ),
                     ],
-                    child: TextAndImagesView(restaurant: restaurant),
+                    child: TextAndImagesView(restaurant: widget.restaurant),
                   ),
                 ),
               );
@@ -89,12 +114,13 @@ class CategoriesAndStarsView extends StatelessWidget {
               ),
             ),
           ),
-          const PreferredSize(
-            preferredSize: Size.fromHeight(56.0), // Altura estándar de una barra de búsqueda
+          PreferredSize(
+            preferredSize: const Size.fromHeight(56.0),
             child: Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 1, 16.0, 8.0), // Aumenta los valores laterales para más espacio
+              padding: const EdgeInsets.fromLTRB(16.0, 1, 16.0, 8.0),
               child: TextField(
-                decoration: InputDecoration(
+                controller: _searchController,
+                decoration: const InputDecoration(
                   hintText: 'Search',
                   prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(
@@ -194,5 +220,11 @@ class CategoriesAndStarsView extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void disposeCategoriesStarsView() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
   }
 }
