@@ -9,35 +9,39 @@ class LoginConfirmPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('LOGIN SUCCESFUL'),
-      ),
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is UnAuthenticated) {
-            // Navigate to the sign in screen when the user Signs Out
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => SignInView()),
-              (route) => false,
-            );
-          }
-        },
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                child: const Text('Sign Out'),
-                onPressed: () {
-                  // Signing out the user
-                  context.read<AuthBloc>().add(SignOutRequested());
-                },
-              ),
-            ],
+    return PopScope(
+      canPop: false,
+      child:
+        Scaffold(
+          appBar: AppBar(
+            title: const Text('LOGIN SUCCESFUL'),
           ),
-        ),
-      ),
+          body: BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is UnAuthenticated) {
+                // Navigate to the sign in screen when the user Signs Out
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => SignInView()),
+                  (route) => false,
+                );
+              }
+            },
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    child: const Text('Sign Out'),
+                    onPressed: () {
+                      // Signing out the user
+                      context.read<AuthBloc>().add(SignOutRequested());
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        )
     );
   }
 }

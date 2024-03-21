@@ -10,6 +10,8 @@ import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart
 
 
 class SignInView extends StatefulWidget {
+  const SignInView({super.key});
+
   @override
   _SignInViewState createState() => _SignInViewState();
 }
@@ -17,19 +19,33 @@ class SignInView extends StatefulWidget {
 class _SignInViewState extends State<SignInView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            if (state is Loading) {
-              return const CircularProgressIndicator();
-            } else {
-              return buildSignInContent(context);
-            }
-          },
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is Authenticated) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) {
+              return BlocProvider<BrowseBloc>(
+                create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(LoadRestaurants()),
+                child: BrowseView(),
+              );
+            }),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              if (state is Loading) {
+                return const CircularProgressIndicator();
+              } else {
+                return buildSignInContent(context);
+              }
+            },
+          ),
         ),
-      ),
+      )
     );
   }
 
@@ -65,7 +81,7 @@ class _SignInViewState extends State<SignInView> {
           ),
           textAlign: TextAlign.center,
         ),
-        Spacer(),
+        const Spacer(),
         buildGoogleSignInButton(context),
         SizedBox(height: screenSize.height * 0.05),
       ],
@@ -89,15 +105,6 @@ class _SignInViewState extends State<SignInView> {
         onPressed: () {
           initializeBackgroundTaskReminder();
           BlocProvider.of<AuthBloc>(context).add(GoogleSignInRequested());
-          Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) {
-                      return BlocProvider<BrowseBloc>(
-                        create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(LoadRestaurants()),
-                        child: BrowseView(),
-                      );
-                     }
-                    ),
-            );
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
