@@ -64,27 +64,35 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
           OutlinedButton(
             onPressed: () {
               final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
-              final starsBloc = BlocProvider.of<StarsBloc>(context);
-              final userBloc = BlocProvider.of<UserBloc>(context);
+              if (foodCategoryBloc.selectedCategories.isEmpty) {
+                const snackBar = SnackBar(
+                  content: Text('Please select at least one category.'),
+                  duration: Duration(seconds: 2),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              } else {
+                final starsBloc = BlocProvider.of<StarsBloc>(context);
+                final userBloc = BlocProvider.of<UserBloc>(context);
 
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => MultiBlocProvider(
-                    providers: [
-                      BlocProvider.value(value: foodCategoryBloc),
-                      BlocProvider.value(value: starsBloc),
-                      BlocProvider.value(value: userBloc),
-                      BlocProvider(create: (context) => ImageUploadBloc(ReviewRepository())),
-                      BlocProvider(create: (context) => ReviewBloc(
-                          reviewRepository: ReviewRepository(),
-                          restaurantRepository: RestaurantRepository()
-                        )
-                      ),
-                    ],
-                    child: TextAndImagesView(restaurant: widget.restaurant),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider.value(value: foodCategoryBloc),
+                        BlocProvider.value(value: starsBloc),
+                        BlocProvider.value(value: userBloc),
+                        BlocProvider(create: (context) => ImageUploadBloc(ReviewRepository())),
+                        BlocProvider(create: (context) => ReviewBloc(
+                            reviewRepository: ReviewRepository(),
+                            restaurantRepository: RestaurantRepository()
+                          )
+                        ),
+                      ],
+                      child: TextAndImagesView(restaurant: widget.restaurant),
+                    ),
                   ),
-                ),
-              );
+                );
+              }
             },
             style: OutlinedButton.styleFrom(
               side: BorderSide.none,

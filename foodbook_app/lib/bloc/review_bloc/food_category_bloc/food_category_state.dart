@@ -43,6 +43,15 @@ class FoodCategoryMaxSelectionReached extends FoodCategoryState {
   List<Object> get props => [message];
 }
 
+class FoodCategoryMinSelectionReached extends FoodCategoryState {
+  final String message;
+
+  FoodCategoryMinSelectionReached({this.message = "Minimum category selections not yet reached."});
+
+  @override
+  List<Object> get props => [message];
+}
+
 class FoodCategoryError extends FoodCategoryState {
   final String error;
 

@@ -7,9 +7,10 @@ import 'package:foodbook_app/data/repositories/category_repository.dart';
 class FoodCategoryBloc extends Bloc<FoodCategoryEvent, FoodCategoryState> {
   final CategoryRepository categoryRepository;
   final int maxSelection;
+  final int minSelection;
   List<CategoryDTO> selectedCategories = [];
 
-  FoodCategoryBloc({required this.categoryRepository, required this.maxSelection})
+  FoodCategoryBloc({required this.categoryRepository, required this.maxSelection, required this.minSelection})
       : super(InitialState()) {
     on<SelectCategoryEvent>(_onSelectCategory);
     on<DeselectCategoryEvent>(_onDeselectCategory);
@@ -45,8 +46,10 @@ class FoodCategoryBloc extends Bloc<FoodCategoryEvent, FoodCategoryState> {
       selectedCategories.add(CategoryDTO(name: event.category));
       final categories = await categoryRepository.getAllCategories();
       emit(FoodCategorySelected(categories, selectedCategories));
-    } else {
+    } else if (selectedCategories.length >= maxSelection) {
       emit(FoodCategoryMaxSelectionReached());
+    } else {
+      emit(FoodCategoryError('An error occurred while selecting category.'));
     }
   }
 

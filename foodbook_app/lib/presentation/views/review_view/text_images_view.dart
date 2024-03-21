@@ -16,33 +16,12 @@ import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
-import 'package:foodbook_app/data/models/review.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-String _formatCurrentDate() {
-  DateTime now = DateTime.now().toUtc().subtract(Duration(hours: 5));
-  int hour = now.hour % 12;
-  hour = hour == 0 ? 12 : hour;
-
-  String period = now.hour >= 12 && now.hour < 24 ? 'p.m.' : 'a.m.';
-
-  return '${now.day} de ${_getMonthName(now.month)} de ${now.year}, '
-         '${hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} '
-         '$period UTC-5';
-}
-
-String _getMonthName(int month) {
-  const monthsInSpanish = [
-    'january', 'february', 'march', 'april', 'may', 'june',
-    'july', 'august', 'september', 'october', 'november', 'december'
-  ];
-  return monthsInSpanish[month - 1];
-}
 
 class TextAndImagesView extends StatefulWidget {
   final Restaurant restaurant;
@@ -60,7 +39,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   final TextEditingController _commentController = TextEditingController();
 
   Future<void> getImage() async {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
 
     showModalBottomSheet(
       context: context,
@@ -69,40 +48,40 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           child: Wrap(
             children: <Widget>[
               ListTile(
-                  leading: Icon(Icons.photo_library),
-                  title: Text('Gallery'),
-                  onTap: () async {
-                    Navigator.of(context).pop(); // Cierra el modal
-                    var storageStatus = await Permission.storage.status; // Para Android
-                    if (!storageStatus.isGranted) {
-                      await Permission.storage.request(); // Para Android
-                    }
-                    storageStatus = await Permission.storage.status; // Actualiza el estado para Android
-                    if (storageStatus.isGranted) {
-                      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-                      if (pickedFile != null) {
-                        setState(() {
-                          _image = File(pickedFile.path);
-                        });
-                      }
-                    }
-                  storageStatus = await Permission.camera.status;                    
-                    if (storageStatus.isPermanentlyDenied) {
-                      openAppSettings();
-                    }
-                  }),
-              ListTile(
-                leading: Icon(Icons.photo_camera),
-                title: Text('Camera'),
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Gallery'),
                 onTap: () async {
                   Navigator.of(context).pop(); // Cierra el modal
+                  var storageStatus = await Permission.storage.status; // Para Android
+                  if (!storageStatus.isGranted) {
+                    await Permission.storage.request(); // Para Android
+                  }
+                  storageStatus = await Permission.storage.status; // Actualiza el estado para Android
+                  if (storageStatus.isGranted) {
+                    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                    if (pickedFile != null) {
+                      setState(() {
+                        _image = File(pickedFile.path);
+                      });
+                    }
+                  }
+                storageStatus = await Permission.camera.status;                    
+                  if (storageStatus.isPermanentlyDenied) {
+                    openAppSettings();
+                  }
+                }),
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text('Camera'),
+                onTap: () async {
+                  Navigator.of(context).pop();
                   var cameraStatus = await Permission.camera.status;
                   if (!cameraStatus.isGranted) {
                     await Permission.camera.request();
                   }
                   cameraStatus = await Permission.camera.status;
                   if (cameraStatus.isGranted) {
-                    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+                    final pickedFile = await picker.pickImage(source: ImageSource.camera);
                     if (pickedFile != null) {
                       setState(() {
                         _image = File(pickedFile.path);
@@ -202,7 +181,6 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
               if (state is ImageUploadSuccess) {
                 _uploadedImageUrl = state.imageUrl;
                 if (context.read<UserBloc>().state is AuthenticatedUserState && _times == 0) {
-                  print('NO DEBERÍA ENTRAR ACÁ');
                   createReview(_email!, _uploadedImageUrl!);
                 }
               } else if (state is ImageUploadFailure) {
@@ -290,7 +268,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                       _image != null ? 'Remove image' : 'Add image',
                       style: TextStyle(
                         fontSize: 20,
-                        color: _image != null ? Color.fromRGBO(255, 0, 0, 0.612) : Color.fromRGBO(0, 122, 255, 100),
+                        color: _image != null ? const Color.fromRGBO(255, 0, 0, 0.612) : const Color.fromRGBO(0, 122, 255, 100),
                       ),
                     ),
                   ),
