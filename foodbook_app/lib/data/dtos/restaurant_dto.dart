@@ -1,5 +1,5 @@
-import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/data/models/review.dart';
 
 class RestaurantDTO {
   final String name;
@@ -9,7 +9,7 @@ class RestaurantDTO {
   final Map<String, dynamic> waitTime;
   final String price;
   final Map<String, num> stats;
-  //final List<String> userReviews;
+  final List<String> userReviews;
 
   RestaurantDTO({
     required this.name,
@@ -19,7 +19,7 @@ class RestaurantDTO {
     required this.waitTime,
     required this.price,
     required this.stats,
-    //required this.userReviews,
+    required this.userReviews,
   });
 
   Restaurant toModel() {
@@ -29,7 +29,7 @@ class RestaurantDTO {
       imagePaths: imageLinks,
       latitude: location[0],
       longitude: location[1],
-      //reviews: userReviews.map((review) => ReviewDTO.fromJson(review).toModel()).toList(),
+      // reviews: userReviews.map((review) => ReviewDTO.fromJson(review).toModel()).toList(),
       reviews: [],
       cleanliness_avg: (stats['cleanliness']! * 20).toInt(),
       waiting_time_avg: (stats['waitTime']! * 20).toInt(),
@@ -60,16 +60,14 @@ class RestaurantDTO {
   //    .map((review) => review.toString()));
 
   return RestaurantDTO(
-    name: json['name'] as String? ?? 'Unknown',
-    categories: categories,
-    imageLinks: imageLinks,
-    location: location,
-    waitTime: waitTime,
-    price: json['price'] as String? ?? '-',
-    stats: stats,
-    //userReviews: userReviews,
-    
-  );
-}
-
+      name: json['name'] as String? ?? 'Unknown',
+      categories: categories,
+      imageLinks: imageLinks,
+      location: location,
+      waitTime: waitTime,
+      price: json['price'] as String? ?? '-',
+      stats: stats,
+      userReviews: [],
+    );
+  }
 }

@@ -32,15 +32,18 @@ class ReviewItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(review.title!, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            review.title != null ? Text(review.title!, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)) : const SizedBox.shrink(),
             const SizedBox(height: 4),
             // Text('by ${review.user} - ${DateFormat('dd/MM/yyyy').format(review.date)}'),
-            Text('by ${review.user} - ${review.date}'),
+            Text('by ${review.user} - ${DateFormat('dd/MM/yyyy HH:mm:ss').format(review.date.toDate())}'),
             const SizedBox(height: 10),
-            Text(review.content!),
+            review.content != null ? Text(review.content!) : const SizedBox.shrink(),
             const SizedBox(height: 10),
             // ignore: avoid_print
-            if (review.imageUrl != null) Image.asset(review.imageUrl!, fit: BoxFit.cover),
+            if (review.imageUrl != null) Image.network(
+              review.imageUrl!,
+              fit: BoxFit.cover,
+            ),
             const SizedBox(height: 10),
             Row(
               children: [
@@ -51,7 +54,7 @@ class ReviewItem extends StatelessWidget {
             Row(
               children: [
                 const Expanded(child: Text('Waiting Time')),
-                _buildRatingStars((review.ratings['waitingTime'] ?? 0).toInt()),
+                _buildRatingStars((review.ratings['waitTime'] ?? 0).toInt()),
               ],
             ),
             Row(

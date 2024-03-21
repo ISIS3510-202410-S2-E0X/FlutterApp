@@ -63,7 +63,6 @@ class _ForYouViewState extends State<ForYouView> {
                 if (state is RestaurantsLoadInProgress) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is RestaurantsRecommendationLoadSuccess) {
-                  print('RESTAURANTS ACÁ: ${state.recommendedRestaurants}');
                   if (state.recommendedRestaurants.isEmpty) {
                     return const Center(child: Text('No restaurants to show'));
                   }

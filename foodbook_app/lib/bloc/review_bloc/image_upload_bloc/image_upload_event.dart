@@ -16,3 +16,12 @@ class ImageUploadRequested extends ImageUploadEvent {
   @override
   List<Object> get props => [image];
 }
+
+class ImageRequested extends ImageUploadEvent {
+  final String imagePath;
+
+  const ImageRequested(this.imagePath);
+
+  @override
+  List<Object> get props => [imagePath];
+}
