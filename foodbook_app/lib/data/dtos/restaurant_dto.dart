@@ -1,5 +1,4 @@
 import 'package:foodbook_app/data/models/restaurant.dart';
-import 'package:foodbook_app/data/models/review.dart';
 
 class RestaurantDTO {
   final String name;

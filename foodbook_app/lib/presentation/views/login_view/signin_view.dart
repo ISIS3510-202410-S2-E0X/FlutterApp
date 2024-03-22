@@ -5,7 +5,6 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
-import 'package:foodbook_app/notifications/background_review_reminder.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 
 

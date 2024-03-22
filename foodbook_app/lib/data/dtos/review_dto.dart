@@ -1,8 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:foodbook_app/data/dtos/category_dto.dart';
-import 'package:foodbook_app/data/models/category.dart';
 import 'package:foodbook_app/data/models/review.dart';
-import 'package:intl/intl.dart';
 // import 'package:intl/intl.dart'; 
 
 class ReviewDTO {
