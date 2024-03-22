@@ -10,6 +10,22 @@ class RatingCategory extends StatelessWidget {
 
   const RatingCategory({super.key, required this.category, required this.initialRating});
 
+  String toCamelCase(String str) {
+    List<String> words = str.split(' ');
+
+    for (int i = 1; i < words.length; i++) {
+      words[i] = words[i][0].toUpperCase() + words[i].substring(1).toLowerCase();
+    }
+
+    String result = words.join('');
+
+    if (result.startsWith("Waiting")) {
+      result = "wait${result.substring("Waiting".length)}";
+    }
+
+    return result[0].toLowerCase() + result.substring(1);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,7 +52,7 @@ class RatingCategory extends StatelessWidget {
             onRatingUpdate: (rating) {
               // Enviar evento al BLoC
               print('UPDATED!');
-              context.read<StarsBloc>().add(ReviewRatingChanged(category, rating));
+              context.read<StarsBloc>().add(ReviewRatingChanged(toCamelCase(category), rating));
             },
           ),
         ],

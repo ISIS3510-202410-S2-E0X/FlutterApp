@@ -1,9 +1,29 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 
 class ImagesDisplay extends StatelessWidget {
   final Restaurant restaurant;
   const ImagesDisplay({Key? key, required this.restaurant}) : super(key: key);
+
+  // Helper method to decode a base64 string into bytes
+  Uint8List _decodeImage(String base64String) {
+    // Remove the metadata prefix from the data URL if present
+    final String imageData = base64String.split(',').last;
+    return base64Decode(imageData);
+  }
+
+  // Helper method to determine and return the appropriate image widget
+  Widget _getImageWidget(String imagePath) {
+    if (imagePath.startsWith('data:image')) {
+      // It's a base64 image
+      return Image.memory(_decodeImage(imagePath), fit: BoxFit.cover);
+    } else {
+      // It's a network image
+      return Image.network(imagePath, fit: BoxFit.cover);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +48,7 @@ class ImagesDisplay extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8), 
-                child: Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover),
+                child: _getImageWidget(restaurant.imagePaths[0]),
               ),
             ),
           );
@@ -50,7 +70,7 @@ class ImagesDisplay extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8), 
-                    child: Image.asset(restaurant.imagePaths[index], fit: BoxFit.cover),
+                    child: _getImageWidget(restaurant.imagePaths[index]),
                   ),
                 ),
               ),
@@ -75,7 +95,7 @@ class ImagesDisplay extends StatelessWidget {
                   child: ClipRRect(
                     // If you want rounded corners, otherwise just remove the ClipRRect
                     borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
-                    child: Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover),
+                    child: _getImageWidget(restaurant.imagePaths[0]),
                   ),
                 ),
               ),
@@ -99,7 +119,7 @@ class ImagesDisplay extends StatelessWidget {
                         child: ClipRRect(
                           // If you want rounded corners, otherwise just remove the ClipRRect
                           borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
-                          child: Image.asset(restaurant.imagePaths[index+1], fit: BoxFit.cover),
+                          child: _getImageWidget(restaurant.imagePaths[index+1]),
                         ),
                       ),
                     ),
@@ -128,7 +148,7 @@ class ImagesDisplay extends StatelessWidget {
                   child: ClipRRect(
                     // If you want rounded corners, otherwise just remove the ClipRRect
                     borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
-                    child: Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover),
+                    child: _getImageWidget(restaurant.imagePaths[0]),
                   ),
                 ),
               ),
@@ -153,7 +173,7 @@ class ImagesDisplay extends StatelessWidget {
                         child: ClipRRect(
                           // If you want rounded corners, otherwise just remove the ClipRRect
                           borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
-                          child: Image.asset(restaurant.imagePaths[1], fit: BoxFit.cover),
+                          child: _getImageWidget(restaurant.imagePaths[1]),
                         ),
                       ),
                     ),
@@ -176,7 +196,7 @@ class ImagesDisplay extends StatelessWidget {
                               child: ClipRRect(
                                 // If you want rounded corners, otherwise just remove the ClipRRect
                                 borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
-                                child: Image.asset(restaurant.imagePaths[2], fit: BoxFit.cover),
+                                child: _getImageWidget(restaurant.imagePaths[2]),
                               ),
                             ),
                           ),
@@ -195,7 +215,7 @@ class ImagesDisplay extends StatelessWidget {
                               child: ClipRRect(
                                 // If you want rounded corners, otherwise just remove the ClipRRect
                                 borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
-                                child: Image.asset(restaurant.imagePaths[3], fit: BoxFit.cover),
+                                child: _getImageWidget(restaurant.imagePaths[3]),
                               ),
                             ),
                           ),
@@ -228,7 +248,7 @@ class ImagesDisplay extends StatelessWidget {
                     child: ClipRRect(
                       // If you want rounded corners, otherwise just remove the ClipRRect
                       borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
-                      child: Image.asset(restaurant.imagePaths[0], fit: BoxFit.cover),
+                      child: _getImageWidget(restaurant.imagePaths[0]),
                     ),
                   ),
                 ),
@@ -255,7 +275,7 @@ class ImagesDisplay extends StatelessWidget {
                                 child: ClipRRect(
                                   // If you want rounded corners, otherwise just remove the ClipRRect
                                   borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
-                                  child: Image.asset(restaurant.imagePaths[1], fit: BoxFit.cover),
+                                  child: _getImageWidget(restaurant.imagePaths[1]),
                                 ),
                               ),
                             ),
@@ -274,7 +294,7 @@ class ImagesDisplay extends StatelessWidget {
                                 child: ClipRRect(
                                   // If you want rounded corners, otherwise just remove the ClipRRect
                                   borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
-                                  child: Image.asset(restaurant.imagePaths[2], fit: BoxFit.cover),
+                                  child: _getImageWidget(restaurant.imagePaths[2]),
                                 ),
                               ),
                             ),
@@ -299,7 +319,7 @@ class ImagesDisplay extends StatelessWidget {
                                 child: ClipRRect(
                                   // If you want rounded corners, otherwise just remove the ClipRRect
                                   borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
-                                  child: Image.asset(restaurant.imagePaths[3], fit: BoxFit.cover),
+                                  child: _getImageWidget(restaurant.imagePaths[3]),
                                 ),
                               ),
                             ),
@@ -318,7 +338,7 @@ class ImagesDisplay extends StatelessWidget {
                                 child: ClipRRect(
                                   // If you want rounded corners, otherwise just remove the ClipRRect
                                   borderRadius: BorderRadius.circular(8), // Adjust the radius to your preference
-                                  child: Image.asset(restaurant.imagePaths[4], fit: BoxFit.cover),
+                                  child: _getImageWidget(restaurant.imagePaths[4]),
                                 ),
                               ),
                             ),

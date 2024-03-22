@@ -1,4 +1,9 @@
+
 abstract class FoodCategoryEvent {}
+
+class LoadCategoriesEvent extends FoodCategoryEvent {}
+
+class LoadSelectedCategoriesEvent extends FoodCategoryEvent {}
 
 class SelectCategoryEvent extends FoodCategoryEvent {
   final String category;
@@ -16,4 +21,12 @@ class MaxSelectionReachedEvent extends FoodCategoryEvent {
   final List<String> selectedCategories;
 
   MaxSelectionReachedEvent(this.selectedCategories);
+}
+
+class SearchCategoriesEvent extends FoodCategoryEvent {
+  final String searchTerm;
+
+  SearchCategoriesEvent(this.searchTerm);
+
+  List<Object> get props => [searchTerm];
 }
