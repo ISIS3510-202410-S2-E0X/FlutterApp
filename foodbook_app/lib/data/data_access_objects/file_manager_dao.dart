@@ -7,7 +7,7 @@ class FileManagerDAO {
     return directory.path;
   }
 
-  Future<File> get _localFile () async {
+  Future<File> get _localFile async {
     final path = await _localPath;
     // You can customize the file name here as per your requirement
     return File('$path/image.png');
