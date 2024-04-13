@@ -7,21 +7,22 @@ class FileManagerDAO {
     return directory.path;
   }
 
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    // You can customize the file name here as per your requirement
-    return File('$path/image.png');
-  }
+  Future<File> _localFile(String imageName) async {
+  final path = await _localPath;
+  // Customize the file name using the provided image name
+  return File('$path/$imageName');
+}
 
-  Future<void> saveImage(File imageFile) async {
-    final file = await _localFile;
-    // Write the file
-    await file.writeAsBytes(imageFile.readAsBytesSync());
-  }
 
-  Future<File?> getImage() async {
+  Future<void> saveImage(File imageFile, String imageName) async {
+  final file = await _localFile(imageName);
+  // Write the file
+  await file.writeAsBytes(imageFile.readAsBytesSync());
+}
+
+  Future<File?> getImage(String imageName) async {
   try {
-    final file = await _localFile;
+    final file = await _localFile(imageName);
     // Check if the file exists
     if (await file.exists()) {
       return file;
@@ -34,5 +35,19 @@ class FileManagerDAO {
     return null;
   }
 }
+  
+    Future<void> deleteImage(String imageName) async {
+    try {
+      final file = await _localFile(imageName);
+      // Check if the file exists
+      if (await file.exists()) {
+        await file.delete();
+      } else {
+        print("Image file does not exist.");
+      }
+    } catch (e) {
+      print("Error while deleting image: $e");
+    }
+    }
 
 }
