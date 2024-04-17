@@ -1,10 +1,11 @@
-abstract class SearchState{}
+abstract class SearchState {}
 
-class InitialState extends SearchState{}
+class SearchInitial extends SearchState {}
 
-class Loading extends SearchState{}
+class SearchLoading extends SearchState {}
 
-class LoadedWords extends SearchState{
-  final List<String> words;
-  LoadedWords({required this.words});
+class SearchSuccess extends SearchState {
+  final List<String> suggestions;
+
+  SearchSuccess({required this.suggestions});
 }
