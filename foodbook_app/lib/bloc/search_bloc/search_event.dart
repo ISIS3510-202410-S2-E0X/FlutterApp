@@ -10,7 +10,7 @@ abstract class SearchEvent extends Equatable {
 class SearchWord extends SearchEvent {
   final String query;
 
-  SearchWord({required this.query});
+  const SearchWord({required this.query});
 
   @override
   List<Object> get props => [query];
@@ -32,4 +32,10 @@ class SearchButtonPressed extends SearchEvent {
 
   const SearchButtonPressed({required this.query});
 
+}
+class SelectSuggested extends SearchEvent {
+  final String suggestion;
+  SelectSuggested({required this.suggestion});
+  @override
+  List<Object> get props => [suggestion];
 }

@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
+import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
+import 'package:foodbook_app/data/data_access_objects/shared_preferences_dao.dart';
 import 'package:foodbook_app/data/repositories/auth_repository.dart';
+import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
 import 'package:foodbook_app/notifications/background_task.dart';
 import 'package:foodbook_app/notifications/notification_service.dart';
 import 'package:foodbook_app/presentation/views/login_view/signin_view.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:foodbook_app/presentation/views/test_views/search_bar.dart';
+import 'package:foodbook_app/presentation/views/test_views/search_test.dart';
 import 'package:geolocator/geolocator.dart';
 import 'firebase_options.dart';
 
@@ -64,29 +69,41 @@ Future<void> requestLocationPermission() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
+  // @override
+  // Widget build(BuildContext context) {
+  //   return RepositoryProvider(
+  //     create: (context) => AuthRepository(),
+  //     child: MultiBlocProvider(
+  //       providers: [
+  //         BlocProvider<AuthBloc>(
+  //           create: (context) => AuthBloc(
+  //             authRepository: RepositoryProvider.of<AuthRepository>(context),
+  //           ),
+  //         ),
+  //         BlocProvider<UserBloc>(
+  //           create: (context) => UserBloc(),
+  //         ),
+  //       ],
+  //       child: MaterialApp(
+  //         title: 'FoodBook',
+  //         theme: ThemeData(
+  //           primarySwatch: Colors.blue,
+  //         ),
+  //         home: const SignInView(),
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => AuthRepository(),
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<AuthBloc>(
-            create: (context) => AuthBloc(
-              authRepository: RepositoryProvider.of<AuthRepository>(context),
-            ),
-          ),
-          BlocProvider<UserBloc>(
-            create: (context) => UserBloc(),
-          ),
-        ],
-        child: MaterialApp(
-          title: 'FoodBook',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home: SignInView(),
-        ),
-      ),
-    );
-  }
+  return MaterialApp(
+    title: 'FoodBook App',
+    home: BlocProvider(
+      create: (context) => SearchBloc(),
+      child: SearchPage2(),
+    ),
+  );
 }
+
+}
+
