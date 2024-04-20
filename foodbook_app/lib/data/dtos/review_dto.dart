@@ -65,7 +65,7 @@ class ReviewDTO {
     });
 
     return ReviewDTO(
-      user: json['user'] as String,
+      user: (json['user'] as Map)['name'] as String,
       title: json['title'],
       content: json['content'],
       date: json['date'] as Timestamp,
