@@ -7,11 +7,11 @@ abstract class SearchState extends Equatable {
   List<Object> get props => [];
 }
 
-class SearchInitial extends SearchState {}
+class SearchInitial2 extends SearchState {}
 
 class SearchLoading extends SearchState {}
 
-class SearchSuccess extends SearchState {
+class SearchSuccess2 extends SearchState {
   late final List<dynamic> results;
 
   @override

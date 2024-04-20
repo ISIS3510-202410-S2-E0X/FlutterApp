@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
+import 'package:foodbook_app/presentation/views/test_views/search_test.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
 import 'package:foodbook_app/presentation/widgets/menu/search_bar.dart';
@@ -20,23 +22,30 @@ class BrowseView extends StatelessWidget {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white, // Set AppBar background to white
-          title: const Text(
-            'Browse',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black, // Title color
-            ),
+          title: Row(
+            children: [
+              const Text(
+                'Browse',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black, // Title color
+                ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.7, // Adjust the width as needed
+                height: kToolbarHeight, // Constrain the height of the SearchPage2 widget
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context)),
+                ),
+              ),
+            ],
           ),
-          // Add the FilterBar widget to the AppBar
-          actions: [
-            //FilterBar(),
-          ],
           elevation: 0, // Remove shadow
         ),
         backgroundColor: Colors.grey[200], // Set the background color to grey
         body: Column(
           children: [
-            RestaurantSearchBar(browseBloc: BlocProvider.of<BrowseBloc>(context)),
             Divider(
               height: 1, // Height of the divider line
               color: Colors.grey[300], // Color of the divider line

@@ -9,7 +9,7 @@ import 'package:foodbook_app/data/repositories/shared_preferences_repository.dar
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final SharedPreferencesRepository repository = SharedPreferencesRepository();
-  SearchBloc() : super(SearchInitial()){
+  SearchBloc() : super(SearchInitial2()){
     on<SearchButtonPressed>((event, emit) async {
       emit(SearchLoading());
     });

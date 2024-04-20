@@ -1,18 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/search_bloc/search_state.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
+import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
 
 class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
   final RestaurantRepository restaurantRepository;
   final ReviewRepository reviewRepository;
+  final SharedPreferencesRepository repository = SharedPreferencesRepository();
 
   BrowseBloc({required this.restaurantRepository, required this.reviewRepository}) : super(RestaurantsInitial()) {
     on<LoadRestaurants>(_onLoadRestaurants);
     on<FilterRestaurants>(_onFilterRestaurants);
     on<FetchRecommendedRestaurants>(_onFetchRecommendedRestaurants);
+    on<SearchWord2>(_onSearchWord);
+    on<SearchButtonPressed2>(_onSearchButtonPressed);
+    on<AddSuggestion2>(_onAddSuggestion);
     //on<ToggleBookmark>(_onToggleBookmark);
   }
 
@@ -65,7 +72,20 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
       emit(RestaurantsLoadFailure(error.toString()));
     }
   }
-
+  void _onSearchWord(SearchWord2 event, Emitter<BrowseState> emit) async {
+      try {
+        await repository.saveSearchTerm(event.query);
+        emit(Prefilter());
+      } catch (e) {
+        emit(SearchFailure2(e.toString()));
+      }
+  }
+  void _onSearchButtonPressed(SearchButtonPressed2 event, Emitter<BrowseState> emit) async {
+    emit(SearchLoading2());
+  }
+  void _onAddSuggestion(AddSuggestion2 event, Emitter<BrowseState> emit) async {
+    emit(SearchFinalized());
+  }
   List<Restaurant> _applyFilters(
     String? name,
     String? price,

@@ -69,41 +69,41 @@ Future<void> requestLocationPermission() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return RepositoryProvider(
-  //     create: (context) => AuthRepository(),
-  //     child: MultiBlocProvider(
-  //       providers: [
-  //         BlocProvider<AuthBloc>(
-  //           create: (context) => AuthBloc(
-  //             authRepository: RepositoryProvider.of<AuthRepository>(context),
-  //           ),
-  //         ),
-  //         BlocProvider<UserBloc>(
-  //           create: (context) => UserBloc(),
-  //         ),
-  //       ],
-  //       child: MaterialApp(
-  //         title: 'FoodBook',
-  //         theme: ThemeData(
-  //           primarySwatch: Colors.blue,
-  //         ),
-  //         home: const SignInView(),
-  //       ),
-  //     ),
-  //   );
-  // }
+   @override
+   Widget build(BuildContext context) {
+     return RepositoryProvider(
+       create: (context) => AuthRepository(),
+       child: MultiBlocProvider(
+         providers: [
+           BlocProvider<AuthBloc>(
+             create: (context) => AuthBloc(
+               authRepository: RepositoryProvider.of<AuthRepository>(context),
+             ),
+           ),
+           BlocProvider<UserBloc>(
+             create: (context) => UserBloc(),
+           ),
+         ],
+         child: MaterialApp(
+           title: 'FoodBook',
+           theme: ThemeData(
+             primarySwatch: Colors.blue,
+           ),
+           home: const SignInView(),
+         ),
+       ),
+     );
+  }
 
-  Widget build(BuildContext context) {
-  return MaterialApp(
-    title: 'FoodBook App',
-    home: BlocProvider(
-      create: (context) => SearchBloc(),
-      child: SearchPage2(),
-    ),
-  );
-}
+//   Widget build(BuildContext context) {
+//   return MaterialApp(
+//     title: 'FoodBook App',
+//     home: BlocProvider(
+//       create: (context) => SearchBloc(),
+//       child: SearchPage2(),
+//     ),
+//   );
+// }
 
 }
 
