@@ -43,7 +43,8 @@ class RestaurantDTO {
 
   static RestaurantDTO fromJson(Map<String, dynamic> json) {
     
-  var categories = List<String>.from(json['categories'] ?? []);
+  // Assuming 'json' is your JSON object that contains the categories list.
+  var categories = (json['categories'] as List).map((item) => item['name'] as String).toList();
   var imageLinks = List<String>.from(json['imageLinks'] ?? []);
   var location = List<double>.from(json['location-arr'] ?? []);
 
