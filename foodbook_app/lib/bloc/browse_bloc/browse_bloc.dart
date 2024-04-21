@@ -36,6 +36,8 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
 
   void _onFilterRestaurants(FilterRestaurants event, Emitter<BrowseState> emit) async {
     emit(RestaurantsLoadInProgress());
+    await repository.saveSearchTerm(event.name!);
+    print("Saving the query to search history: ${event.name}");
     try {
       final restaurants = await restaurantRepository.fetchRestaurants();
       final filteredRestaurants = _applyFilters(
