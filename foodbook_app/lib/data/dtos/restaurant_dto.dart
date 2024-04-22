@@ -37,7 +37,6 @@ class RestaurantDTO {
       waitTimeMin: waitTime['min'],
       waitTimeMax: waitTime['max'],
       priceRange: price,
-      bookmarked: false, 
     );
   }
 

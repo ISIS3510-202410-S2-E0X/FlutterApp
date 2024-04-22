@@ -14,7 +14,6 @@ class Restaurant {
   final int waitTimeMin;
   final int waitTimeMax;
   final String priceRange;
-  final bool bookmarked;
 
   Restaurant({
     required this.name,
@@ -30,6 +29,5 @@ class Restaurant {
     required this.waitTimeMin,
     required this.waitTimeMax,
     required this.priceRange,
-    required this.bookmarked,
   });
 }
