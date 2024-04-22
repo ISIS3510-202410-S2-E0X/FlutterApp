@@ -6,8 +6,8 @@ class UserAuthInitial extends UserState {}
 
 class AuthenticatedUserState extends UserState {
   @override
-  final String email;
-  AuthenticatedUserState(this.email);
+  final String displayName;
+  AuthenticatedUserState(this.displayName);
 }
 
 class UnauthenticatedUserState extends UserState {}

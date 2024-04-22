@@ -101,7 +101,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
-  String? _email;
+  String? _name;
   String? _uploadedImageUrl;
   Future saveImage() async {
     print('Saving image...');
@@ -163,10 +163,10 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           BlocListener<UserBloc, UserState>(
             listener: (context, state) {
               if (state is AuthenticatedUserState) {
-                _email = state.email;
+                _name = state.displayName;
                 if (_image == null && _times == 0) {
                   print('No image to upload, creating review...');
-                  createReview(_email!, null);
+                  createReview(_name!, null);
                   cancelSingleTask("reviewReminder");
                   initializeBackgroundTaskReminder();
                 }
@@ -181,7 +181,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
               if (state is ImageUploadSuccess) {
                 _uploadedImageUrl = state.imageUrl;
                 if (context.read<UserBloc>().state is AuthenticatedUserState && _times == 0) {
-                  createReview(_email!, _uploadedImageUrl!);
+                  createReview(_name!, _uploadedImageUrl!);
                 }
               } else if (state is ImageUploadFailure) {
                 // Manejo del error
