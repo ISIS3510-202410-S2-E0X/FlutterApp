@@ -1,16 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
-import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
-import 'package:foodbook_app/bloc/search_bloc/search_event.dart';
+import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_state.dart';
-import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
-import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
-import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
 // SearchPage2 Widget
@@ -80,13 +75,11 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
+        
         icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
-          showSearch(
-            context: context,
-            delegate: CustomSearchDelegate(browseBloc: browseBloc),
-          );
+          browseBloc.add(SearchButtonPressed2(query: query));
         },
       ),
     ];
@@ -95,22 +88,24 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
         close(context, '');
+        browseBloc.add(LoadRestaurants());
       },
     );
   }
 
   @override
   Widget buildResults(BuildContext context) {
+    browseBloc.add(SearchButtonPressed2(query: query));
     return BlocBuilder<BrowseBloc, BrowseState>(
       bloc: browseBloc,
       builder: (context, state) {
+        //browseBloc.add(SearchWord2(query: query));
         if (state is SearchLoading2) {
           print("Saving the query to search history: $query");
           browseBloc.add(FilterRestaurants(name: query));
-          return const Center(child: CircularProgressIndicator());
           // return BlocProvider<BrowseBloc>(
           //       create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(FilterRestaurants(name: query)),
           //       child: BrowseView(),
@@ -136,7 +131,9 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                 );
               }
             );
+            //browseBloc.add(initailSearch());
           } else if (state is RestaurantsLoadFailure) {
+              
               return Center(child: Text("No results found for: $query"));
             }
         else {
@@ -152,43 +149,35 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   //     child: Text('Search Results for: $query'),
   //   );
   // }
-
+  
   @override
   Widget buildSuggestions(BuildContext context) {
-    return BlocBuilder<BrowseBloc, BrowseState>(
-      bloc: browseBloc,
-      builder: (context, state) {
-        if (state is SearchLoading2) {
-          return FutureBuilder<List<String>>(
-            future: repository.getSearchHistory(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else {
-                final suggestions = snapshot.data!;
-                return ListView.builder(
-                  itemCount: suggestions.length,
-                  itemBuilder: (context, index) {
-                    final suggestion = suggestions[index];
-                    return ListTile(
-                      title: Text(suggestion),
-                      onTap: () {
-                        query = suggestion; // Set the suggestion as the initial query
-                        showResults(context); // Show the search results immediately
-                      },
-                    );
-                  },
-                );
-              }
-            },
+    return FutureBuilder<List<String>>(
+      future: repository.getSearchHistory(),
+      builder: (context, snapshot) {
+        final suggestions = snapshot.data!;
+        return ListView.builder(
+        itemCount: suggestions.length,
+        itemBuilder: (context, index) {
+          final suggestion = suggestions[index];
+          return ListTile(
+          title: Text(suggestion),
+          onTap: () {
+            query = suggestion; // Set the suggestion as the initial query
+            browseBloc.add(SearchButtonPressed2(query: query));
+            buildResults(context); // Show the search results immediately
+          },
           );
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
+        },
+        );
       },
     );
+  }
+
+  @override
+  void close(BuildContext context, String result) {
+    super.close(context, result);
+    browseBloc.add(LoadRestaurants());
   }
 }
 

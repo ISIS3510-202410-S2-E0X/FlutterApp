@@ -25,7 +25,7 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
 
   void _onLoadRestaurants(LoadRestaurants event, Emitter<BrowseState> emit) async {
     emit(RestaurantsLoadInProgress());
-    await Future.delayed(const Duration(seconds: 1));
+    
     try {
       final restaurants = await restaurantRepository.fetchRestaurants();
       emit(RestaurantsLoadSuccess(restaurants));
@@ -46,6 +46,10 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
         event.category,
         restaurants,
       );
+      if (filteredRestaurants.isEmpty) {
+        emit(RestaurantsLoadFailure('No restaurants found'));
+        return;
+      }
       emit(RestaurantsLoadSuccess(filteredRestaurants));
     } catch (error) {
       emit(RestaurantsLoadFailure(error.toString()));
@@ -76,8 +80,7 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
   }
   void _onSearchWord(SearchWord2 event, Emitter<BrowseState> emit) async {
       try {
-        await repository.saveSearchTerm(event.query);
-        emit(Prefilter());
+        emit(SearchLoading2());
       } catch (e) {
         emit(SearchFailure2(e.toString()));
       }
