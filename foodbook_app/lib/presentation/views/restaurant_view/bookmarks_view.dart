@@ -29,7 +29,7 @@ class _BookmarksViewState extends State<BookmarksView> {
   Widget build(BuildContext context) {
     return BlocProvider<BookmarkBloc>(
       create: (context) => BookmarkBloc(
-        BookmarkManager(), // Replace with your actual repository instance
+        BookmarkManager(), 
       ),
       child: PopScope(
         canPop: false,

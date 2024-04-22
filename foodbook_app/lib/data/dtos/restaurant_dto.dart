@@ -98,7 +98,7 @@ class RestaurantDTO {
         'service': restaurant.service_avg,
         'foodQuality': restaurant.food_quality_avg,
       },
-      userReviews: [], // You'll need to handle the conversion from reviews to the DTO format if needed.
+      userReviews: [], // We dont save user reviews in cache due to memory constraints
     );
   }
 
@@ -111,7 +111,7 @@ class RestaurantDTO {
       location: List<double>.from(json['location'] ?? []),
       waitTime: Map<String, dynamic>.from(json['waitTime'] ?? {}),
       price: json['price'] as String? ?? '-',
-      stats: Map<String, num>.from(json['stats'] ?? {}),
+      stats: Map<String, num>.from(json['stats'] ?? {}).map((key, value) => MapEntry(key, value / 20)),
       userReviews: List<String>.from(json['userReviews'] ?? []),
     );
   }

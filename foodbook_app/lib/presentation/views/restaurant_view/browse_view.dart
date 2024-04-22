@@ -17,10 +17,9 @@ class BrowseView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Provide BookmarkBloc above your ListView
     return BlocProvider<BookmarkBloc>(
       create: (context) => BookmarkBloc(
-        BookmarkManager(), // Replace with your actual repository instance
+        BookmarkManager(), 
       ),
       child: PopScope(
         canPop: false,

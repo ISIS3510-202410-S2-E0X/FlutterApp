@@ -65,7 +65,7 @@ class CustomNavigationBar extends StatelessWidget {
         } else if (index == 2) {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => BlocProvider<BookmarkViewBloc>(
-                  create: (context) => BookmarkViewBloc(BookmarkManager()), // Ensure BookmarkManager is instantiated correctly
+                  create: (context) => BookmarkViewBloc(BookmarkManager()), 
                   child: BookmarksView(),
               ),
           ));

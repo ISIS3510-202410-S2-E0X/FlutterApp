@@ -39,7 +39,6 @@ class BookmarkManager {
     return bookmarks.contains(restaurantName);
   }
 
-  // Assuming you have a method in Restaurant to convert it to a RestaurantDTO
   String serializeRestaurant(Restaurant restaurant) {
     final restaurantDTO = RestaurantDTO.fromModel(restaurant);
     return json.encode(restaurantDTO.toJson());
