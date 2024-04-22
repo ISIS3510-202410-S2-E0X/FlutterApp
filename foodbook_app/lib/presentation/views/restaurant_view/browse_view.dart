@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
@@ -9,6 +11,8 @@ import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
 import 'package:foodbook_app/presentation/widgets/menu/search_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
+import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
+
 
 
 class BrowseView extends StatelessWidget {
@@ -16,7 +20,11 @@ class BrowseView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
+    return BlocProvider<BookmarkBloc>(
+      create: (context) => BookmarkBloc(
+        BookmarkManager(), // Replace with your actual repository instance
+      ),
+    child: PopScope(
       canPop: false,
       child: Scaffold(
         appBar: AppBar(
@@ -94,8 +102,10 @@ class BrowseView extends StatelessWidget {
             }
           },
         ),
-      )
+      ),
+    ),
     );
+
   }
 }
 
