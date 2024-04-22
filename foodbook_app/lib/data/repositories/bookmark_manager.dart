@@ -56,5 +56,10 @@ class BookmarkManager {
     return null;
   }
 
+  Future<List<String>> getBookmarkedRestaurants() async {
+    final prefs = await _getPrefs();
+    return prefs.getStringList(_bookmarksKey) ?? [];
+  }
+
 }
 

@@ -11,3 +11,5 @@ class ToggleBookmark extends BookmarkEvent {
   final Restaurant restaurant;
   ToggleBookmark(this.restaurant);
 }
+
+class LoadBookmarkedRestaurants extends BookmarkEvent {}

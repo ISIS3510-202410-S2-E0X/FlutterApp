@@ -48,9 +48,9 @@ class BookmarksView extends StatelessWidget {
                       return Center(child: CircularProgressIndicator());
                     } else if (state is RestaurantsLoadSuccess) {
                       return ListView.builder(
-                        itemCount: state.restaurants.where((restaurant) => restaurant.bookmarked).length,
+                        itemCount: state.restaurants.length,
                         itemBuilder: (context, index) {
-                          final bookmarkedRestaurants = state.restaurants.where((restaurant) => restaurant.bookmarked).toList();
+                          final bookmarkedRestaurants = state.restaurants.toList();
                           final restaurant = bookmarkedRestaurants[index];
                           return GestureDetector(
                             onTap: () {
