@@ -1,30 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart'; // Replace with your actual path to BookmarkBloc
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_event.dart'; // Replace with your actual path to BookmarkEvent
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_state.dart'; // Replace with your actual path to BookmarkState
 
-class BookmarkIcon extends StatefulWidget {
+class BookmarkIcon extends StatelessWidget {
   final Restaurant restaurant;
-  final Function onBookmarkPressed;
 
-  const BookmarkIcon({Key? key, required this.restaurant, required this.onBookmarkPressed}) : super(key: key);
+  BookmarkIcon({required this.restaurant});
 
-  @override
-  _BookmarkIconState createState() => _BookmarkIconState();
-}
-
-class _BookmarkIconState extends State<BookmarkIcon> {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: Icon(
-        widget.restaurant.bookmarked ? Icons.bookmark : Icons.bookmark_border,
-        color: Color.fromARGB(255, 0, 0, 0),
+      icon: BlocBuilder<BookmarkBloc, BookmarkState>(
+        builder: (context, state) {
+          bool isBookmarked = false;
+          if (state is BookmarkLoaded) {
+            isBookmarked = state.isBookmarked;
+          }
+          return Icon(
+            isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+            color: Color.fromARGB(255, 0, 0, 0),
+          );
+        },
       ),
       onPressed: () {
-        widget.onBookmarkPressed();
-        setState(() {}); // Force rebuild to reflect changes
+        BlocProvider.of<BookmarkBloc>(context).add(ToggleBookmark(restaurant.name));
       },
     );
   }
 }
+
 
 
