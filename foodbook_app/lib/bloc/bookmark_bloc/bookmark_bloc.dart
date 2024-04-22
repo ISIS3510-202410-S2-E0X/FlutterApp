@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_event.dart';
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_state.dart';
-import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 
 class BookmarkBloc extends Bloc<BookmarkEvent, BookmarkState> {
@@ -21,22 +20,6 @@ class BookmarkBloc extends Bloc<BookmarkEvent, BookmarkState> {
         await bookmarkManager.bookmarkRestaurant(event.restaurant);
       }
       emit(BookmarkLoaded(!isBookmarked));
-    });
-
-    on<LoadBookmarkedRestaurants>((event, emit) async {
-      try {
-        final bookmarks = await bookmarkManager.getBookmarkedRestaurants();
-        final List<Restaurant> bookmarkedRestaurants = [];
-        for (var name in bookmarks) {
-          final details = await bookmarkManager.getRestaurantDetails(name);
-          if (details != null) {
-            bookmarkedRestaurants.add(details);
-          }
-        }
-        emit(BookmarkedRestaurantsLoaded(bookmarkedRestaurants)); // You will need to create this state
-      } catch (error) {
-        emit(BookmarksLoadFailure(error.toString())); // You will need to create this state
-      }
     });
 
 

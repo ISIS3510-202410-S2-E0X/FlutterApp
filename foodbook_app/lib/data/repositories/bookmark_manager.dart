@@ -50,7 +50,7 @@ class BookmarkManager {
     final prefs = await _getPrefs();
     final jsonString = prefs.getString(restaurantName);
     if (jsonString != null) {
-      final restaurantDTO = RestaurantDTO.fromJson(json.decode(jsonString));
+      final restaurantDTO = RestaurantDTO.fromCache(json.decode(jsonString));
       return restaurantDTO.toModel();
     }
     return null;

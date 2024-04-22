@@ -101,4 +101,18 @@ class RestaurantDTO {
       userReviews: [], // You'll need to handle the conversion from reviews to the DTO format if needed.
     );
   }
+
+  // Create a RestaurantDTO from a Restaurant in cache.
+  static RestaurantDTO fromCache(Map<String, dynamic> json) {
+    return RestaurantDTO(
+      name: json['name'] as String? ?? 'Unknown',
+      categories: List<String>.from(json['categories'] ?? []),
+      imageLinks: List<String>.from(json['imageLinks'] ?? []),
+      location: List<double>.from(json['location'] ?? []),
+      waitTime: Map<String, dynamic>.from(json['waitTime'] ?? {}),
+      price: json['price'] as String? ?? '-',
+      stats: Map<String, num>.from(json['stats'] ?? {}),
+      userReviews: List<String>.from(json['userReviews'] ?? []),
+    );
+  }
 }
