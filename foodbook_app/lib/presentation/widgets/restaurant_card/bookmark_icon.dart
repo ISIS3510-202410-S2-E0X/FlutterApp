@@ -5,10 +5,22 @@ import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart'; // Replace 
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_event.dart'; // Replace with your actual path to BookmarkEvent
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_state.dart'; // Replace with your actual path to BookmarkState
 
-class BookmarkIcon extends StatelessWidget {
+class BookmarkIcon extends StatefulWidget {
   final Restaurant restaurant;
 
-  BookmarkIcon({required this.restaurant});
+  BookmarkIcon({Key? key, required this.restaurant}) : super(key: key);
+
+  @override
+  _BookmarkIconState createState() => _BookmarkIconState();
+}
+
+class _BookmarkIconState extends State<BookmarkIcon> {
+  @override
+  void initState() {
+    super.initState();
+    // Dispatch the CheckBookmark event as soon as the widget is inserted into the tree.
+    BlocProvider.of<BookmarkBloc>(context, listen: false).add(CheckBookmark(widget.restaurant.name));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +38,13 @@ class BookmarkIcon extends StatelessWidget {
         },
       ),
       onPressed: () {
-        BlocProvider.of<BookmarkBloc>(context).add(ToggleBookmark(restaurant.name));
+        // Toggle the bookmark state when the icon button is pressed.
+        BlocProvider.of<BookmarkBloc>(context).add(ToggleBookmark(widget.restaurant.name));
       },
     );
   }
 }
+
 
 
 

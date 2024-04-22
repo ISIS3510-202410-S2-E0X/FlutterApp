@@ -26,6 +26,7 @@ class BookmarkManager {
 
   Future<bool> isBookmarked(String restaurantName) async {
     final List<String> bookmarks = await getBookmarkedRestaurants();
-    return bookmarks.contains(restaurantName);
+    bool isBookmarked = bookmarks.contains(restaurantName);
+    return isBookmarked;
   }
 }

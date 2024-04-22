@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_event.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart'; // Importa tu Bloc aquí
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart'; // Importa los eventos de tu Bloc aquí
@@ -19,6 +20,10 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void checkBookmark() {
+      context.read<BookmarkBloc>().add(CheckBookmark(restaurant.name));
+    }
+
     bool hasImages = restaurant.imagePaths.isNotEmpty;
 
     return Card(
@@ -46,7 +51,12 @@ class RestaurantCard extends StatelessWidget {
                     TitleSection(restaurant: restaurant),
                     BlocProvider<BookmarkBloc>(
                       create: (context) => BookmarkBloc(BookmarkManager()),
-                      child: BookmarkIcon(restaurant: restaurant),
+                      child: Builder(
+                        builder: (context) {
+                          checkBookmark(); // Check bookmark status when the widget builds
+                          return BookmarkIcon(restaurant: restaurant);
+                        }
+                      ),
                     ),
                   ],
                 ),
