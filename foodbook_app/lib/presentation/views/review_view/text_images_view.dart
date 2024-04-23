@@ -29,6 +29,7 @@ class TextAndImagesView extends StatefulWidget {
   const TextAndImagesView({super.key, required this.restaurant});
 
   @override
+  // ignore: library_private_types_in_public_api
   _TextAndImagesViewState createState() => _TextAndImagesViewState();
 }
 
@@ -104,7 +105,6 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   String? _name;
   String? _uploadedImageUrl;
   Future saveImage() async {
-    print('Saving image...');
     if (_image == null) return; 
     final imageUploadBloc = BlocProvider.of<ImageUploadBloc>(context);
     imageUploadBloc.add(ImageUploadRequested(_image!));
@@ -112,7 +112,16 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false, 
+      onPopInvoked: (didPop) async {
+        Navigator.of(context).pop({
+          'reviewTitle': _titleController.text,
+          'reviewContent': _commentController.text,
+          'imageUrl': _uploadedImageUrl,
+        });
+    },
+    child: Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
         backgroundColor: Colors.white,
@@ -126,7 +135,6 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
         actions: [
           OutlinedButton(
             onPressed: () => {
-
               context.read<UserBloc>().add(GetCurrentUser()),
               saveImage(),
               Navigator.of(context).push(
@@ -165,7 +173,6 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
               if (state is AuthenticatedUserState) {
                 _name = state.displayName;
                 if (_image == null && _times == 0) {
-                  print('No image to upload, creating review...');
                   createReview(_name!, null);
                   cancelSingleTask("reviewReminder");
                   initializeBackgroundTaskReminder();
@@ -192,6 +199,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
         ],
         child: buildForm(),
       ),
+     ),
     );
   }
 

@@ -1,21 +1,19 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class ReviewDraft {
   final String user;
   final String? title;
   final String? content;
-  final Timestamp date;
-  final String? imageUrl;
-  final bool uploaded;
-  final Map<String, double> ratings;
-  final List<String> selectedCategories;
+  final String? image;
+  final String? spot;
+  final int uploaded; // SQLite no maneja Boolean, así que se convierte a int
+  final Map<String, int> ratings;
+  final List<dynamic> selectedCategories;
 
   ReviewDraft({
     required this.user,
     required this.title,
     required this.content,
-    required this.date,
-    required this.imageUrl,
+    required this.image,
+    required this.spot,
     required this.uploaded,
     required this.ratings,
     required this.selectedCategories,

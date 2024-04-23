@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -5,10 +6,14 @@ import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_e
 import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
+import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 
 import 'package:foodbook_app/presentation/widgets/reviews_creation/multi_select_chip_widget.dart';
 import 'package:foodbook_app/presentation/widgets/reviews_creation/review_category_widget.dart';
@@ -28,6 +33,9 @@ class CategoriesAndStarsView extends StatefulWidget {
 
 class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
   final TextEditingController _searchController = TextEditingController();
+  String? reviewTitle;
+  String? reviewContent;
+  String? imageUrl;
 
   @override
   void initState() {
@@ -47,10 +55,83 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
     BlocProvider.of<FoodCategoryBloc>(context).add(SearchCategoriesEvent(_searchController.text));
   }
 
+  void _openTextAndImagesView() async {
+    final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
+    final starsBloc = BlocProvider.of<StarsBloc>(context);
+    final userBloc = BlocProvider.of<UserBloc>(context);
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: foodCategoryBloc),
+            BlocProvider.value(value: starsBloc),
+            BlocProvider.value(value: userBloc),
+            BlocProvider(create: (context) => ImageUploadBloc(ReviewRepository())),
+            BlocProvider(create: (context) => ReviewBloc(
+                reviewRepository: ReviewRepository(),
+                restaurantRepository: RestaurantRepository()
+              )
+            ),
+          ],
+          child: TextAndImagesView(restaurant: widget.restaurant),
+        ),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        reviewTitle = result['reviewTitle'];
+        reviewContent = result['reviewContent'];
+        imageUrl = result['imageUrl'];
+      });
+    }
+
+    print('TITULO: $reviewTitle');
+    print('CONTENIDO: $reviewContent');
+    print('IMAGEN: $imageUrl');
+  }
+
+  void _saveDraft() async {
+    // Acceder a los BLoCs para obtener datos necesarios
+    final userBlocState = BlocProvider.of<UserBloc>(context).state;
+    final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
+    final starsBloc = BlocProvider.of<StarsBloc>(context);
+
+    // Suponemos que AuthenticatedUserState contiene el email del usuario
+    ReviewDraft draft = ReviewDraft(
+      user: userBlocState.email,
+      title: reviewTitle,
+      content: reviewContent,
+      image: imageUrl,
+      spot: widget.restaurant.name,
+      uploaded: 0,
+      ratings: {
+        RatingsKeys.cleanliness: (starsBloc.newRatings[RatingsKeys.cleanliness] ?? 0.0).toInt(),
+        RatingsKeys.waitingTime: (starsBloc.newRatings[RatingsKeys.waitingTime] ?? 0).toInt(),
+        RatingsKeys.service: (starsBloc.newRatings[RatingsKeys.service] ?? 0).toInt(),
+        RatingsKeys.foodQuality: (starsBloc.newRatings[RatingsKeys.foodQuality] ?? 0).toInt(),
+      },
+      selectedCategories: foodCategoryBloc.selectedCategories.map((category) => category.name).toList(),
+    );
+
+    try {
+      // Acceder al repository para guardar el borrador
+      final reviewDraftRepository = RepositoryProvider.of<ReviewDraftRepository>(context);
+      await reviewDraftRepository.insertDraft(draft);
+      print("Draft saved successfully!");
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Draft saved successfully")));
+    } catch (e) {
+      print("Error saving draft: $e");
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error saving draft")));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false, // Asumiendo que esto controla si se permite el retroceso
+      canPop: false, 
       onPopInvoked: (didPop) async {
         if (!didPop) {
           // Lógica para manejar cuando el usuario intenta salir
@@ -79,6 +160,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
           if (shouldSaveDraft != 'Continue') {
             if (shouldSaveDraft == 'Yes') {
               // Lógica para guardar el borrador
+              _saveDraft();
             }
             // ignore: use_build_context_synchronously
             Navigator.of(context).pop();
@@ -116,26 +198,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     return;
                   } else {
-                    final userBloc = BlocProvider.of<UserBloc>(context);
-
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => MultiBlocProvider(
-                          providers: [
-                            BlocProvider.value(value: foodCategoryBloc),
-                            BlocProvider.value(value: starsBloc),
-                            BlocProvider.value(value: userBloc),
-                            BlocProvider(create: (context) => ImageUploadBloc(ReviewRepository())),
-                            BlocProvider(create: (context) => ReviewBloc(
-                                reviewRepository: ReviewRepository(),
-                                restaurantRepository: RestaurantRepository()
-                              )
-                            ),
-                          ],
-                          child: TextAndImagesView(restaurant: widget.restaurant),
-                        ),
-                      ),
-                    );
+                    _openTextAndImagesView();
                   }
                 }
               },
