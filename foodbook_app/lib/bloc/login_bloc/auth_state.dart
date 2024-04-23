@@ -30,3 +30,4 @@ class AuthError extends AuthState {
   List<Object?> get props => [error];
 }
 
+
