@@ -139,8 +139,8 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
           Object shouldSaveDraft = await showDialog<String>(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Confirm Exit'),
-              content: const Text('Do you want to save the review as a draft?'),
+              title: const Text('Would you like yo save this review as a draft?'),
+              content: const Text('This will delete your latest review?'),
               actions: <Widget>[
                 TextButton(
                   child: const Text('Yes'),

@@ -197,22 +197,30 @@ class SpotDetail extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text('Unfinished Review'),
-                    content: const Text('You have an unfinished review for this restaurant. Do you want to continue with that or start a new one?'),
+                    title: const Text('Unfinished Review', textAlign: TextAlign.center),
+                    content: const Text('Looks like you have a draft', textAlign: TextAlign.center),
                     actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          
-                        },
-                        child: const Text('Continue'),
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            
+                          },
+                          child: const Text('Create review from draft', style: TextStyle(
+                            fontSize: 14
+                          ),),
+                        ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          _navigateToReviewPage(context);
-                        },
-                        child: const Text('New'),
-                      ),
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            _navigateToReviewPage(context);
+                          },
+                          child: const Text('Create new review', style: TextStyle(
+                            fontSize: 14
+                          ),),
+                        ),
+                      )
                     ],
                   );
                 },
@@ -220,7 +228,7 @@ class SpotDetail extends StatelessWidget {
             } else {
               _navigateToReviewPage(context);
             }
-          }, child: const Text('Leave a review', style:TextStyle(color:Colors.white)),
+          }, child: const Text('Leave a review', style: TextStyle(color:Colors.white)),
         )
       ),
     );
