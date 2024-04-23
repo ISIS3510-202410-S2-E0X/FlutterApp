@@ -21,16 +21,19 @@ class BookmarkViewBloc extends Bloc<BookmarkViewEvent, BookmarkViewState> {
     Emitter<BookmarkViewState> emit,
   ) async {
     emit(BookmarksLoadInProgress());
-    List<String> failedToLoad = [];
+
+    final List<Restaurant> bookmarkedRestaurants = [];
+    final List<String> failedToLoad = [];
+
     try {
       final bookmarks = await bookmarkManager.getBookmarkedRestaurants();
-      //Simulate there is another restaurant in bookmarks that is not in cache
-      //bookmarks.add("El Corral");
-      final List<Restaurant> bookmarkedRestaurants = [];
+      // Simulate there is a restaurant not in bookmarks
+      //bookmarks.add("Hornitos2");
+
       for (var name in bookmarks) {
         var details = await bookmarkManager.getRestaurantDetails(name);
         if (details == null) {
-          details = await restaurantRepository.findRestaurantByName(name); // Use RestaurantRepository here
+          details = await restaurantRepository.findRestaurantByName(name); // Use RestaurantRepository
         }
         if (details != null) {
           bookmarkedRestaurants.add(details);
@@ -40,12 +43,20 @@ class BookmarkViewBloc extends Bloc<BookmarkViewEvent, BookmarkViewState> {
       }
 
       if (failedToLoad.isNotEmpty) {
-        emit(BookmarksLoadFailure("The bookmarked restaurants: ${failedToLoad.join(', ')} are not in cache and couldn't be accessed through network. Try again with an internet connection."));
+        emit(BookmarksLoadFailure(
+          successfullyLoaded: bookmarkedRestaurants,
+          failedToLoadNames: failedToLoad,
+          errorMessage: "Some restaurants couldn't be loaded.",
+        ));
       } else {
         emit(BookmarkedRestaurantsLoaded(bookmarkedRestaurants));
       }
     } catch (error) {
-      emit(BookmarksLoadFailure(error.toString()));
+      emit(BookmarksLoadFailure(
+        successfullyLoaded: bookmarkedRestaurants,
+        failedToLoadNames: failedToLoad,
+        errorMessage: error.toString(),
+      ));
     }
   }
 }

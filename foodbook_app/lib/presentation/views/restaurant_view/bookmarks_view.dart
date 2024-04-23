@@ -56,7 +56,7 @@ class _BookmarksViewState extends State<BookmarksView> {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is BookmarkedRestaurantsLoaded) {
                 if (state.bookmarkedRestaurants.isEmpty) {
-                  return const Center(child: Text('No bookmarks found in cache.'));
+                  return const Center(child: Text('No bookmarked restaurants.'));
                 }
                 return ListView.builder(
                   itemCount: state.bookmarkedRestaurants.length,
@@ -76,7 +76,38 @@ class _BookmarksViewState extends State<BookmarksView> {
                   },
                 );
               } else if (state is BookmarksLoadFailure) {
-                return Center(child: Text('Failed to load restaurants'));
+                //The message changes if there is 1 or more than 1 restaurant that couldn't be loaded
+                final failureMessage = state.failedToLoadNames.length == 1
+                    ? "The bookmarked restaurant: ${state.failedToLoadNames.first} is not in cache and couldn't be accessed through network. Try again with an internet connection."
+                    : "The bookmarked restaurants: ${state.failedToLoadNames.join(', ')} are not in cache and couldn't be accessed through network. Try again with an internet connection.";
+                return Column(
+                  children: [
+                    if (state.successfullyLoaded.isNotEmpty)
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: state.successfullyLoaded.length,
+                          itemBuilder: (context, index) {
+                            final restaurant = state.successfullyLoaded[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SpotDetail(restaurant: restaurant),
+                                  ),
+                                );
+                              },
+                              child: RestaurantCard(restaurant: restaurant),
+                            );
+                          },
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(failureMessage, textAlign: TextAlign.center),
+                    ),
+                  ],
+                );
               }
               // If state is BookmarkViewInitial or any other unhandled state, show a loading indicator
               return const Center(child: CircularProgressIndicator());
