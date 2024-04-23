@@ -24,9 +24,11 @@ class ReviewDraftRepository {
       whereArgs: [spot]
     );
     
-    return res.isNotEmpty
-        ? res.map((c) => ReviewDraftDTO.fromJson(c).toModel()).toList()
-        : [];
+    if (res.length == 1) {
+      return res.map((c) => ReviewDraftDTO.fromJson(c).toModel()).toList();
+    }
+
+    return [];
   }
 
   Future<void> insertDraft(ReviewDraft draft) async {
@@ -52,5 +54,14 @@ class ReviewDraftRepository {
       where: 'id = ?',
       whereArgs: [id]
     );
+  }
+
+  Future<void> deleteAllDrafts() async {
+    final db = await dbProvider.getDatabase();
+    await db.delete('ReviewDrafts');
+  }
+
+  Future<void> killDatabase() async {
+    await dbProvider.killDatabase();
   }
 }

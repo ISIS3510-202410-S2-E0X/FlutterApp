@@ -119,6 +119,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
     try {
       // Acceder al repository para guardar el borrador
       final reviewDraftRepository = RepositoryProvider.of<ReviewDraftRepository>(context);
+      // await reviewDraftRepository.killDatabase();
       await reviewDraftRepository.insertDraft(draft);
       print("Draft saved successfully!");
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Draft saved successfully")));

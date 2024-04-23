@@ -7,6 +7,8 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
+import 'package:foodbook_app/data/data_sources/database_provider.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/profile_view/profile_view.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/views/test_views/search_test.dart';
@@ -90,7 +92,7 @@ class BrowseView extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SpotDetail(restaurant: state.restaurants[index]),
+                                  builder: (context) => SpotDetail(restaurant: state.restaurants[index], reviewDraftRepository: ReviewDraftRepository(DatabaseProvider())),
                                 ),
                               );
                             },

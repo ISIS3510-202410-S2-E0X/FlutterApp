@@ -5,6 +5,7 @@ import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/repositories/category_repository.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
@@ -14,8 +15,56 @@ import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_map.da
 
 class SpotDetail extends StatelessWidget {
   final Restaurant restaurant;
+  final ReviewDraftRepository reviewDraftRepository;
 
-  const SpotDetail({super.key, required this.restaurant});
+  const SpotDetail({
+    super.key,
+    required this.restaurant,
+    required this.reviewDraftRepository
+  });
+
+  void _navigateToReviewPage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider<ReviewDraftRepository>(
+                create: (context) => ReviewDraftRepository(DatabaseProvider()),
+              ),
+            ],                  
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider<FoodCategoryBloc>(
+                  create: (context) => FoodCategoryBloc(
+                    categoryRepository: CategoryRepository(),
+                    maxSelection: 3,
+                    minSelection: 1,
+                  ),
+                ),
+                BlocProvider<StarsBloc>(
+                  create: (context) => StarsBloc(),
+                ),
+                BlocProvider<ReviewDraftBloc>(
+                  create: (context) => ReviewDraftBloc(ReviewDraftRepository(DatabaseProvider())),
+                )
+              ],
+              child: CategoriesAndStarsView(restaurant: restaurant),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<bool> hasUnfinishedReview(String restaurant) async {
+    List<ReviewDraft> reviewDraft = await reviewDraftRepository.getDraftsBySpot(restaurant);
+    if (reviewDraft.isNotEmpty) {
+      return true;
+    }
+    
+    return Future.delayed(const Duration(milliseconds: 500), () => false); 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,41 +190,38 @@ class SpotDetail extends StatelessWidget {
             backgroundColor: Colors.blue, // Button color
             minimumSize: const Size(double.infinity, 50),
           ),
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return MultiRepositoryProvider(
-                    providers: [
-                      RepositoryProvider<ReviewDraftRepository>(
-                        create: (context) => ReviewDraftRepository(DatabaseProvider()),
+          onPressed: () async {
+            bool hasDraft = await hasUnfinishedReview(restaurant.name);
+            if (hasDraft) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Unfinished Review'),
+                    content: const Text('You have an unfinished review for this restaurant. Do you want to continue with that or start a new one?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          
+                        },
+                        child: const Text('Continue'),
                       ),
-                    ],                  
-                    child: MultiBlocProvider(
-                      providers: [
-                        BlocProvider<FoodCategoryBloc>(
-                          create: (context) => FoodCategoryBloc(
-                            categoryRepository: CategoryRepository(),
-                            maxSelection: 3,
-                            minSelection: 1,
-                          ),
-                        ),
-                        BlocProvider<StarsBloc>(
-                          create: (context) => StarsBloc(),
-                        ),
-                        BlocProvider<ReviewDraftBloc>(
-                          create: (context) => ReviewDraftBloc(ReviewDraftRepository(DatabaseProvider())),
-                        )
-                      ],
-                      child: CategoriesAndStarsView(restaurant: restaurant),
-                    ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _navigateToReviewPage(context);
+                        },
+                        child: const Text('New'),
+                      ),
+                    ],
                   );
                 },
-              ),
-            );
-          },
-          child: const Text('Leave a review', style:TextStyle(color:Colors.white)),
-        ),
+              );
+            } else {
+              _navigateToReviewPage(context);
+            }
+          }, child: const Text('Leave a review', style:TextStyle(color:Colors.white)),
+        )
       ),
     );
   }

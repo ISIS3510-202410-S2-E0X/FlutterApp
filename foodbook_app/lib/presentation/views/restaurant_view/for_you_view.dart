@@ -6,6 +6,8 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
+import 'package:foodbook_app/data/data_sources/database_provider.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
@@ -76,7 +78,7 @@ class _ForYouViewState extends State<ForYouView> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SpotDetail(restaurant: state.recommendedRestaurants[index]),
+                                  builder: (context) => SpotDetail(restaurant: state.recommendedRestaurants[index], reviewDraftRepository: ReviewDraftRepository(DatabaseProvider())),
                                 ),
                               );
                             },
