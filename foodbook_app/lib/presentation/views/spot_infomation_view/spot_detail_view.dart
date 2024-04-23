@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/category_repository.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
 import 'package:foodbook_app/presentation/views/review_view/restaurant_reviews_view.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_map.dart';
@@ -142,20 +145,30 @@ class SpotDetail extends StatelessWidget {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) {
-                  return MultiBlocProvider(
+                  return MultiRepositoryProvider(
                     providers: [
-                      BlocProvider<FoodCategoryBloc>(
-                        create: (context) => FoodCategoryBloc(
-                          categoryRepository: CategoryRepository(),
-                          maxSelection: 3,
-                          minSelection: 1,
+                      RepositoryProvider<ReviewDraftRepository>(
+                        create: (context) => ReviewDraftRepository(DatabaseProvider()),
+                      ),
+                    ],                  
+                    child: MultiBlocProvider(
+                      providers: [
+                        BlocProvider<FoodCategoryBloc>(
+                          create: (context) => FoodCategoryBloc(
+                            categoryRepository: CategoryRepository(),
+                            maxSelection: 3,
+                            minSelection: 1,
+                          ),
                         ),
-                      ),
-                      BlocProvider<StarsBloc>(
-                        create: (context) => StarsBloc(),
-                      ),
-                    ],
-                    child: CategoriesAndStarsView(restaurant: restaurant),
+                        BlocProvider<StarsBloc>(
+                          create: (context) => StarsBloc(),
+                        ),
+                        BlocProvider<ReviewDraftBloc>(
+                          create: (context) => ReviewDraftBloc(ReviewDraftRepository(DatabaseProvider())),
+                        )
+                      ],
+                      child: CategoriesAndStarsView(restaurant: restaurant),
+                    ),
                   );
                 },
               ),

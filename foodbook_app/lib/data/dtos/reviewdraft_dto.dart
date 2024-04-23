@@ -5,18 +5,18 @@ class ReviewDraftDTO {
   final String user;
   final String? title;
   final String? content;
-  final Timestamp date;
-  final String? imageUrl;
-  final bool uploaded;
-  final Map<String, double> ratings;
-  final List<String> selectedCategories;
+  final String? image;
+  final String? spot;
+  final int uploaded;
+  final Map<String, int> ratings;
+  final List<dynamic> selectedCategories;
 
   ReviewDraftDTO({
     required this.user,
     required this.title,
     required this.content,
-    required this.date,
-    required this.imageUrl,
+    required this.image,
+    required this.spot,
     required this.uploaded,
     required this.ratings,
     required this.selectedCategories,
@@ -27,22 +27,21 @@ class ReviewDraftDTO {
       user: review.user,
       title: review.title,
       content: review.content,
-      // date: DateFormat('yyyy-MM-dd').format(review.date),
-      date: review.date,
-      imageUrl: review.imageUrl,
+      image: review.image,
+      spot: review.spot,
       uploaded: review.uploaded,
       ratings: review.ratings,
       selectedCategories: review.selectedCategories,
     );
   }
 
-  ReviewDraftDTO toModel() {
-    return ReviewDraftDTO(
+  ReviewDraft toModel() {
+    return ReviewDraft(
       user: user,
       title: title,
       content: content,
-      date: date,
-      imageUrl: imageUrl,
+      image: image,
+      spot: spot,
       uploaded: uploaded,
       ratings: ratings,
       selectedCategories: selectedCategories,
@@ -50,33 +49,44 @@ class ReviewDraftDTO {
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    Map<String, dynamic> json = {
       'user': user,
       'title': title,
       'content': content,
-      'date': date,
-      'imageUrl': imageUrl,
-      'uploaded': uploaded,
-      'ratings': ratings,
-      'selectedCategories': selectedCategories.map((category) => category).toList(),
+      'image': image,
+      'uploaded': uploaded,  // SQLite no maneja Boolean, así que se convierte a int
+      'spot': spot,
+      'cleanliness': ratings[RatingsKeys.cleanliness],
+      'service': ratings[RatingsKeys.service],
+      'foodQuality': ratings[RatingsKeys.foodQuality],
+      'waitTime': ratings[RatingsKeys.waitingTime],
+      'category1': selectedCategories.isNotEmpty ? selectedCategories[0] : null,
+      'category2': selectedCategories.length > 1 ? selectedCategories[1] : null,
+      'category3': selectedCategories.length > 2 ? selectedCategories[2] : null,
     };
+    return json;
   }
 
-  static ReviewDraftDTO fromJson(Map<String, dynamic> json) {
-    Map<String, double> ratings = {};
-    json['ratings']?.forEach((key, value) {
-      ratings[key] = (value as num).toDouble();
-    });
+  factory ReviewDraftDTO.fromJson(Map<String, dynamic> json) {
+    var jsonCategories = [];
+    if (json['category1'] != null) jsonCategories.add(json['category1']);
+    if (json['category2'] != null) jsonCategories.add(json['category2']);
+    if (json['category3'] != null) jsonCategories.add(json['category3']);
 
     return ReviewDraftDTO(
-      user: (json['user'] as Map)['name'] as String,
-      title: json['title'],
-      content: json['content'],
-      date: json['date'] as Timestamp,
-      imageUrl: json['imageUrl'],
-      uploaded: json['uploaded'],
-      ratings: ratings,
-      selectedCategories: List<String>.from(json['selectedCategories'] ?? []),
+      user: json['user'] as String,
+      title: json['title'] as String?,
+      content: json['content'] as String?,
+      image: json['imageUrl'] as String?,
+      spot: json['spot'] as String?,
+      uploaded: json['uploaded'] as int,
+      ratings: {
+        RatingsKeys.cleanliness: json['cleanliness'] as int,
+        RatingsKeys.service: json['service'] as int,
+        RatingsKeys.foodQuality: json['foodQuality'] as int,
+        RatingsKeys.waitingTime: json['waitTime'] as int,
+      },
+      selectedCategories: jsonCategories,
     );
   }
 }
