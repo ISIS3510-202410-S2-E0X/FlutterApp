@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_event.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart'; // Importa tu Bloc aquí
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart'; // Importa los eventos de tu Bloc aquí
+import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/category_section.dart';
 
 import 'package:foodbook_app/presentation/widgets/restaurant_card/images_display.dart';
@@ -17,6 +20,10 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void checkBookmark() {
+      context.read<BookmarkBloc>().add(CheckBookmark(restaurant.name));
+    }
+
     bool hasImages = restaurant.imagePaths.isNotEmpty;
 
     return Card(
@@ -42,13 +49,15 @@ class RestaurantCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TitleSection(restaurant: restaurant),
-                    BookmarkIcon(
-                      restaurant: restaurant,
-                      onBookmarkPressed: () {
-                        //BlocProvider.of<BrowseBloc>(context).add(ToggleBookmark(restaurant.id));
-                      },
+                    BlocProvider<BookmarkBloc>(
+                      create: (context) => BookmarkBloc(BookmarkManager()),
+                      child: Builder(
+                        builder: (context) {
+                          checkBookmark(); // Check bookmark status when the widget builds
+                          return BookmarkIcon(restaurant: restaurant);
+                        }
+                      ),
                     ),
-
                   ],
                 ),
                 SizedBox(height: 4), // Add a little space between title and icons

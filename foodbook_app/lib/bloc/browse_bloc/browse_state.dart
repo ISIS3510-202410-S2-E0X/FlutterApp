@@ -30,3 +30,41 @@ class RestaurantsLoadFailure extends BrowseState {
   RestaurantsLoadFailure(this.error);
 }
 
+class SearchLoading2 extends BrowseState {}
+
+class SearchSuccess2 extends BrowseState {
+  late final List<dynamic> results;
+
+  @override
+  List<Object> get props => [results];
+
+  @override
+  String toString() => 'SearchSuccess { results: $results }';
+}
+
+class SearchFailure2 extends BrowseState {
+  final String error;
+
+  SearchFailure2(this.error);
+
+  @override
+  List<Object> get props => [error];
+
+  @override
+  String toString() => 'SearchFailure { error: $error }';
+}
+
+class SearchFinalized extends BrowseState {
+}
+class SearchSuccess extends BrowseState {
+  late final List<dynamic> results;
+
+  @override
+  List<Object> get props => [results];
+
+  @override
+  String toString() => 'SearchSuccess { results: $results }';
+}
+
+class Prefilter extends BrowseState {
+}
