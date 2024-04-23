@@ -281,7 +281,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
-  void createReview(String userEmail, String? uploadedImageUrl) async {
+  void createReview(String userName, String? uploadedImageUrl) async {
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
     final starsBloc = BlocProvider.of<StarsBloc>(context);
 
@@ -291,7 +291,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     final selectedCategoriesString = selectedCategories.map((category) => category.name).toList();
     
     ReviewDTO newReview = ReviewDTO(
-      user: userEmail.replaceFirst("@gmail.com", ""),
+      user: userName,
       title: _titleController.text.isNotEmpty ? _titleController.text : null,
       content: _commentController.text.isNotEmpty ? _commentController.text : null,
       date: Timestamp.fromDate(DateTime.now()), // _formatCurrentDate(),

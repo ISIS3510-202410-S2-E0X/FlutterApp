@@ -33,7 +33,7 @@ class _SearchPage2State extends State<SearchPage2> {
         backgroundColor: Colors.white,
         actions: [
             Container(
-              width: MediaQuery.of(context).size.width * 0.6, // 40% of screen width
+              width: MediaQuery.of(context).size.width * 0.5, // 40% of screen width
               child: ElevatedButton(
               onPressed: () {
               // Dispatch an event to fetch search history when the search button is pressed
