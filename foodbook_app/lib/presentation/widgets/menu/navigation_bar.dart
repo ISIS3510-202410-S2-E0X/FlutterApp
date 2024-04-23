@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
+import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/bookmarks_view.dart';
@@ -61,10 +64,13 @@ class CustomNavigationBar extends StatelessWidget {
           ));
         } else if (index == 2) {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => BlocProvider<BrowseBloc>(
-              create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(LoadRestaurants()),
-              child: BookmarksView(),
-            ),
+              builder: (context) => BlocProvider<BookmarkViewBloc>(
+                  create: (context) => BookmarkViewBloc(
+                    bookmarkManager: BookmarkManager(),
+                    restaurantRepository: RestaurantRepository(),
+                  ),
+                  child: BookmarksView(),
+              ),
           ));
         }
       },

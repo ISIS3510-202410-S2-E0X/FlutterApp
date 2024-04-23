@@ -1,93 +1,126 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
-import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_event.dart';
+import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_state.dart';
+import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
-import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
-import 'package:foodbook_app/presentation/widgets/menu/search_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
 
+class BookmarksView extends StatefulWidget {
+  const BookmarksView({Key? key}) : super(key: key);
 
+  @override
+  _BookmarksViewState createState() => _BookmarksViewState();
+}
 
-class BookmarksView extends StatelessWidget {
-  BookmarksView({Key? key}) : super(key: key);
+class _BookmarksViewState extends State<BookmarksView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BookmarkViewBloc>().add(LoadBookmarkedRestaurants());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
+    return BlocProvider<BookmarkBloc>(
+      create: (context) => BookmarkBloc(
+        BookmarkManager(), 
+      ),
+      child: PopScope(
+        canPop: false,
+        child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            backgroundColor: Colors.white, // Set AppBar background to white
+            backgroundColor: Colors.white,
             title: const Text(
               'Bookmarks',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.black, // Title color
+                color: Colors.black,
               ),
             ),
-            actions: [
-              //FilterBar(),
+            actions: const [
+              // FilterBar(),
             ],
-            elevation: 0, // Remove shadow
+            elevation: 0,
           ),
-          backgroundColor: Colors.grey[200], // Set the background color to grey
-          body: Column(
-            children: [
-              RestaurantSearchBar(browseBloc: BlocProvider.of<BrowseBloc>(context)),
-              Divider(
-                height: 1, // Height of the divider line
-                color: Colors.grey[300], // Color of the divider line
-              ),
-              Expanded(
-                child: BlocBuilder<BrowseBloc, BrowseState>(
-                  builder: (context, state) {
-                    if (state is RestaurantsLoadInProgress) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (state is RestaurantsLoadSuccess) {
-                      return ListView.builder(
-                        itemCount: state.restaurants.where((restaurant) => restaurant.bookmarked).length,
-                        itemBuilder: (context, index) {
-                          final bookmarkedRestaurants = state.restaurants.where((restaurant) => restaurant.bookmarked).toList();
-                          final restaurant = bookmarkedRestaurants[index];
-                          return GestureDetector(
-                            onTap: () {
-                              // Navigate to another view when the restaurant card is clicked
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SpotDetail(restaurant: restaurant),
-                                ),
-                              );
-                            },
-                            child: RestaurantCard(restaurant: restaurant),
-                          );
-                        },
-                      );
-                    } else if (state is RestaurantsLoadFailure) {
-                      return Center(child: Text('Failed to load restaurants'));
-                    }
-                    
-                    return Center(child: Text('Start browsing by applying some filters!'));
+          backgroundColor: Colors.grey[200],
+          body: BlocBuilder<BookmarkViewBloc, BookmarkViewState>(
+            builder: (context, state) {
+              if (state is BookmarksLoadInProgress) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is BookmarkedRestaurantsLoaded) {
+                if (state.bookmarkedRestaurants.isEmpty) {
+                  return const Center(child: Text('No bookmarked restaurants.'));
+                }
+                return ListView.builder(
+                  itemCount: state.bookmarkedRestaurants.length,
+                  itemBuilder: (context, index) {
+                    final restaurant = state.bookmarkedRestaurants[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SpotDetail(restaurant: restaurant),
+                          ),
+                        );
+                      },
+                      child: RestaurantCard(restaurant: restaurant),
+                    );
                   },
-                ),
-              ),
-            ],
+                );
+              } else if (state is BookmarksLoadFailure) {
+                //The message changes if there is 1 or more than 1 restaurant that couldn't be loaded
+                final failureMessage = state.failedToLoadNames.length == 1
+                    ? "The bookmarked restaurant: ${state.failedToLoadNames.first} is not in cache and couldn't be accessed through network. Try again with an internet connection."
+                    : "The bookmarked restaurants: ${state.failedToLoadNames.join(', ')} are not in cache and couldn't be accessed through network. Try again with an internet connection.";
+                return Column(
+                  children: [
+                    if (state.successfullyLoaded.isNotEmpty)
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: state.successfullyLoaded.length,
+                          itemBuilder: (context, index) {
+                            final restaurant = state.successfullyLoaded[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SpotDetail(restaurant: restaurant),
+                                  ),
+                                );
+                              },
+                              child: RestaurantCard(restaurant: restaurant),
+                            );
+                          },
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(failureMessage, textAlign: TextAlign.center),
+                    ),
+                  ],
+                );
+              }
+              // If state is BookmarkViewInitial or any other unhandled state, show a loading indicator
+              return const Center(child: CircularProgressIndicator());
+            },
           ),
           bottomNavigationBar: CustomNavigationBar(
-            selectedIndex: 2, // Set the selected index to 1
+            selectedIndex: 2,
             onItemTapped: (int index) {
-              // Handle navigation to different views
-              if (index == 0) {
-                Navigator.pushNamed(context, '/browse');
-              } else if (index == 1) {
-                Navigator.pushNamed(context, '/for_you');
-              }
+              // Implement navigation logic here
             },
           ),
         )
+      )
     );
   }
 }

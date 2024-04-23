@@ -15,6 +15,7 @@ import flutter_local_notifications
 import geolocator_apple
 import google_sign_in_ios
 import location
+import shared_preferences_foundation
 import path_provider_foundation
 import sqflite
 

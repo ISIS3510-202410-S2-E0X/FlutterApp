@@ -23,6 +23,39 @@ class FilterRestaurants extends BrowseEvent {
     this.category,    // Nullable type
   });
 }
+class SearchWord2 extends BrowseEvent {
+  final String query;
+
+
+  SearchWord2({required this.query});
+
+  @override
+  List<Object> get props => [query];
+}
+
+class AddSuggestion2 extends BrowseEvent {
+  final String query;
+
+  AddSuggestion2({required this.query});
+
+  @override
+  List<Object> get props => [query];
+}
+
+class RemoveSuggestion2 extends BrowseEvent {}
+
+class SearchButtonPressed2 extends BrowseEvent {
+  final String query;
+
+  SearchButtonPressed2({required this.query});
+
+}
+class SelectSuggested2 extends BrowseEvent {
+  final String suggestion;
+  SelectSuggested2({required this.suggestion});
+  @override
+  List<Object> get props => [suggestion];
+}
 
 // class ToggleBookmark extends BrowseEvent {
 //   final String restaurantId;
