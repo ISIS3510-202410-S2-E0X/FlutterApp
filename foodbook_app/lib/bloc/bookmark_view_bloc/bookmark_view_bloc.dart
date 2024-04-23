@@ -3,11 +3,16 @@ import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_event.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_state.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
+import 'package:foodbook_app/data/repositories/restaurant_repository.dart'; // Import your RestaurantRepository
 
 class BookmarkViewBloc extends Bloc<BookmarkViewEvent, BookmarkViewState> {
   final BookmarkManager bookmarkManager;
+  final RestaurantRepository restaurantRepository; // Add RestaurantRepository
 
-  BookmarkViewBloc(this.bookmarkManager) : super(BookmarkViewInitial()) {
+  BookmarkViewBloc({
+    required this.bookmarkManager,
+    required this.restaurantRepository,
+  }) : super(BookmarkViewInitial()) {
     on<LoadBookmarkedRestaurants>(_onLoadBookmarkedRestaurants);
   }
 
@@ -16,16 +21,29 @@ class BookmarkViewBloc extends Bloc<BookmarkViewEvent, BookmarkViewState> {
     Emitter<BookmarkViewState> emit,
   ) async {
     emit(BookmarksLoadInProgress());
+    List<String> failedToLoad = [];
     try {
       final bookmarks = await bookmarkManager.getBookmarkedRestaurants();
+      //Simulate there is another restaurant in bookmarks that is not in cache
+      //bookmarks.add("El Corral");
       final List<Restaurant> bookmarkedRestaurants = [];
       for (var name in bookmarks) {
-        final details = await bookmarkManager.getRestaurantDetails(name);
+        var details = await bookmarkManager.getRestaurantDetails(name);
+        if (details == null) {
+          details = await restaurantRepository.findRestaurantByName(name); // Use RestaurantRepository here
+        }
         if (details != null) {
           bookmarkedRestaurants.add(details);
+        } else {
+          failedToLoad.add(name);
         }
       }
-      emit(BookmarkedRestaurantsLoaded(bookmarkedRestaurants));
+
+      if (failedToLoad.isNotEmpty) {
+        emit(BookmarksLoadFailure("The bookmarked restaurants: ${failedToLoad.join(', ')} are not in cache and couldn't be accessed through network. Try again with an internet connection."));
+      } else {
+        emit(BookmarkedRestaurantsLoaded(bookmarkedRestaurants));
+      }
     } catch (error) {
       emit(BookmarksLoadFailure(error.toString()));
     }

@@ -116,4 +116,39 @@ class RestaurantRepository {
       return null;
     }
   }
+
+  // Find restaurant by name
+  Future<Restaurant?> findRestaurantByName(String name) async {
+    try {
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('spots')
+          .where('name', isEqualTo: name)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var restaurantData = querySnapshot.docs.first.data();
+        var restaurantDTO = RestaurantDTO.fromJson(restaurantData);
+        Restaurant restaurant = restaurantDTO.toModel();
+        var reviewReferences = restaurantData['reviewData']['userReviews'] as List<dynamic>?;
+        if (reviewReferences != null) {
+          List<Review> reviews = [];
+          for (var reviewRef in reviewReferences) {
+            DocumentSnapshot reviewSnapshot = await (reviewRef as DocumentReference).get();
+            if (reviewSnapshot.exists) {
+              reviews.add(ReviewDTO.fromJson(reviewSnapshot.data() as Map<String, dynamic>).toModel());
+            }
+          }
+          restaurant.reviews = reviews;
+        }
+        return restaurant;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error finding restaurant: $e");
+      return null;
+    }
+  }
+  
 }
