@@ -1,3 +1,5 @@
+import 'package:foodbook_app/data/models/restaurant.dart';
+
 abstract class BookmarkEvent {}
 
 class CheckBookmark extends BookmarkEvent {
@@ -6,6 +8,6 @@ class CheckBookmark extends BookmarkEvent {
 }
 
 class ToggleBookmark extends BookmarkEvent {
-  final String restaurantName;
-  ToggleBookmark(this.restaurantName);
+  final Restaurant restaurant;
+  ToggleBookmark(this.restaurant);
 }

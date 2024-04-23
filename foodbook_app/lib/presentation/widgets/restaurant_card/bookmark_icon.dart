@@ -39,7 +39,7 @@ class _BookmarkIconState extends State<BookmarkIcon> {
       ),
       onPressed: () {
         // Toggle the bookmark state when the icon button is pressed.
-        BlocProvider.of<BookmarkBloc>(context).add(ToggleBookmark(widget.restaurant.name));
+        BlocProvider.of<BookmarkBloc>(context).add(ToggleBookmark(widget.restaurant));
       },
     );
   }

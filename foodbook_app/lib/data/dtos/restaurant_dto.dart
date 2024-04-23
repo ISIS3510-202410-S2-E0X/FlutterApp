@@ -37,37 +37,82 @@ class RestaurantDTO {
       waitTimeMin: waitTime['min'],
       waitTimeMax: waitTime['max'],
       priceRange: price,
-      bookmarked: false, 
     );
   }
 
   static RestaurantDTO fromJson(Map<String, dynamic> json) {
     
-  // Assuming 'json' is your JSON object that contains the categories list.
-  var categories = (json['categories'] as List).map((item) => item['name'] as String).toList();
-  var imageLinks = List<String>.from(json['imageLinks'] ?? []);
-  var location = List<double>.from(json['location-arr'] ?? []);
+    // Assuming 'json' is your JSON object that contains the categories list.
+    var categories = (json['categories'] as List).map((item) => item['name'] as String).toList();
+    var imageLinks = List<String>.from(json['imageLinks'] ?? []);
+    var location = List<double>.from(json['location-arr'] ?? []);
 
-  var waitTime = Map<String, dynamic>.from(json['waitTime'] ?? {});
+    var waitTime = Map<String, dynamic>.from(json['waitTime'] ?? {});
 
-  var reviewData = json['reviewData'] as Map<String, dynamic>? ?? {};
-  var stats = Map<String, num>.from(reviewData['stats'] as Map<String, dynamic>? ?? {});
+    var reviewData = json['reviewData'] as Map<String, dynamic>? ?? {};
+    var stats = Map<String, num>.from(reviewData['stats'] as Map<String, dynamic>? ?? {});
 
+    
+    // Para userReviews, extraemos las referencias como List<String>
+    // Asumiendo que son referencias de Firestore en formato de String
+    //var userReviews = List<String>.from((reviewData['userReviews'] as List<dynamic>? ?? [])
+    //    .map((review) => review.toString()));
+
+    return RestaurantDTO(
+        name: json['name'] as String? ?? 'Unknown',
+        categories: categories,
+        imageLinks: imageLinks,
+        location: location,
+        waitTime: waitTime,
+        price: json['price'] as String? ?? '-',
+        stats: stats,
+        userReviews: [],
+      );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'categories': categories,
+      'imageLinks': imageLinks,
+      'location': location,
+      'waitTime': waitTime,
+      'price': price,
+      'stats': stats,
+      'userReviews': userReviews,
+    };
+  }
   
-  // Para userReviews, extraemos las referencias como List<String>
-  // Asumiendo que son referencias de Firestore en formato de String
-  //var userReviews = List<String>.from((reviewData['userReviews'] as List<dynamic>? ?? [])
-  //    .map((review) => review.toString()));
+  // Create a RestaurantDTO from a Restaurant model.
+  static RestaurantDTO fromModel(Restaurant restaurant) {
+    return RestaurantDTO(
+      name: restaurant.name,
+      categories: restaurant.categories,
+      imageLinks: restaurant.imagePaths,
+      location: [restaurant.latitude, restaurant.longitude],
+      waitTime: {'min': restaurant.waitTimeMin, 'max': restaurant.waitTimeMax},
+      price: restaurant.priceRange,
+      stats: {
+        'cleanliness': restaurant.cleanliness_avg,
+        'waitTime': restaurant.waiting_time_avg,
+        'service': restaurant.service_avg,
+        'foodQuality': restaurant.food_quality_avg,
+      },
+      userReviews: [], // We dont save user reviews in cache due to memory constraints
+    );
+  }
 
-  return RestaurantDTO(
+  // Create a RestaurantDTO from a Restaurant in cache.
+  static RestaurantDTO fromCache(Map<String, dynamic> json) {
+    return RestaurantDTO(
       name: json['name'] as String? ?? 'Unknown',
-      categories: categories,
-      imageLinks: imageLinks,
-      location: location,
-      waitTime: waitTime,
+      categories: List<String>.from(json['categories'] ?? []),
+      imageLinks: List<String>.from(json['imageLinks'] ?? []),
+      location: List<double>.from(json['location'] ?? []),
+      waitTime: Map<String, dynamic>.from(json['waitTime'] ?? {}),
       price: json['price'] as String? ?? '-',
-      stats: stats,
-      userReviews: [],
+      stats: Map<String, num>.from(json['stats'] ?? {}).map((key, value) => MapEntry(key, value / 20)),
+      userReviews: List<String>.from(json['userReviews'] ?? []),
     );
   }
 }
