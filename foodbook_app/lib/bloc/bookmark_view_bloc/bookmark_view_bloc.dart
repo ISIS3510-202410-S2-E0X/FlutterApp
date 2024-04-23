@@ -3,11 +3,16 @@ import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_event.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_state.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
+import 'package:foodbook_app/data/repositories/restaurant_repository.dart'; // Import your RestaurantRepository
 
 class BookmarkViewBloc extends Bloc<BookmarkViewEvent, BookmarkViewState> {
   final BookmarkManager bookmarkManager;
+  final RestaurantRepository restaurantRepository; // Add RestaurantRepository
 
-  BookmarkViewBloc(this.bookmarkManager) : super(BookmarkViewInitial()) {
+  BookmarkViewBloc({
+    required this.bookmarkManager,
+    required this.restaurantRepository,
+  }) : super(BookmarkViewInitial()) {
     on<LoadBookmarkedRestaurants>(_onLoadBookmarkedRestaurants);
   }
 
@@ -16,18 +21,42 @@ class BookmarkViewBloc extends Bloc<BookmarkViewEvent, BookmarkViewState> {
     Emitter<BookmarkViewState> emit,
   ) async {
     emit(BookmarksLoadInProgress());
+
+    final List<Restaurant> bookmarkedRestaurants = [];
+    final List<String> failedToLoad = [];
+
     try {
       final bookmarks = await bookmarkManager.getBookmarkedRestaurants();
-      final List<Restaurant> bookmarkedRestaurants = [];
+      // Simulate there is a restaurant not in bookmarks
+      //bookmarks.add("Hornitos2");
+
       for (var name in bookmarks) {
-        final details = await bookmarkManager.getRestaurantDetails(name);
+        var details = await bookmarkManager.getRestaurantDetails(name);
+        if (details == null) {
+          details = await restaurantRepository.findRestaurantByName(name); // Use RestaurantRepository
+        }
         if (details != null) {
           bookmarkedRestaurants.add(details);
+        } else {
+          failedToLoad.add(name);
         }
       }
-      emit(BookmarkedRestaurantsLoaded(bookmarkedRestaurants));
+
+      if (failedToLoad.isNotEmpty) {
+        emit(BookmarksLoadFailure(
+          successfullyLoaded: bookmarkedRestaurants,
+          failedToLoadNames: failedToLoad,
+          errorMessage: "Some restaurants couldn't be loaded.",
+        ));
+      } else {
+        emit(BookmarkedRestaurantsLoaded(bookmarkedRestaurants));
+      }
     } catch (error) {
-      emit(BookmarksLoadFailure(error.toString()));
+      emit(BookmarksLoadFailure(
+        successfullyLoaded: bookmarkedRestaurants,
+        failedToLoadNames: failedToLoad,
+        errorMessage: error.toString(),
+      ));
     }
   }
 }

@@ -13,6 +13,13 @@ class BookmarkedRestaurantsLoaded extends BookmarkViewState {
 class BookmarksLoadInProgress extends BookmarkViewState {} 
 
 class BookmarksLoadFailure extends BookmarkViewState {
-  final String error;
-  BookmarksLoadFailure(this.error);
+  final List<Restaurant> successfullyLoaded;
+  final List<String> failedToLoadNames;
+  final String errorMessage;
+
+  BookmarksLoadFailure({
+    required this.successfullyLoaded,
+    required this.failedToLoadNames,
+    required this.errorMessage,
+  });
 }
