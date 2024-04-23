@@ -28,7 +28,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
     on<ResetState>((event, emit) async {  
-    emit(UnAuthenticated());
+      emit(UnAuthenticated());
     });
   }
 }
