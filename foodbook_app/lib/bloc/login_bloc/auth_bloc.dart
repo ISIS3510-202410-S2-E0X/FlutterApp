@@ -30,5 +30,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ResetState>((event, emit) async {  
       emit(UnAuthenticated());
     });
+    on<NoInternet>((event, emit) async {
+      emit(AuthError("No Internet Connection"));
+    });
+    on<InternetRecovered>((event, emit) async {
+      emit(UnAuthenticated());
+    });
   }
 }

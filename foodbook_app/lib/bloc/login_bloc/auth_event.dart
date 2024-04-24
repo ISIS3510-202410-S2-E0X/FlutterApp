@@ -28,3 +28,7 @@ class GoogleSignInRequested extends AuthEvent {}
 class SignOutRequested extends AuthEvent {}
 
 class ResetState extends AuthEvent {}
+
+class NoInternet extends AuthEvent {}
+
+class InternetRecovered extends AuthEvent {}
