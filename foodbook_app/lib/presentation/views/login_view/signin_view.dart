@@ -147,7 +147,7 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
           return Center(
             child: Container(
               child: Text(
-                'Please connect to the internet to login',
+                'No connection, please make sure you have internet access before attempting to login.',
                 style: TextStyle(
                   color: Colors.red,
                   fontSize: screenSize.width * 0.04,
