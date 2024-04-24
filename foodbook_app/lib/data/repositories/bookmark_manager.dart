@@ -16,27 +16,27 @@ class BookmarkManager {
   Future<void> bookmarkRestaurant(Restaurant restaurant) async {
     final prefs = await _getPrefs();
     List<String> bookmarks = prefs.getStringList(_bookmarksKey) ?? [];
-    if (!bookmarks.contains(restaurant.name)) {
-      bookmarks.add(restaurant.name);
+    if (!bookmarks.contains(restaurant.id)) {
+      bookmarks.add(restaurant.id);
       await prefs.setStringList(_bookmarksKey, bookmarks);
     }
     // Serialize and store the restaurant details
-    await prefs.setString(restaurant.name, serializeRestaurant(restaurant));
+    await prefs.setString(restaurant.id, serializeRestaurant(restaurant));
   }
 
-  Future<void> unbookmarkRestaurant(String restaurantName) async {
+  Future<void> unbookmarkRestaurant(String restaurantId) async {
     final prefs = await _getPrefs();
     List<String> bookmarks = prefs.getStringList(_bookmarksKey) ?? [];
-    bookmarks.remove(restaurantName);
+    bookmarks.remove(restaurantId);
     await prefs.setStringList(_bookmarksKey, bookmarks);
     // Remove the restaurant details from the cache
-    await prefs.remove(restaurantName);
+    await prefs.remove(restaurantId);
   }
 
-  Future<bool> isBookmarked(String restaurantName) async {
+  Future<bool> isBookmarked(String restaurantId) async {
     final prefs = await _getPrefs();
     List<String> bookmarks = prefs.getStringList(_bookmarksKey) ?? [];
-    return bookmarks.contains(restaurantName);
+    return bookmarks.contains(restaurantId);
   }
 
   String serializeRestaurant(Restaurant restaurant) {
@@ -45,9 +45,9 @@ class BookmarkManager {
   }
 
   // Helper method to deserialize a JSON string to a Restaurant object
-  Future<Restaurant?> getRestaurantDetails(String restaurantName) async {
+  Future<Restaurant?> getRestaurantDetails(String restaurantId) async {
     final prefs = await _getPrefs();
-    final jsonString = prefs.getString(restaurantName);
+    final jsonString = prefs.getString(restaurantId);
     if (jsonString != null) {
       final restaurantDTO = RestaurantDTO.fromCache(json.decode(jsonString));
       return restaurantDTO.toModel();

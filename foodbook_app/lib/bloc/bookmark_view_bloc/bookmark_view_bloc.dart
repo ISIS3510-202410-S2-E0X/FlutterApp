@@ -30,15 +30,15 @@ class BookmarkViewBloc extends Bloc<BookmarkViewEvent, BookmarkViewState> {
       // Simulate there is a restaurant not in bookmarks
       //bookmarks.add("Hornitos2");
 
-      for (var name in bookmarks) {
-        var details = await bookmarkManager.getRestaurantDetails(name);
+      for (var id in bookmarks) {
+        var details = await bookmarkManager.getRestaurantDetails(id);
         if (details == null) {
-          details = await restaurantRepository.findRestaurantByName(name); // Use RestaurantRepository
+          details = await restaurantRepository.fetchRestaurantById(id); // Use RestaurantRepository
         }
         if (details != null) {
           bookmarkedRestaurants.add(details);
         } else {
-          failedToLoad.add(name);
+          failedToLoad.add(id);
         }
       }
 

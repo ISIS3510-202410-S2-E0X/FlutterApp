@@ -19,7 +19,7 @@ class _BookmarkIconState extends State<BookmarkIcon> {
   void initState() {
     super.initState();
     // Dispatch the CheckBookmark event as soon as the widget is inserted into the tree.
-    BlocProvider.of<BookmarkBloc>(context, listen: false).add(CheckBookmark(widget.restaurant.name));
+    BlocProvider.of<BookmarkBloc>(context, listen: false).add(CheckBookmark(widget.restaurant.id));
   }
 
   @override
