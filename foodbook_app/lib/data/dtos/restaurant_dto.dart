@@ -1,6 +1,7 @@
 import 'package:foodbook_app/data/models/restaurant.dart';
 
 class RestaurantDTO {
+  final String id;
   final String name;
   final List<String> categories;
   final List<String> imageLinks;
@@ -11,6 +12,7 @@ class RestaurantDTO {
   final List<String> userReviews;
 
   RestaurantDTO({
+    required this.id,
     required this.name,
     required this.categories,
     required this.imageLinks,
@@ -23,6 +25,7 @@ class RestaurantDTO {
 
   Restaurant toModel() {
     return Restaurant(
+      id: id,
       name: name,
       categories: categories,
       imagePaths: imageLinks,
@@ -40,7 +43,7 @@ class RestaurantDTO {
     );
   }
 
-  static RestaurantDTO fromJson(Map<String, dynamic> json) {
+  static RestaurantDTO fromJson(String restaurantId, Map<String, dynamic> json) {
     
     // Assuming 'json' is your JSON object that contains the categories list.
     var categories = (json['categories'] as List).map((item) => item['name'] as String).toList();
@@ -59,6 +62,7 @@ class RestaurantDTO {
     //    .map((review) => review.toString()));
 
     return RestaurantDTO(
+        id: restaurantId,
         name: json['name'] as String? ?? 'Unknown',
         categories: categories,
         imageLinks: imageLinks,
@@ -72,6 +76,7 @@ class RestaurantDTO {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'categories': categories,
       'imageLinks': imageLinks,
@@ -86,6 +91,7 @@ class RestaurantDTO {
   // Create a RestaurantDTO from a Restaurant model.
   static RestaurantDTO fromModel(Restaurant restaurant) {
     return RestaurantDTO(
+      id: restaurant.id,
       name: restaurant.name,
       categories: restaurant.categories,
       imageLinks: restaurant.imagePaths,
@@ -105,6 +111,7 @@ class RestaurantDTO {
   // Create a RestaurantDTO from a Restaurant in cache.
   static RestaurantDTO fromCache(Map<String, dynamic> json) {
     return RestaurantDTO(
+      id: json['id'] as String? ?? 'Unknown',
       name: json['name'] as String? ?? 'Unknown',
       categories: List<String>.from(json['categories'] ?? []),
       imageLinks: List<String>.from(json['imageLinks'] ?? []),

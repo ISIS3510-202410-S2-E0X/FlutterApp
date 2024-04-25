@@ -13,24 +13,25 @@ class RestaurantRepository {
   final RestaurantsCacheDAO _restaurantsCacheDAO = RestaurantsCacheDAO();
 
   Future<List<Restaurant>> fetchRestaurants() async {
-  List<Restaurant> restaurants = [];
-  try {
-    final pro = await FirebaseFirestore.instance.collection('spots').get();
-
-    for (var element in pro.docs) {
-      var restaurantData = element.data();
-      var restaurantDTO = RestaurantDTO.fromJson(restaurantData);
-      Restaurant restaurant = restaurantDTO.toModel();
-      _restaurantsCacheDAO.cacheRestaurant(restaurant);
-      print("cached restaurant: ${restaurant.name}");
-      
-      var reviewReferences = restaurantData['reviewData']['userReviews'] as List<dynamic>?;
-      if (reviewReferences != null) {
-        List<Review> reviews = [];
-        for (var reviewRef in reviewReferences) {
-          DocumentSnapshot reviewSnapshot = await (reviewRef as DocumentReference).get();
-          if (reviewSnapshot.exists) {
-            reviews.add(ReviewDTO.fromJson(reviewSnapshot.data() as Map<String, dynamic>).toModel());
+    List<Restaurant> restaurants = [];
+    try {
+      final pro = await FirebaseFirestore.instance.collection('spots').get();
+      for (var element in pro.docs) {
+        // Guarda el id del restaurante
+        String restaurantId = element.id;
+        var restaurantData = element.data();
+        var restaurantDTO = RestaurantDTO.fromJson(restaurantId, restaurantData);
+        Restaurant restaurant = restaurantDTO.toModel();
+        _restaurantsCacheDAO.cacheRestaurant(restaurant);
+        print("cached restaurant: ${restaurant.name}");
+        var reviewReferences = restaurantData['reviewData']['userReviews'] as List<dynamic>?;
+        if (reviewReferences != null) {
+          List<Review> reviews = [];
+          for (var reviewRef in reviewReferences) {
+            DocumentSnapshot reviewSnapshot = await (reviewRef as DocumentReference).get();
+            if (reviewSnapshot.exists) {
+              reviews.add(ReviewDTO.fromJson(reviewSnapshot.data() as Map<String, dynamic>).toModel());
+            }
           }
         }
         restaurant.reviews = reviews;
@@ -111,7 +112,7 @@ class RestaurantRepository {
     try {
       DocumentSnapshot<Map<String, dynamic>> restaurantSnapshot = await db.collection('spots').doc(restaurantId).get();
       if (restaurantSnapshot.exists && restaurantSnapshot.data() != null) {
-        var restaurantDTO = RestaurantDTO.fromJson(restaurantSnapshot.data()!);
+        var restaurantDTO = RestaurantDTO.fromJson(restaurantId,restaurantSnapshot.data()!);
         Restaurant restaurant = restaurantDTO.toModel();
 
         List<dynamic>? reviewRefs = restaurantSnapshot.data()?['reviewData']['userReviews'];
@@ -133,40 +134,6 @@ class RestaurantRepository {
       if (kDebugMode) {
         print("Error fetching restaurant by ID: $e");
       }
-      return null;
-    }
-  }
-
-  // Find restaurant by name
-  Future<Restaurant?> findRestaurantByName(String name) async {
-    try {
-      var querySnapshot = await FirebaseFirestore.instance
-          .collection('spots')
-          .where('name', isEqualTo: name)
-          .limit(1)
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        var restaurantData = querySnapshot.docs.first.data();
-        var restaurantDTO = RestaurantDTO.fromJson(restaurantData);
-        Restaurant restaurant = restaurantDTO.toModel();
-        var reviewReferences = restaurantData['reviewData']['userReviews'] as List<dynamic>?;
-        if (reviewReferences != null) {
-          List<Review> reviews = [];
-          for (var reviewRef in reviewReferences) {
-            DocumentSnapshot reviewSnapshot = await (reviewRef as DocumentReference).get();
-            if (reviewSnapshot.exists) {
-              reviews.add(ReviewDTO.fromJson(reviewSnapshot.data() as Map<String, dynamic>).toModel());
-            }
-          }
-          restaurant.reviews = reviews;
-        }
-        return restaurant;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print("Error finding restaurant: $e");
       return null;
     }
   }
