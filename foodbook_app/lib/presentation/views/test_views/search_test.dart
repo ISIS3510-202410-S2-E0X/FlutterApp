@@ -141,7 +141,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                                   RepositoryProvider.of<ReviewDraftRepository>(context)),
                             ),
                           ],
-                          child: SpotDetail(restaurant: state.restaurants[index].id),
+                          child: SpotDetail(restaurantId: state.restaurants[index].id),
                         ),
                       ),
                     );
@@ -150,21 +150,14 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                 );
               },
             );
-          } else if (state is RestaurantsLoadFailure) {
+          } else{
               return Center(child: Text("No results found for: $query"));
-            }
-          );
-        } 
-        else if (state is RestaurantsLoadFailure) {
-          return Center(child: Text("No results found for: $query"));
-        } 
-        else {
-          return Center(child: Text("No results found for: $query"));
-        }
-      },
-    ),
-  );
-}
+          }
+        },
+      )
+  
+    );
+  }
 
 
   @override
