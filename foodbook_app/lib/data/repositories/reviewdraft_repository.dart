@@ -17,6 +17,7 @@ class ReviewDraftRepository {
   }
 
   Future<List<ReviewDraft>> getDraftsBySpot(String spot) async {
+    await dbProvider.killDatabase();
     final db = await dbProvider.getDatabase();
     var res = await db.query(
       "ReviewDrafts",
@@ -37,13 +38,13 @@ class ReviewDraftRepository {
     await db.insert('ReviewDrafts', ReviewDraftDTO.fromModel(draft).toJson());
   }
 
-  Future<void> updateDraft(ReviewDraft draft) async {
+  Future<void> updateDraft(ReviewDraft draft, String spot) async {
     final db = await dbProvider.getDatabase();
     await db.update(
       'ReviewDrafts',
       ReviewDraftDTO.fromModel(draft).toJson(),
       where: 'spot = ?',
-      whereArgs: [draft]
+      whereArgs: [spot]
     );
   }
 

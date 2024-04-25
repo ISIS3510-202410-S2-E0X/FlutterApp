@@ -13,7 +13,7 @@ class DatabaseProvider {
 
   _initDB() async {
     var documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "LoSgDraftsDB.db");
+    String path = join(documentsDirectory.path, "LoSgDraftsDB_1.db");
     print("DB path: $path");
     return await openDatabase(path, version: 1, onCreate: _createDB);
   }
@@ -40,7 +40,7 @@ class DatabaseProvider {
 
   Future<void> killDatabase() async {
     var documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "RDsLS.db");
+    String path = join(documentsDirectory.path, "LoSgDraftsDB.db");
     await deleteDatabase(path);
     _database = null;
     print("Database deleted successfully.");

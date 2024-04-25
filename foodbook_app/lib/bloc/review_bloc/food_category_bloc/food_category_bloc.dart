@@ -79,6 +79,6 @@ class FoodCategoryBloc extends Bloc<FoodCategoryEvent, FoodCategoryState> {
   Future<void> _onSetInitialCategories(SetInitialCategoriesEvent event, Emitter<FoodCategoryState> emit) async {
     final categories = await categoryRepository.getAllCategories();
     selectedCategories = event.initialCategories;
-    emit(FoodCategorySelected(categories, selectedCategories)); 
+    emit(FoodCategorySelected(categories, selectedCategories));
   }
 }

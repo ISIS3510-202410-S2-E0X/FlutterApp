@@ -7,7 +7,7 @@ class ReviewDraft {
   final String? image;
   final String? spot;
   final int uploaded; // SQLite no maneja Boolean, así que se convierte a int
-  final Map<String, int> ratings;
+  final Map<String, double> ratings;
   final List<CategoryDTO> selectedCategories;
 
   ReviewDraft({

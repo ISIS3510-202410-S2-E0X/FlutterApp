@@ -9,7 +9,7 @@ class ReviewDraftDTO {
   final String? image;
   final String? spot;
   final int uploaded;
-  final Map<String, int> ratings;
+  final Map<String, double> ratings;
   final List<CategoryDTO> selectedCategories;
 
   ReviewDraftDTO({
@@ -61,9 +61,9 @@ class ReviewDraftDTO {
       'service': ratings[RatingsKeys.service],
       'foodQuality': ratings[RatingsKeys.foodQuality],
       'waitTime': ratings[RatingsKeys.waitingTime],
-      'category1': selectedCategories.isNotEmpty ? selectedCategories[0] : null,
-      'category2': selectedCategories.length > 1 ? selectedCategories[1] : null,
-      'category3': selectedCategories.length > 2 ? selectedCategories[2] : null,
+      'category1': selectedCategories.isNotEmpty ? selectedCategories[0].name : null,
+      'category2': selectedCategories.length > 1 ? selectedCategories[1].name : null,
+      'category3': selectedCategories.length > 2 ? selectedCategories[2].name : null,
     };
     return json;
   }
@@ -82,10 +82,10 @@ class ReviewDraftDTO {
       spot: json['spot'] as String?,
       uploaded: json['uploaded'] as int,
       ratings: {
-        RatingsKeys.cleanliness: json['cleanliness'] as int,
-        RatingsKeys.service: json['service'] as int,
-        RatingsKeys.foodQuality: json['foodQuality'] as int,
-        RatingsKeys.waitingTime: json['waitTime'] as int,
+        RatingsKeys.cleanliness: json['cleanliness'].toDouble(),
+        RatingsKeys.service: json['service'].toDouble(),
+        RatingsKeys.foodQuality: json['foodQuality'].toDouble(),
+        RatingsKeys.waitingTime: json['waitTime'].toDouble(),
       },
       selectedCategories: jsonCategories.map((category) => CategoryDTO.fromJson(category)).toList(),
     );

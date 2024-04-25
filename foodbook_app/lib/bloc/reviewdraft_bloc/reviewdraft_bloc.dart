@@ -30,7 +30,6 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
     try {
       // await reviewDraftRepository.killDatabase();
       final drafts = await reviewDraftRepository.getDraftsBySpot(event.spot);
-      print(drafts.length);
       emit(ReviewLoaded(drafts));
     } catch (e) {
       emit(ReviewError());
@@ -43,7 +42,7 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
   }
 
   Future<void> _onUpdateDraft(UpdateDraft event, Emitter<ReviewDraftState> emit) async {
-    await reviewDraftRepository.updateDraft(event.draft);
+    await reviewDraftRepository.updateDraft(event.draft, event.spot);
     add(LoadDrafts());
   }
 
