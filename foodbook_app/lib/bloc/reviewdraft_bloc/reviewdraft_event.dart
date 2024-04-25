@@ -21,10 +21,16 @@ class AddDraft extends ReviewDraftEvent {
 
 class UpdateDraft extends ReviewDraftEvent {
   final ReviewDraft draft;
-  UpdateDraft(this.draft);
+  final String spot;
+  UpdateDraft(this.draft, this.spot);
 }
 
 class DeleteDraft extends ReviewDraftEvent {
   final int id;
   DeleteDraft(this.id);
+}
+
+class CheckUnfinishedDraft extends ReviewDraftEvent {
+  final String restaurantId;
+  CheckUnfinishedDraft(this.restaurantId);
 }

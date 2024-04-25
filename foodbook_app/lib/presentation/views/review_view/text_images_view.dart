@@ -24,9 +24,18 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class TextAndImagesView extends StatefulWidget {
+  final String? reviewTitle;
+  final String? reviewContent;
+  final String? imageUrl;
   final Restaurant restaurant;
 
-  const TextAndImagesView({super.key, required this.restaurant});
+  const TextAndImagesView({
+    super.key,
+    required this.restaurant,
+    this.reviewTitle,
+    this.reviewContent,
+    this.imageUrl
+  });
 
   @override
   // ignore: library_private_types_in_public_api
@@ -38,6 +47,19 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   int _times = 0;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.reviewTitle != null) {
+      _titleController.text = widget.reviewTitle!;
+    }
+
+    if (widget.reviewContent != null) {
+      _commentController.text = widget.reviewContent!;
+    }
+  }
 
   Future<void> getImage() async {
     final ImagePicker picker = ImagePicker();
@@ -313,9 +335,9 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
       BlocProvider.of<ReviewBloc>(context).add(CreateReviewEvent(newReview, widget.restaurant.name));
       _resetFormAndImage();
       _times = 1;
-      // TO-DO: show a success message
+      // TODO: Mostrar mensaje de éxito
     } catch (e) {
-      // TO-DO: show an error message
+      print('Error creating review: $e');
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:foodbook_app/data/dtos/category_dto.dart';
 
 abstract class FoodCategoryEvent {}
 
@@ -29,4 +30,9 @@ class SearchCategoriesEvent extends FoodCategoryEvent {
   SearchCategoriesEvent(this.searchTerm);
 
   List<Object> get props => [searchTerm];
+}
+
+class SetInitialCategoriesEvent extends FoodCategoryEvent {
+  final List<CategoryDTO> initialCategories;
+  SetInitialCategoriesEvent(this.initialCategories);
 }

@@ -4,7 +4,11 @@ import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_event.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_state.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
+import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
@@ -64,13 +68,13 @@ class _BookmarksViewState extends State<BookmarksView> {
                     final restaurant = state.bookmarkedRestaurants[index];
                     return GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SpotDetail(restaurant: restaurant),
-                          ),
-                        );
-                      },
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SpotDetail(restaurantId: state.bookmarkedRestaurants[index].id),
+                                ),
+                              );
+                            },
                       child: RestaurantCard(restaurant: restaurant),
                     );
                   },
@@ -88,17 +92,31 @@ class _BookmarksViewState extends State<BookmarksView> {
                           itemCount: state.successfullyLoaded.length,
                           itemBuilder: (context, index) {
                             final restaurant = state.successfullyLoaded[index];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SpotDetail(restaurant: restaurant),
-                                  ),
-                                );
-                              },
-                              child: RestaurantCard(restaurant: restaurant),
-                            );
+                              return GestureDetector(
+                                onTap: ()async {
+                                  final restaurantId = restaurant.id;
+
+                                  // Use a RestaurantBloc event to fetch the restaurant details
+                                  context.read<SpotDetailBloc>().add(FetchRestaurantDetail(restaurantId));
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MultiBlocProvider(
+                                        providers: [
+                                          BlocProvider<ReviewDraftBloc>(
+                                            create: (context) => ReviewDraftBloc(
+                                              RepositoryProvider.of<ReviewDraftRepository>(context)
+                                            ),
+                                          ),
+                                        ],
+                                        child: SpotDetail(restaurantId: restaurantId),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: RestaurantCard(restaurant: restaurant),
+                              );
                           },
                         ),
                       ),

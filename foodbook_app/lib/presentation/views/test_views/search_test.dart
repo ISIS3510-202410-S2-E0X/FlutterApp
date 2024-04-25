@@ -5,11 +5,14 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_state.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
+
 // SearchPage2 Widget
 class SearchPage2 extends StatefulWidget {
   final BrowseBloc browseBloc;
@@ -25,7 +28,7 @@ class _SearchPage2State extends State<SearchPage2> {
   @override
   void initState() {
     super.initState();
-    browseBloc = BlocProvider.of<BrowseBloc>(context, listen: false);
+    browseBloc = widget.browseBloc;
   }
 
   @override
@@ -34,33 +37,34 @@ class _SearchPage2State extends State<SearchPage2> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         actions: [
-            Container(
-              width: MediaQuery.of(context).size.width * 0.5, // 40% of screen width
-              child: ElevatedButton(
+          Container(
+            width: MediaQuery.of(context).size.width * 0.5, // 40% of screen width
+            child: ElevatedButton(
               onPressed: () {
-              // Dispatch an event to fetch search history when the search button is pressed
-              browseBloc.add(SearchButtonPressed2(query: ''));
-              showSearch(
-                context: context,
-                delegate: CustomSearchDelegate(browseBloc: browseBloc),
-              );
+                // Dispatch an event to fetch search history when the search button is pressed
+                browseBloc.add(SearchButtonPressed2(query: ''));
+                showSearch(
+                  context: context,
+                  delegate: CustomSearchDelegate(browseBloc: browseBloc),
+                );
               },
               style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0), // Adjust the value as needed
-              ), backgroundColor: Colors.grey[200], // Set the button color to light grey
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0), // Adjust the value as needed
+                ),
+                backgroundColor: Colors.grey[200], // Set the button color to light grey
               ),
               child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(Icons.search, color: Colors.grey), // Set the icon color to light grey
-                SizedBox(width: 10), // Adjust spacing between icon and text
-                Text("Search", style: TextStyle(color:  Colors.grey)), // Set the text color to light grey
-              ],
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.search, color: Colors.grey), // Set the icon color to light grey
+                  SizedBox(width: 10), // Adjust spacing between icon and text
+                  Text("Search", style: TextStyle(color: Colors.grey)), // Set the text color to light grey
+                ],
               ),
-              ),
-            )
-        ]
+            ),
+          )
+        ],
       ),
     );
   }
@@ -77,7 +81,6 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        
         icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
@@ -98,69 +101,65 @@ class CustomSearchDelegate extends SearchDelegate<String> {
     );
   }
 
-@override
-Widget buildResults(BuildContext context) {
-  return MultiBlocProvider(
-    providers: [
-      BlocProvider<BrowseBloc>(
-        create: (context) => browseBloc,
-      ),
-      BlocProvider<BookmarkBloc>(
-        create: (context) => BookmarkBloc(BookmarkManager()),
-      ),
-    ],
-    child: BlocBuilder<BrowseBloc, BrowseState>(
-      bloc: browseBloc,
-      builder: (context, state) {
-        if (state is SearchLoading2) {
-          print("Saving the query to search history: $query");
-          if (query != '') {
-            browseBloc.add(FilterRestaurants(name: query));
-          }
-          
-          
-          return const Center(child: CircularProgressIndicator());
-        } 
-        if (state is RestaurantsLoadInProgress) {
-          return const Center(child: CircularProgressIndicator());
-        } 
-        else if (state is RestaurantsLoadSuccess) {
-          return ListView.builder(
-            itemCount: state.restaurants.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SpotDetail(restaurant: state.restaurants[index]),
-                    ),
-                  );
-                },
-                child: RestaurantCard(restaurant: state.restaurants[index]),
-              );
+
+  @override
+  Widget buildResults(BuildContext context) {
+    browseBloc.add(SearchButtonPressed2(query: query));
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<BrowseBloc>(
+          create: (context) => browseBloc,
+        ),
+        BlocProvider<BookmarkBloc>(
+          create: (context) => BookmarkBloc(BookmarkManager()),
+        ),
+      ],
+      child: BlocBuilder<BrowseBloc, BrowseState>(
+        bloc: browseBloc,
+        builder: (context, state) {
+          if (state is SearchLoading2) {
+            print("Saving the query to search history: $query");
+            if (query != '') {
+              browseBloc.add(FilterRestaurants(name: query));
             }
-          );
-        } 
-        else if (state is RestaurantsLoadFailure) {
-          return Center(child: Text("No results found for: $query"));
-        } 
-        else {
-          return Center(child: Text("No results found for: $query"));
-        }
-      },
-    ),
-  );
-}
-
-
-  // @override
-  // Widget buildResults(BuildContext context) {
-  //   return Center(
-  //     child: Text('Search Results for: $query'),
-  //   );
-  // }
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is RestaurantsLoadInProgress) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is RestaurantsLoadSuccess) {
+            return ListView.builder(
+              itemCount: state.restaurants.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MultiBlocProvider(
+                          providers: [
+                            BlocProvider<ReviewDraftBloc>(
+                              create: (context) => ReviewDraftBloc(
+                                  RepositoryProvider.of<ReviewDraftRepository>(context)),
+                            ),
+                          ],
+                          child: SpotDetail(restaurantId: state.restaurants[index].id),
+                        ),
+                      ),
+                    );
+                  },
+                  child: RestaurantCard(restaurant: state.restaurants[index]),
+                );
+              },
+            );
+          } else{
+              return Center(child: Text("No results found for: $query"));
+          }
+        },
+      )
   
+    );
+  }
+
+
   @override
   Widget buildSuggestions(BuildContext context) {
     return FutureBuilder<List<String>>(
@@ -168,18 +167,18 @@ Widget buildResults(BuildContext context) {
       builder: (context, snapshot) {
         final suggestions = snapshot.data!;
         return ListView.builder(
-        itemCount: suggestions.length,
-        itemBuilder: (context, index) {
-          final suggestion = suggestions[index];
-          return ListTile(
-          title: Text(suggestion),
-          onTap: () {
-            query = suggestion; // Set the suggestion as the initial query
-            browseBloc.add(SearchButtonPressed2(query: query));
-            buildResults(context); // Show the search results immediately
+          itemCount: suggestions.length,
+          itemBuilder: (context, index) {
+            final suggestion = suggestions[index];
+            return ListTile(
+              title: Text(suggestion),
+              onTap: () {
+                query = suggestion; // Set the suggestion as the initial query
+                browseBloc.add(SearchButtonPressed2(query: query));
+                buildResults(context); // Show the search results immediately
+              },
+            );
           },
-          );
-        },
         );
       },
     );
@@ -191,7 +190,6 @@ Widget buildResults(BuildContext context) {
     //browseBloc.add(LoadRestaurants());
   }
 }
-
 
 // @override
 // Widget build(BuildContext context) {
