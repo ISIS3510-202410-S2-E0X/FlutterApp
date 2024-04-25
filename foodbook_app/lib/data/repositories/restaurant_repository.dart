@@ -96,14 +96,22 @@ class RestaurantRepository {
   }
 
   Future<List<dynamic>> getRestaurantsIdsFromIntAPI(String username) async {
-    final response = await http.get(Uri.parse('https://foodbook-app-backend.2.us-1.fl0.io/recommendation/$username'));
-    if (response.statusCode != 200) {
+    print("fetching recommended restaurants for $username...");
+    final response = await http.get(Uri.parse('https://foodbook-app-backend.vercel.app/recommendation/asalgadom'));
+    print('RESPONSE: ${response.body}, ${response.statusCode}');
+    if (response.statusCode == 404) {
+      throw Exception('Leave reviews to get personalized recommendations!');
+    }
+    if (response.statusCode == 200) {
+      //throw Exception('Failed to fetch recommended restaurants');
+      final jsonResponse = jsonDecode(response.body);
+      print('JSON RESPONSE: ${jsonResponse}');
+      return jsonResponse['spots'];
+    }
+    else{
       throw Exception('Failed to fetch recommended restaurants');
     }
-
-    final jsonResponse = jsonDecode(response.body);
-    print('JSON RESPONSE: ${jsonResponse}');
-    return jsonResponse['spots'];
+    
   }
 
   Future<Restaurant?> fetchRestaurantById(String restaurantId) async {
