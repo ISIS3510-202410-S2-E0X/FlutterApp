@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:foodbook_app/data/data_access_objects/restaurants_cache_dao.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/review.dart';
 import 'package:http/http.dart' as http;
@@ -9,6 +10,7 @@ import 'package:foodbook_app/data/dtos/restaurant_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 
 class RestaurantRepository {
+  final RestaurantsCacheDAO _restaurantsCacheDAO = RestaurantsCacheDAO();
 
   Future<List<Restaurant>> fetchRestaurants() async {
     List<Restaurant> restaurants = [];
@@ -20,6 +22,8 @@ class RestaurantRepository {
         var restaurantData = element.data();
         var restaurantDTO = RestaurantDTO.fromJson(restaurantId, restaurantData);
         Restaurant restaurant = restaurantDTO.toModel();
+        _restaurantsCacheDAO.cacheRestaurant(restaurant);
+        print("cached restaurant: ${restaurant.name}");
         var reviewReferences = restaurantData['reviewData']['userReviews'] as List<dynamic>?;
         if (reviewReferences != null) {
           List<Review> reviews = [];
@@ -29,16 +33,31 @@ class RestaurantRepository {
               reviews.add(ReviewDTO.fromJson(reviewSnapshot.data() as Map<String, dynamic>).toModel());
             }
           }
-          restaurant.reviews = reviews;
         }
-        restaurants.add(restaurant);
+        restaurant.reviews = reviews;
       }
-      return restaurants;
-    } on FirebaseException catch (e) {
-        print("Failed to fetch restaurants with error '${e.code}': ${e.message}");
-        return [];
+      restaurants.add(restaurant);
     }
+    return restaurants;
+  } on FirebaseException catch (e) {
+    print("Failed to fetch restaurants with error '${e.code}': ${e.message}");
+    return restaurants;
   }
+}
+  Future<List<Restaurant>> fetchRestaurantsFromCache() async {
+    List<Restaurant> restaurants = [];
+    List<String> restaurantNames = await _restaurantsCacheDAO.getCachedRestaurants();
+    if (restaurantNames.isNotEmpty) {
+      for (var name in restaurantNames) {
+        var details = await _restaurantsCacheDAO.findRestaurantByName(name);
+        if (details != null) {
+          restaurants.add(details);
+        }
+      }
+    }
+    return restaurants;
+  }
+
 
   Future<void> addReviewToRestaurant(String restaurantId, String reviewId) async {
     try {
@@ -57,7 +76,7 @@ class RestaurantRepository {
       rethrow;
     }
   }
-
+  
   Future<String?> findRestaurantIdByName(String name) async {
     try {
       var querySnapshot = await FirebaseFirestore.instance
