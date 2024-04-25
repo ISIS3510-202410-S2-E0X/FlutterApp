@@ -40,17 +40,6 @@ class RestaurantRepository {
     return restaurants;
   } on FirebaseException catch (e) {
     print("Failed to fetch restaurants with error '${e.code}': ${e.message}");
-    // Intenta recuperar los datos desde la caché
-    // print('intentando recuperar datos desde la caché');
-    // List<String> cachedData = await _restaurantsCacheDAO.getBrowseCache();
-    // print('cachedData: $cachedData');
-    // if (cachedData.isNotEmpty) {
-    //   for (var jsonData in cachedData) {
-    //     var restDTO = RestaurantDTO.fromJson(json.decode(jsonData));
-    //     restaurants.add(restDTO.toModel());
-    //   }
-    //   print("Fetched restaurants from cache due to Firebase error.");
-    // }
     return restaurants;
   }
 }
