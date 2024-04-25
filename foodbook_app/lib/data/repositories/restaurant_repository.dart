@@ -99,7 +99,7 @@ class RestaurantRepository {
 
   Future<List<dynamic>> getRestaurantsIdsFromIntAPI(String username) async {
     print("fetching recommended restaurants for $username...");
-    final response = await http.get(Uri.parse('https://foodbook-app-backend.vercel.app/recommendation/asalgadom'));
+    final response = await http.get(Uri.parse('https://foodbook-app-backend.vercel.app/recommendation/$username'));
     print('RESPONSE: ${response.body}, ${response.statusCode}');
     if (response.statusCode == 404) {
       throw Exception('Leave reviews to get personalized recommendations!');
@@ -113,8 +113,8 @@ class RestaurantRepository {
     else{
       throw Exception('Failed to fetch recommended restaurants');
     }
-    
   }
+  
 
   Future<Restaurant?> fetchRestaurantById(String restaurantId) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -123,6 +123,7 @@ class RestaurantRepository {
       if (restaurantSnapshot.exists && restaurantSnapshot.data() != null) {
         var restaurantDTO = RestaurantDTO.fromJson(restaurantId,restaurantSnapshot.data()!);
         Restaurant restaurant = restaurantDTO.toModel();
+        _restaurantsCacheDAO.cacheRestaurantFYP(restaurant);
 
         List<dynamic>? reviewRefs = restaurantSnapshot.data()?['reviewData']['userReviews'];
         if (reviewRefs is List<dynamic>) {
@@ -146,5 +147,18 @@ class RestaurantRepository {
       return null;
     }
   }
-  
+  Future<List<Restaurant>> fetchCachedFYP() async {
+    List<Restaurant> restaurants = [];
+    List<String> restaurantNames = await _restaurantsCacheDAO.getCachedRestaurantFYP();
+    if (restaurantNames.isNotEmpty) {
+      for (var name in restaurantNames) {
+        var details = await _restaurantsCacheDAO.findRestaurantByName(name);
+        if (details != null) {
+          restaurants.add(details);
+        }
+      }
+    }
+    return restaurants;
+  }
+
 }
