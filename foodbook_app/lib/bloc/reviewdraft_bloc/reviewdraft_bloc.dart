@@ -12,7 +12,6 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
     on<AddDraft>(_onAddDraft);
     on<UpdateDraft>(_onUpdateDraft);
     on<DeleteDraft>(_onDeleteDraft);
-    on<CheckUnfinishedDraft>(_onCheckUnfinishedDraft);
   }
 
   Future<void> _onLoadDrafts(LoadDrafts event, Emitter<ReviewDraftState> emit) async {
@@ -28,7 +27,6 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
   Future<void> _onLoadDraftsBySpot(LoadDraftsBySpot event, Emitter<ReviewDraftState> emit) async {
     emit(ReviewLoading());
     try {
-      // await reviewDraftRepository.killDatabase();
       final drafts = await reviewDraftRepository.getDraftsBySpot(event.spot);
       emit(ReviewLoaded(drafts));
     } catch (e) {
@@ -42,25 +40,12 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
   }
 
   Future<void> _onUpdateDraft(UpdateDraft event, Emitter<ReviewDraftState> emit) async {
-    await reviewDraftRepository.updateDraft(event.draft, event.spot);
+    await reviewDraftRepository.updateDraft(event.draft);
     add(LoadDrafts());
   }
 
   Future<void> _onDeleteDraft(DeleteDraft event, Emitter<ReviewDraftState> emit) async {
     await reviewDraftRepository.deleteDraft(event.id);
     add(LoadDrafts());
-  }
-
-  Future<void> _onCheckUnfinishedDraft(CheckUnfinishedDraft event, Emitter<ReviewDraftState> emit) async {
-    try {
-      final drafts = await reviewDraftRepository.getDraftsBySpot(event.restaurantId);
-      if (drafts.isNotEmpty) {
-        emit(UnfinishedDraftExists(drafts.isNotEmpty));
-      } else {
-        emit(NoUnifishedReviews());
-      }
-    } catch (e) {
-      emit(ReviewError());
-    }
   }
 }

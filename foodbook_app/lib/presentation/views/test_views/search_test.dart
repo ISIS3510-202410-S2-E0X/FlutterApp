@@ -5,10 +5,7 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
-import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_state.dart';
-import 'package:foodbook_app/data/data_sources/database_provider.dart';
-import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
@@ -126,36 +123,22 @@ Widget buildResults(BuildContext context) {
         } 
         if (state is RestaurantsLoadInProgress) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state is RestaurantsLoadSuccess) {
-            return ListView.builder(
-              itemCount: state.restaurants.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MultiBlocProvider(
-                          providers: [
-                            BlocProvider<ReviewDraftBloc>(
-                              create: (context) => ReviewDraftBloc(
-                                RepositoryProvider.of<ReviewDraftRepository>(context)
-                              ),
-                            ),
-                          ],
-                          child: SpotDetail(restaurant: state.restaurants[index]),
-                        ),
-                      ),
-                    );
-                  },
-                  child: RestaurantCard(restaurant: state.restaurants[index]),
-                );
-              }
-            );
-            //browseBloc.add(initailSearch());
-          } else if (state is RestaurantsLoadFailure) {
-              
-              return Center(child: Text("No results found for: $query"));
+        } 
+        else if (state is RestaurantsLoadSuccess) {
+          return ListView.builder(
+            itemCount: state.restaurants.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SpotDetail(restaurant: state.restaurants[index]),
+                    ),
+                  );
+                },
+                child: RestaurantCard(restaurant: state.restaurants[index]),
+              );
             }
           );
         } 

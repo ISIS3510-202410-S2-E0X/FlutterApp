@@ -17,19 +17,16 @@ class ReviewDraftRepository {
   }
 
   Future<List<ReviewDraft>> getDraftsBySpot(String spot) async {
-    await dbProvider.killDatabase();
     final db = await dbProvider.getDatabase();
     var res = await db.query(
       "ReviewDrafts",
       where: "spot = ?",
       whereArgs: [spot]
     );
-
-    if (res.length == 1) {
-      return res.map((c) => ReviewDraftDTO.fromJson(c).toModel()).toList();
-    }
-
-    return [];
+    
+    return res.isNotEmpty
+        ? res.map((c) => ReviewDraftDTO.fromJson(c).toModel()).toList()
+        : [];
   }
 
   Future<void> insertDraft(ReviewDraft draft) async {
@@ -38,13 +35,13 @@ class ReviewDraftRepository {
     await db.insert('ReviewDrafts', ReviewDraftDTO.fromModel(draft).toJson());
   }
 
-  Future<void> updateDraft(ReviewDraft draft, String spot) async {
+  Future<void> updateDraft(ReviewDraft draft) async {
     final db = await dbProvider.getDatabase();
     await db.update(
       'ReviewDrafts',
       ReviewDraftDTO.fromModel(draft).toJson(),
       where: 'spot = ?',
-      whereArgs: [spot]
+      whereArgs: [draft]
     );
   }
 
@@ -55,14 +52,5 @@ class ReviewDraftRepository {
       where: 'id = ?',
       whereArgs: [id]
     );
-  }
-
-  Future<void> deleteAllDrafts() async {
-    final db = await dbProvider.getDatabase();
-    await db.delete('ReviewDrafts');
-  }
-
-  Future<void> killDatabase() async {
-    await dbProvider.killDatabase();
   }
 }

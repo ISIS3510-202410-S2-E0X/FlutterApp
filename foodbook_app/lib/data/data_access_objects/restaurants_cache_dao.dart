@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class RestaurantsCacheDAO {
   static const String _cachedKey = 'cachedRestaurants';
-  static const String _cachedFyp = 'cachedFypRestaurants';
 
   Future<void> cacheRestaurant( Restaurant restaurant) async {
    SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -42,19 +41,5 @@ class RestaurantsCacheDAO {
   Future<List<String>> getCachedRestaurants() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getStringList(_cachedKey) ?? [];
-  }
-
-  Future<void> cacheRestaurantFYP( Restaurant restaurant) async {
-   SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> cache = prefs.getStringList(_cachedFyp) ?? [];
-    if (!cache.contains(restaurant.name)) {
-      cache.add(restaurant.name);
-      await prefs.setStringList(_cachedFyp, cache);
-    }
-    await prefs.setString(restaurant.name, serializeRestaurant(restaurant));
-  }
-  Future<List<String>> getCachedRestaurantFYP() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList(_cachedFyp) ?? [];
   }
 }
