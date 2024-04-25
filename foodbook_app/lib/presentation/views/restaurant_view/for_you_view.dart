@@ -1,35 +1,39 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
-import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
-import 'package:foodbook_app/data/data_sources/database_provider.dart';
-import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
 
 class ForYouView extends StatefulWidget {
-  const ForYouView({super.key});
-
+  ForYouView({super.key});
+  
   @override
   State<ForYouView> createState() => _ForYouViewState();
 }
 
 class _ForYouViewState extends State<ForYouView> {
+  final Connectivity _connectivity = Connectivity();
+  Stream<List<ConnectivityResult>> get _connectivityStream => _connectivity.onConnectivityChanged;
+
   @override
   void initState() {
     super.initState();
     // Solicita el usuario actual tan pronto como el widget se inicialice.
     BlocProvider.of<UserBloc>(context, listen: false).add(GetCurrentUser());
+    
   }
 
   @override

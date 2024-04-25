@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_state.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_state.dart';
-import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
-import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_state.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
@@ -267,9 +267,41 @@ class SpotDetailView extends StatelessWidget {
             backgroundColor: Colors.blue, // Button color
             minimumSize: const Size(double.infinity, 50),
           ),
-          onPressed: () => _checkForUnfinishedReview(context),
-          child: const Text('Leave a review', style: TextStyle(color:Colors.white)),
-        )
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  return MultiRepositoryProvider(
+                    providers: [
+                      RepositoryProvider<ReviewDraftRepository>(
+                        create: (context) => ReviewDraftRepository(DatabaseProvider()),
+                      ),
+                    ],                  
+                    child: MultiBlocProvider(
+                      providers: [
+                        BlocProvider<FoodCategoryBloc>(
+                          create: (context) => FoodCategoryBloc(
+                            categoryRepository: CategoryRepository(),
+                            maxSelection: 3,
+                            minSelection: 1,
+                          ),
+                        ),
+                        BlocProvider<StarsBloc>(
+                          create: (context) => StarsBloc(),
+                        ),
+                        BlocProvider<ReviewDraftBloc>(
+                          create: (context) => ReviewDraftBloc(ReviewDraftRepository(DatabaseProvider())),
+                        )
+                      ],
+                      child: CategoriesAndStarsView(restaurant: restaurant),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+          child: const Text('Leave a review', style:TextStyle(color:Colors.white)),
+        ),
       ),
     );
   }

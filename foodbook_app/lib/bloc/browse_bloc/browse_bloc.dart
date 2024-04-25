@@ -7,7 +7,6 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
-import 'package:http/http.dart';
 
 class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
   final RestaurantRepository restaurantRepository;
@@ -87,23 +86,7 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
       }
       
       emit(RestaurantsRecommendationLoadSuccess(recommendedRestaurants));
-    }
-    on ClientException catch (e) {
-      try{
-        print("fetching fyp from cache");
-        var restaurants = await restaurantRepository.fetchCachedFYP();
-        print("length fyp cache: ${restaurants.length}");
-        if (restaurants.isEmpty) {
-          emit(RestaurantsLoadFailure("hmm something went wrong, please verify you’re connected to the internet"));
-        }else{
-        emit(RestaurantsRecommendationLoadSuccess(restaurants));
-        }
-      } catch (e) {
-        emit(RestaurantsLoadFailure("hmm something went wrong, please verify you’re connected to the internet"));
-      }
-    } 
-    catch (error) {
-      print("Error fetching recommended restaurants: $error");
+    } catch (error) {
       emit(RestaurantsLoadFailure(error.toString()));
     }
   }
@@ -133,6 +116,4 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
       return matchesName && matchesPrice && matchesCategory;
     }).toList();
   }
-
-
 }

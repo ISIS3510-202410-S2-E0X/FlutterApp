@@ -4,10 +4,9 @@ import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_event.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_state.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
-import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
-import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
@@ -93,17 +92,17 @@ class _BookmarksViewState extends State<BookmarksView> {
                           itemCount: state.successfullyLoaded.length,
                           itemBuilder: (context, index) {
                             final restaurant = state.successfullyLoaded[index];
-                            return GestureDetector(
-                              onTap: () async {
-                                final restaurantId = restaurant.id;
+                              return GestureDetector(
+                                onTap: ()async {
+                                  final restaurantId = restaurant.id;
 
-                                // Use a RestaurantBloc event to fetch the restaurant details
-                                context.read<SpotDetailBloc>().add(FetchRestaurantDetail(restaurantId));
+                                  // Use a RestaurantBloc event to fetch the restaurant details
+                                  context.read<SpotDetailBloc>().add(FetchRestaurantDetail(restaurantId));
 
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => MultiBlocProvider(
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MultiBlocProvider(
                                         providers: [
                                           BlocProvider<ReviewDraftBloc>(
                                             create: (context) => ReviewDraftBloc(
@@ -113,11 +112,11 @@ class _BookmarksViewState extends State<BookmarksView> {
                                         ],
                                         child: SpotDetail(restaurantId: restaurantId),
                                       ),
-                                  ),
-                                );
-                              },
-                              child: RestaurantCard(restaurant: restaurant),
-                            );
+                                    ),
+                                  );
+                                },
+                                child: RestaurantCard(restaurant: restaurant),
+                              );
                           },
                         ),
                       ),

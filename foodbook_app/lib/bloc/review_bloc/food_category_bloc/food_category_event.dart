@@ -1,4 +1,3 @@
-
 import 'package:foodbook_app/data/dtos/category_dto.dart';
 
 abstract class FoodCategoryEvent {}

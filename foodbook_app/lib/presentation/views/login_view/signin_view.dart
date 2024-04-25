@@ -6,10 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
-import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
-import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 
 
@@ -42,20 +40,8 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
         if (state is Authenticated) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) {
-              return MultiBlocProvider(
-                providers: [
-                  BlocProvider<BrowseBloc>(
-                    create: (context) => BrowseBloc(
-                      restaurantRepository: RestaurantRepository(),
-                      reviewRepository: ReviewRepository(),
-                    )..add(LoadRestaurants()),
-                  ),
-                  BlocProvider<ReviewDraftBloc>(
-                    create: (context) => ReviewDraftBloc(
-                      RepositoryProvider.of<ReviewDraftRepository>(context),
-                    ),
-                  ),
-                ],
+              return BlocProvider<BrowseBloc>(
+                create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(LoadRestaurants()),
                 child: BrowseView(),
               );
             }),
@@ -159,13 +145,16 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
           );
         } else {
           return Center(
-            child: Container(
+            child: Center(
+              child: Container(
               child: Text(
                 'No connection, please make sure you have internet access before attempting to login.',
                 style: TextStyle(
-                  color: Colors.red,
-                  fontSize: screenSize.width * 0.04,
+                color: Colors.red,
+                fontSize: screenSize.width * 0.04,
                 ),
+                textAlign: TextAlign.center,
+              ),
               ),
             ),
           );
