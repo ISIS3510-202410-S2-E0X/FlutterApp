@@ -32,7 +32,7 @@ class BrowseView extends StatelessWidget {
       child: StreamBuilder<ConnectivityResult>(
         stream: _connectivityStream.asyncExpand((results) => Stream.fromIterable(results)),
         builder: (context, snapshot) {
-          bool isOffline = snapshot.data == ConnectivityResult.none;
+          bool isOffline = snapshot.data == ConnectivityResult.none || snapshot.connectionState == ConnectionState.none;
 
           return Scaffold(
             appBar: AppBar(
