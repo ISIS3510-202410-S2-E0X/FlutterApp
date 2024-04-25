@@ -21,6 +21,8 @@ class BookmarkManager {
       await prefs.setStringList(_bookmarksKey, bookmarks);
     }
     // Serialize and store the restaurant details
+    final revision = serializeRestaurant(restaurant);
+    print("Ver en BOOKMARK: $revision");
     await prefs.setString(restaurant.name, serializeRestaurant(restaurant));
   }
 
