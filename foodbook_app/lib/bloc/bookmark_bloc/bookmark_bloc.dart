@@ -8,14 +8,14 @@ class BookmarkBloc extends Bloc<BookmarkEvent, BookmarkState> {
 
   BookmarkBloc(this.bookmarkManager) : super(BookmarkInitial()) {
     on<CheckBookmark>((event, emit) async {
-      bool isBookmarked = await bookmarkManager.isBookmarked(event.restaurantName);
+      bool isBookmarked = await bookmarkManager.isBookmarked(event.restaurantId);
       emit(BookmarkLoaded(isBookmarked));
     });
 
     on<ToggleBookmark>((event, emit) async {
-      bool isBookmarked = await bookmarkManager.isBookmarked(event.restaurant.name);
+      bool isBookmarked = await bookmarkManager.isBookmarked(event.restaurant.id);
       if (isBookmarked) {
-        await bookmarkManager.unbookmarkRestaurant(event.restaurant.name);
+        await bookmarkManager.unbookmarkRestaurant(event.restaurant.id);
       } else {
         await bookmarkManager.bookmarkRestaurant(event.restaurant);
       }

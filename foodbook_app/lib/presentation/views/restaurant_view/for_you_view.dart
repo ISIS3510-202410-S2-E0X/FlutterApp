@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
@@ -9,6 +10,7 @@ import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
+import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
@@ -30,7 +32,11 @@ class _ForYouViewState extends State<ForYouView> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
+    return BlocProvider<BookmarkBloc>(
+      create: (context) => BookmarkBloc(
+        BookmarkManager(), 
+      ),
+      child:PopScope(
       canPop: false,
       child: MultiBlocListener(
         listeners: [
@@ -97,7 +103,13 @@ class _ForYouViewState extends State<ForYouView> {
                         },
                       );
                     } else if (state is RestaurantsLoadFailure) {
-                      return const Center(child: Text('Failed to load restaurants'));
+                        return Center(
+                        child: Text(
+                          state.error.toString().replaceAll('Exception:', ''),
+                          textAlign: TextAlign.center,
+                        ),
+                        );
+
                     }
                     return const Center(child: Text('No restaurants to show'));
                   },
@@ -116,6 +128,7 @@ class _ForYouViewState extends State<ForYouView> {
             },
           )),
         )
+      ),
     );
   }
 }

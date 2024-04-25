@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
@@ -8,6 +9,7 @@ import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_state.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
+import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
@@ -33,7 +35,7 @@ class _SearchPage2State extends State<SearchPage2> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         actions: [
             Container(
               width: MediaQuery.of(context).size.width * 0.5, // 40% of screen width
@@ -99,20 +101,28 @@ class CustomSearchDelegate extends SearchDelegate<String> {
     );
   }
 
-  @override
-  Widget buildResults(BuildContext context) {
-    browseBloc.add(SearchButtonPressed2(query: query));
-    return BlocBuilder<BrowseBloc, BrowseState>(
+@override
+Widget buildResults(BuildContext context) {
+  return MultiBlocProvider(
+    providers: [
+      BlocProvider<BrowseBloc>(
+        create: (context) => browseBloc,
+      ),
+      BlocProvider<BookmarkBloc>(
+        create: (context) => BookmarkBloc(BookmarkManager()),
+      ),
+    ],
+    child: BlocBuilder<BrowseBloc, BrowseState>(
       bloc: browseBloc,
       builder: (context, state) {
-        //browseBloc.add(SearchWord2(query: query));
         if (state is SearchLoading2) {
           print("Saving the query to search history: $query");
-          browseBloc.add(FilterRestaurants(name: query));
-          // return BlocProvider<BrowseBloc>(
-          //       create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(FilterRestaurants(name: query)),
-          //       child: BrowseView(),
-          //     );
+          if (query != '') {
+            browseBloc.add(FilterRestaurants(name: query));
+          }
+          
+          
+          return const Center(child: CircularProgressIndicator());
         } 
         if (state is RestaurantsLoadInProgress) {
           return const Center(child: CircularProgressIndicator());
@@ -147,12 +157,19 @@ class CustomSearchDelegate extends SearchDelegate<String> {
               
               return Center(child: Text("No results found for: $query"));
             }
+          );
+        } 
+        else if (state is RestaurantsLoadFailure) {
+          return Center(child: Text("No results found for: $query"));
+        } 
         else {
           return Center(child: Text("No results found for: $query"));
         }
       },
-    );
-  }
+    ),
+  );
+}
+
 
   // @override
   // Widget buildResults(BuildContext context) {
@@ -188,7 +205,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   @override
   void close(BuildContext context, String result) {
     super.close(context, result);
-    browseBloc.add(LoadRestaurants());
+    //browseBloc.add(LoadRestaurants());
   }
 }
 
