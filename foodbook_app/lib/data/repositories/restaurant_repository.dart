@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:foodbook_app/data/data_access_objects/restaurants_cache_dao.dart';
+
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/review.dart';
 import 'package:http/http.dart' as http;
@@ -11,7 +12,6 @@ import 'package:foodbook_app/data/models/restaurant.dart';
 
 class RestaurantRepository {
   final RestaurantsCacheDAO _restaurantsCacheDAO = RestaurantsCacheDAO();
-
   Future<List<Restaurant>> fetchRestaurants() async {
   List<Restaurant> restaurants = [];
   try {
@@ -75,7 +75,7 @@ class RestaurantRepository {
       rethrow;
     }
   }
-  
+
   Future<String?> findRestaurantIdByName(String name) async {
     try {
       var querySnapshot = await FirebaseFirestore.instance

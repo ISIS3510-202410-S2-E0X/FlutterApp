@@ -55,6 +55,7 @@ class BrowseView extends StatelessWidget {
             elevation: 0, // Remove shadow
             actions: [
               IconButton(
+                
                 icon: const Icon(Icons.account_circle, color:  Color.fromARGB(255, 0, 140, 255)), // Profile icon
                 onPressed: () {
                   //Navigate to the profile view

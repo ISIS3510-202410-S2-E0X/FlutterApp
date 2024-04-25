@@ -23,7 +23,7 @@ import 'firebase_options.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
+  //FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]); // Set up background message handler
