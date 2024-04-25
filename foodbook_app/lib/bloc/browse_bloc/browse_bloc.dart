@@ -27,22 +27,8 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
     emit(RestaurantsLoadInProgress());
     
     try {
-      print("Fetching restaurants");
       final restaurants = await restaurantRepository.fetchRestaurants();
-      print("Restaurants size: ${restaurants.length}");
-      if (restaurants.isEmpty) {
-        final cachedRests = await restaurantRepository.fetchRestaurantsFromCache();
-        if (cachedRests.isEmpty) {
-          emit(RestaurantsLoadFailure('No restaurants found'));
-        }
-        
-        emit(RestaurantsLoadSuccess(cachedRests));
-        print("Fetched restaurants from cache");
-      }
-      if (restaurants.isNotEmpty) {
-        emit(RestaurantsLoadSuccess(restaurants));
-      }
-      
+      emit(RestaurantsLoadSuccess(restaurants));
     } catch (error) {
       emit(RestaurantsLoadFailure(error.toString()));
     }
