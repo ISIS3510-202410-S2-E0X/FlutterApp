@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/data_access_objects/shared_preferences_dao.dart';
+import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/auth_repository.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
 import 'package:foodbook_app/notifications/background_task.dart';
@@ -73,28 +76,40 @@ class MyApp extends StatelessWidget {
 
    @override
    Widget build(BuildContext context) {
-     return RepositoryProvider(
-       create: (context) => AuthRepository(),
-       child: MultiBlocProvider(
-         providers: [
-           BlocProvider<AuthBloc>(
-             create: (context) => AuthBloc(
-               authRepository: RepositoryProvider.of<AuthRepository>(context),
-             ),
-           ),
-           BlocProvider<UserBloc>(
-             create: (context) => UserBloc(),
-           ),
-         ],
-         child: MaterialApp(
-           title: 'FoodBook',
-           theme: ThemeData(
-             primarySwatch: Colors.blue,
-           ),
-           home: const SignInView(),
-         ),
-       ),
-     );
+     return MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<AuthRepository>(
+            create: (context) => AuthRepository(),
+          ),
+          RepositoryProvider<ReviewDraftRepository>(
+            create: (context) => ReviewDraftRepository(DatabaseProvider()),
+          ),
+        ],
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<AuthBloc>(
+              create: (context) => AuthBloc(
+                authRepository: RepositoryProvider.of<AuthRepository>(context, listen: false),
+              ),
+            ),
+            BlocProvider<UserBloc>(
+              create: (context) => UserBloc(),
+            ),
+            BlocProvider<ReviewDraftBloc>(
+              create: (context) => ReviewDraftBloc(
+                RepositoryProvider.of<ReviewDraftRepository>(context, listen: false),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            title: 'FoodBook',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            home: const SignInView(),
+          ),
+        ),
+      );
   }
 
 //   Widget build(BuildContext context) {
