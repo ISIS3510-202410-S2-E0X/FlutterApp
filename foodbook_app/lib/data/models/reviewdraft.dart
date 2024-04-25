@@ -1,3 +1,5 @@
+import 'package:foodbook_app/data/dtos/category_dto.dart';
+
 class ReviewDraft {
   final String user;
   final String? title;
@@ -6,7 +8,7 @@ class ReviewDraft {
   final String? spot;
   final int uploaded; // SQLite no maneja Boolean, así que se convierte a int
   final Map<String, int> ratings;
-  final List<dynamic> selectedCategories;
+  final List<CategoryDTO> selectedCategories;
 
   ReviewDraft({
     required this.user,

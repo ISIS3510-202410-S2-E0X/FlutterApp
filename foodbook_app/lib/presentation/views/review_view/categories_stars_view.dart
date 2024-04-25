@@ -10,6 +10,7 @@ import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
+import 'package:foodbook_app/data/dtos/category_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
@@ -25,8 +26,13 @@ import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_s
 
 class CategoriesAndStarsView extends StatefulWidget {
   final Restaurant restaurant;
+  final ReviewDraft? initialReview;
 
-  const CategoriesAndStarsView({super.key, required this.restaurant});
+  const CategoriesAndStarsView({
+    super.key,
+    required this.restaurant,
+    this.initialReview,  
+  });
 
   @override
   State<CategoriesAndStarsView> createState() => _CategoriesAndStarsViewState();
@@ -42,6 +48,14 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
+    if (widget.initialReview != null) {
+      reviewTitle = widget.initialReview!.title;
+      reviewContent = widget.initialReview!.content;
+      imageUrl = widget.initialReview!.image;
+      print('INITIAL REVIEW: ${widget.initialReview!.selectedCategories}');
+      
+      BlocProvider.of<FoodCategoryBloc>(context).add(SetInitialCategoriesEvent(widget.initialReview!.selectedCategories.cast<CategoryDTO>()));
+    }
   }
 
   @override
@@ -105,14 +119,14 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
       content: reviewContent,
       image: imageUrl,
       spot: widget.restaurant.name,
-      uploaded: 0, // Assuming 'uploaded' is a boolean
+      uploaded: 0,
       ratings: {
         RatingsKeys.cleanliness: (starsBloc.newRatings[RatingsKeys.cleanliness] ?? 0.0).toInt(),
         RatingsKeys.waitingTime: (starsBloc.newRatings[RatingsKeys.waitingTime] ?? 0.0).toInt(),
         RatingsKeys.service: (starsBloc.newRatings[RatingsKeys.service] ?? 0.0).toInt(),
         RatingsKeys.foodQuality: (starsBloc.newRatings[RatingsKeys.foodQuality] ?? 0.0).toInt(),
       },
-      selectedCategories: foodCategoryBloc.selectedCategories.map((category) => category.name).toList(),
+      selectedCategories: foodCategoryBloc.selectedCategories.map((category) => CategoryDTO(name: category.name)).toList(),
     );
 
     BlocProvider.of<ReviewDraftBloc>(context).add(AddDraft(draft));
@@ -259,9 +273,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
                         return MultiSelectChip(
                           [category.name],
                           const [''],
-                          onSelectionChanged: (selectedCategories) {
-                            // TO-DO: actions when selected categories change
-                          },
+                          onSelectionChanged: (selectedCategories) {/* ... */},
                           maxSelection: 3,
                         );
                       },
@@ -280,9 +292,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
                         return MultiSelectChip(
                           [category.name],
                           categoriesSelected.map((e) => e.name).toList(),
-                          onSelectionChanged: (selectedCategories) {
-                            // TO-DO: actions when selected categories change
-                          },
+                          onSelectionChanged: (selectedCategories) {/* ... */},
                           maxSelection: 3,
                         );
                       },

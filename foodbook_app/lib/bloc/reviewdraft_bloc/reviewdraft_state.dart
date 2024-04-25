@@ -21,4 +21,6 @@ class UnfinishedDraftExists extends ReviewDraftState {
   UnfinishedDraftExists(this.exists);
 }
 
+class NoUnifishedReviews extends ReviewDraftState {}
+
 class ReviewError extends ReviewDraftState {}

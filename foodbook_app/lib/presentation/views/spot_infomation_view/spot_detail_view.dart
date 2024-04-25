@@ -24,28 +24,54 @@ class SpotDetail extends StatelessWidget {
   });
 
   void _navigateToReviewPage(BuildContext context, { bool continueDraft = false }) {
+    ReviewDraftBloc reviewDraftBloc = BlocProvider.of<ReviewDraftBloc>(context);
+
+    if (continueDraft) {
+      print('Continuing draft');
+      reviewDraftBloc.add(LoadDraftsBySpot(restaurant.name));
+
+      reviewDraftBloc.stream.firstWhere((state) => state is ReviewLoaded).then((state) {
+        if (state is ReviewLoaded && state.drafts.isNotEmpty) {
+          print('Draft found, navigating with draft');
+          _pushCategoriesAndStarsView(context, state.drafts.first);
+        } else {
+          print('No draft found, navigating to new review page');
+          _pushCategoriesAndStarsView(context);
+        }
+      }).catchError((error) {
+        // Manejar cualquier error que pueda ocurrir durante el proceso
+        print('Error: $error');
+        _pushCategoriesAndStarsView(context); // Navegar sin borrador si hay un error
+      });
+    } else {
+      print('Starting new draft');
+      _pushCategoriesAndStarsView(context);
+    }
+  }
+
+  void _pushCategoriesAndStarsView(BuildContext context, [ReviewDraft? draft]) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
           return MultiBlocProvider(
-              providers: [
-                BlocProvider<ReviewDraftBloc>(
-                  create: (context) => ReviewDraftBloc(
-                    ReviewDraftRepository(DatabaseProvider())
-                  ),
+            providers: [
+              BlocProvider<ReviewDraftBloc>(
+                create: (context) => ReviewDraftBloc(
+                  ReviewDraftRepository(DatabaseProvider())
                 ),
-                BlocProvider<FoodCategoryBloc>(
-                  create: (context) => FoodCategoryBloc(
-                    categoryRepository: CategoryRepository(),
-                    maxSelection: 3,
-                    minSelection: 1,
-                  ),
+              ),
+              BlocProvider<FoodCategoryBloc>(
+                create: (context) => FoodCategoryBloc(
+                  categoryRepository: CategoryRepository(),
+                  maxSelection: 3,
+                  minSelection: 1,
                 ),
-                BlocProvider<StarsBloc>(
-                  create: (context) => StarsBloc(),
-                ),
-              ],
-              child: CategoriesAndStarsView(restaurant: restaurant),
+              ),
+              BlocProvider<StarsBloc>(
+                create: (context) => StarsBloc(),
+              ),
+            ],
+            child: CategoriesAndStarsView(restaurant: restaurant, initialReview: draft),
           );
         },
       ),
@@ -53,40 +79,39 @@ class SpotDetail extends StatelessWidget {
   }
 
   void _checkForUnfinishedReview(BuildContext context) {
-    BlocProvider.of<ReviewDraftBloc>(context).add(CheckUnfinishedDraft(restaurant.name));
+    final reviewDraftBloc = BlocProvider.of<ReviewDraftBloc>(context);
+    reviewDraftBloc.add(CheckUnfinishedDraft(restaurant.name));
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return BlocBuilder<ReviewDraftBloc, ReviewDraftState>(
-          builder: (context, state) {
-            if (state is UnfinishedDraftExists) {
-              return AlertDialog(
-                title: const Text('Unfinished Review'),
-                content: const Text('You have an unfinished draft. Would you like to continue?'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      _navigateToReviewPage(context, continueDraft: true);
-                    },
-                    child: const Text('Continue Draft'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      _navigateToReviewPage(context, continueDraft: false);
-                    },
-                    child: const Text('Start New'),
-                  ),
-                ],
-              );
-            }
-            return const SizedBox.shrink(); // Handle state when no draft exists
-          },
+    reviewDraftBloc.stream.firstWhere((state) => state is UnfinishedDraftExists || state is NoUnifishedReviews).then((state) {
+      if (state is UnfinishedDraftExists) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Unfinished Review'),
+            content: const Text('You have an unfinished draft. Would you like to continue?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _navigateToReviewPage(context, continueDraft: true);
+                },
+                child: const Text('Continue Draft'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _navigateToReviewPage(context, continueDraft: false);
+                },
+                child: const Text('Start New'),
+              ),
+            ],
+          ),
         );
-      },
-    );
+      } else {
+        // No hay borrador inacabado, procede con un nuevo borrador
+        _navigateToReviewPage(context, continueDraft: false);
+      }
+    });
   }
 
   @override

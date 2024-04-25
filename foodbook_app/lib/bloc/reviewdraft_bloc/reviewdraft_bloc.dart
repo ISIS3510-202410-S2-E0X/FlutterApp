@@ -28,7 +28,9 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
   Future<void> _onLoadDraftsBySpot(LoadDraftsBySpot event, Emitter<ReviewDraftState> emit) async {
     emit(ReviewLoading());
     try {
+      // await reviewDraftRepository.killDatabase();
       final drafts = await reviewDraftRepository.getDraftsBySpot(event.spot);
+      print(drafts.length);
       emit(ReviewLoaded(drafts));
     } catch (e) {
       emit(ReviewError());
@@ -53,7 +55,11 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
   Future<void> _onCheckUnfinishedDraft(CheckUnfinishedDraft event, Emitter<ReviewDraftState> emit) async {
     try {
       final drafts = await reviewDraftRepository.getDraftsBySpot(event.restaurantId);
-      emit(UnfinishedDraftExists(drafts.isNotEmpty));
+      if (drafts.isNotEmpty) {
+        emit(UnfinishedDraftExists(drafts.isNotEmpty));
+      } else {
+        emit(NoUnifishedReviews());
+      }
     } catch (e) {
       emit(ReviewError());
     }

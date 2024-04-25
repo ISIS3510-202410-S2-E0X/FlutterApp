@@ -23,7 +23,7 @@ class ReviewDraftRepository {
       where: "spot = ?",
       whereArgs: [spot]
     );
-    
+
     if (res.length == 1) {
       return res.map((c) => ReviewDraftDTO.fromJson(c).toModel()).toList();
     }

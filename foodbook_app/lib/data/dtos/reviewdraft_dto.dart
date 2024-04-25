@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:foodbook_app/data/dtos/category_dto.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
 
 class ReviewDraftDTO {
@@ -9,7 +10,7 @@ class ReviewDraftDTO {
   final String? spot;
   final int uploaded;
   final Map<String, int> ratings;
-  final List<dynamic> selectedCategories;
+  final List<CategoryDTO> selectedCategories;
 
   ReviewDraftDTO({
     required this.user,
@@ -69,9 +70,9 @@ class ReviewDraftDTO {
 
   factory ReviewDraftDTO.fromJson(Map<String, dynamic> json) {
     var jsonCategories = [];
-    if (json['category1'] != null) jsonCategories.add(json['category1']);
-    if (json['category2'] != null) jsonCategories.add(json['category2']);
-    if (json['category3'] != null) jsonCategories.add(json['category3']);
+    if (json['category1'] != null) jsonCategories.add({ 'name' : json['category1'] });
+    if (json['category2'] != null) jsonCategories.add({ 'name' : json['category2'] });
+    if (json['category3'] != null) jsonCategories.add({ 'name' : json['category3'] });
 
     return ReviewDraftDTO(
       user: json['user'] as String,
@@ -86,7 +87,7 @@ class ReviewDraftDTO {
         RatingsKeys.foodQuality: json['foodQuality'] as int,
         RatingsKeys.waitingTime: json['waitTime'] as int,
       },
-      selectedCategories: jsonCategories,
+      selectedCategories: jsonCategories.map((category) => CategoryDTO.fromJson(category)).toList(),
     );
   }
 }
