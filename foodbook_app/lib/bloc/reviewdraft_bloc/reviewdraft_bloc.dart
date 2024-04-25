@@ -12,6 +12,7 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
     on<AddDraft>(_onAddDraft);
     on<UpdateDraft>(_onUpdateDraft);
     on<DeleteDraft>(_onDeleteDraft);
+    on<CheckUnfinishedDraft>(_onCheckUnfinishedDraft);
   }
 
   Future<void> _onLoadDrafts(LoadDrafts event, Emitter<ReviewDraftState> emit) async {
@@ -47,5 +48,14 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
   Future<void> _onDeleteDraft(DeleteDraft event, Emitter<ReviewDraftState> emit) async {
     await reviewDraftRepository.deleteDraft(event.id);
     add(LoadDrafts());
+  }
+
+  Future<void> _onCheckUnfinishedDraft(CheckUnfinishedDraft event, Emitter<ReviewDraftState> emit) async {
+    try {
+      final drafts = await reviewDraftRepository.getDraftsBySpot(event.restaurantId);
+      emit(UnfinishedDraftExists(drafts.isNotEmpty));
+    } catch (e) {
+      emit(ReviewError());
+    }
   }
 }

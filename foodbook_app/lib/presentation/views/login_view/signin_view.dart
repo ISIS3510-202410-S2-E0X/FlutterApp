@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 
 
@@ -23,8 +25,20 @@ class _SignInViewState extends State<SignInView> {
         if (state is Authenticated) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) {
-              return BlocProvider<BrowseBloc>(
-                create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(LoadRestaurants()),
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider<BrowseBloc>(
+                    create: (context) => BrowseBloc(
+                      restaurantRepository: RestaurantRepository(),
+                      reviewRepository: ReviewRepository(),
+                    )..add(LoadRestaurants()),
+                  ),
+                  BlocProvider<ReviewDraftBloc>(
+                    create: (context) => ReviewDraftBloc(
+                      RepositoryProvider.of<ReviewDraftRepository>(context),
+                    ),
+                  ),
+                ],
                 child: BrowseView(),
               );
             }),

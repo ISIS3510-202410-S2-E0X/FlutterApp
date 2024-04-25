@@ -28,3 +28,8 @@ class DeleteDraft extends ReviewDraftEvent {
   final int id;
   DeleteDraft(this.id);
 }
+
+class CheckUnfinishedDraft extends ReviewDraftEvent {
+  final String restaurantId;
+  CheckUnfinishedDraft(this.restaurantId);
+}

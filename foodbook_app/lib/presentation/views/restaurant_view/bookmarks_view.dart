@@ -4,6 +4,7 @@ import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_event.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_state.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
@@ -69,7 +70,7 @@ class _BookmarksViewState extends State<BookmarksView> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SpotDetail(restaurant: restaurant, reviewDraftRepository: ReviewDraftRepository(DatabaseProvider())),
+                            builder: (context) => SpotDetail(restaurant: restaurant),
                           ),
                         );
                       },
@@ -90,17 +91,26 @@ class _BookmarksViewState extends State<BookmarksView> {
                           itemCount: state.successfullyLoaded.length,
                           itemBuilder: (context, index) {
                             final restaurant = state.successfullyLoaded[index];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SpotDetail(restaurant: restaurant, reviewDraftRepository: ReviewDraftRepository(DatabaseProvider())),
-                                  ),
-                                );
-                              },
-                              child: RestaurantCard(restaurant: restaurant),
-                            );
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MultiBlocProvider(
+                                        providers: [
+                                          BlocProvider<ReviewDraftBloc>(
+                                            create: (context) => ReviewDraftBloc(
+                                              RepositoryProvider.of<ReviewDraftRepository>(context)
+                                            ),
+                                          ),
+                                        ],
+                                        child: SpotDetail(restaurant: restaurant),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: RestaurantCard(restaurant: restaurant),
+                              );
                           },
                         ),
                       ),

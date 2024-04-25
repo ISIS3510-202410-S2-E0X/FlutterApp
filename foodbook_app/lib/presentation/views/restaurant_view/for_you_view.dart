@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
@@ -78,7 +79,16 @@ class _ForYouViewState extends State<ForYouView> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SpotDetail(restaurant: state.recommendedRestaurants[index], reviewDraftRepository: ReviewDraftRepository(DatabaseProvider())),
+                                  builder: (context) => MultiBlocProvider(
+                                    providers: [
+                                      BlocProvider<ReviewDraftBloc>(
+                                        create: (context) => ReviewDraftBloc(
+                                          RepositoryProvider.of<ReviewDraftRepository>(context)
+                                        ),
+                                      ),
+                                    ],
+                                    child: SpotDetail(restaurant: state.recommendedRestaurants[index]),
+                                  ),
                                 ),
                               );
                             },

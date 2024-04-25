@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_state.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
@@ -15,26 +17,23 @@ import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_map.da
 
 class SpotDetail extends StatelessWidget {
   final Restaurant restaurant;
-  final ReviewDraftRepository reviewDraftRepository;
 
   const SpotDetail({
     super.key,
     required this.restaurant,
-    required this.reviewDraftRepository
   });
 
-  void _navigateToReviewPage(BuildContext context) {
+  void _navigateToReviewPage(BuildContext context, { bool continueDraft = false }) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return MultiRepositoryProvider(
-            providers: [
-              RepositoryProvider<ReviewDraftRepository>(
-                create: (context) => ReviewDraftRepository(DatabaseProvider()),
-              ),
-            ],                  
-            child: MultiBlocProvider(
+          return MultiBlocProvider(
               providers: [
+                BlocProvider<ReviewDraftBloc>(
+                  create: (context) => ReviewDraftBloc(
+                    ReviewDraftRepository(DatabaseProvider())
+                  ),
+                ),
                 BlocProvider<FoodCategoryBloc>(
                   create: (context) => FoodCategoryBloc(
                     categoryRepository: CategoryRepository(),
@@ -45,25 +44,49 @@ class SpotDetail extends StatelessWidget {
                 BlocProvider<StarsBloc>(
                   create: (context) => StarsBloc(),
                 ),
-                BlocProvider<ReviewDraftBloc>(
-                  create: (context) => ReviewDraftBloc(ReviewDraftRepository(DatabaseProvider())),
-                )
               ],
               child: CategoriesAndStarsView(restaurant: restaurant),
-            ),
           );
         },
       ),
     );
   }
 
-  Future<bool> hasUnfinishedReview(String restaurant) async {
-    List<ReviewDraft> reviewDraft = await reviewDraftRepository.getDraftsBySpot(restaurant);
-    if (reviewDraft.isNotEmpty) {
-      return true;
-    }
-    
-    return Future.delayed(const Duration(milliseconds: 500), () => false); 
+  void _checkForUnfinishedReview(BuildContext context) {
+    BlocProvider.of<ReviewDraftBloc>(context).add(CheckUnfinishedDraft(restaurant.name));
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return BlocBuilder<ReviewDraftBloc, ReviewDraftState>(
+          builder: (context, state) {
+            if (state is UnfinishedDraftExists) {
+              return AlertDialog(
+                title: const Text('Unfinished Review'),
+                content: const Text('You have an unfinished draft. Would you like to continue?'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _navigateToReviewPage(context, continueDraft: true);
+                    },
+                    child: const Text('Continue Draft'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _navigateToReviewPage(context, continueDraft: false);
+                    },
+                    child: const Text('Start New'),
+                  ),
+                ],
+              );
+            }
+            return const SizedBox.shrink(); // Handle state when no draft exists
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -190,45 +213,8 @@ class SpotDetail extends StatelessWidget {
             backgroundColor: Colors.blue, // Button color
             minimumSize: const Size(double.infinity, 50),
           ),
-          onPressed: () async {
-            bool hasDraft = await hasUnfinishedReview(restaurant.name);
-            if (hasDraft) {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Unfinished Review', textAlign: TextAlign.center),
-                    content: const Text('Looks like you have a draft', textAlign: TextAlign.center),
-                    actions: <Widget>[
-                      Center(
-                        child: TextButton(
-                          onPressed: () {
-                            
-                          },
-                          child: const Text('Create review from draft', style: TextStyle(
-                            fontSize: 14
-                          ),),
-                        ),
-                      ),
-                      Center(
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            _navigateToReviewPage(context);
-                          },
-                          child: const Text('Create new review', style: TextStyle(
-                            fontSize: 14
-                          ),),
-                        ),
-                      )
-                    ],
-                  );
-                },
-              );
-            } else {
-              _navigateToReviewPage(context);
-            }
-          }, child: const Text('Leave a review', style: TextStyle(color:Colors.white)),
+          onPressed: () => _checkForUnfinishedReview(context),
+          child: const Text('Leave a review', style: TextStyle(color:Colors.white)),
         )
       ),
     );

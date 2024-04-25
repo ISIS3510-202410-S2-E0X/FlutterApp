@@ -16,4 +16,9 @@ class ReviewDraftLoaded extends ReviewDraftState {
   ReviewDraftLoaded(this.draft);
 }
 
+class UnfinishedDraftExists extends ReviewDraftState {
+  final bool exists;
+  UnfinishedDraftExists(this.exists);
+}
+
 class ReviewError extends ReviewDraftState {}

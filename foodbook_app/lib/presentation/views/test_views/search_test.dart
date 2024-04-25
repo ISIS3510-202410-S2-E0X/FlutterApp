@@ -4,6 +4,7 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_state.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
@@ -121,11 +122,19 @@ class CustomSearchDelegate extends SearchDelegate<String> {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                  // Navigate to another view when the restaurant card is clicked
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SpotDetail(restaurant: state.restaurants[index], reviewDraftRepository: ReviewDraftRepository(DatabaseProvider())),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MultiBlocProvider(
+                          providers: [
+                            BlocProvider<ReviewDraftBloc>(
+                              create: (context) => ReviewDraftBloc(
+                                RepositoryProvider.of<ReviewDraftRepository>(context)
+                              ),
+                            ),
+                          ],
+                          child: SpotDetail(restaurant: state.restaurants[index]),
+                        ),
                       ),
                     );
                   },

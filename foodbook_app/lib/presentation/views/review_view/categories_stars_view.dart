@@ -7,6 +7,7 @@ import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_blo
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
@@ -93,40 +94,28 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
     print('IMAGEN: $imageUrl');
   }
 
-  void _saveDraft() async {
-    // Acceder a los BLoCs para obtener datos necesarios
+  void _saveDraft() {
     final userBlocState = BlocProvider.of<UserBloc>(context).state;
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
     final starsBloc = BlocProvider.of<StarsBloc>(context);
 
-    // Suponemos que AuthenticatedUserState contiene el email del usuario
     ReviewDraft draft = ReviewDraft(
       user: userBlocState.email,
       title: reviewTitle,
       content: reviewContent,
       image: imageUrl,
       spot: widget.restaurant.name,
-      uploaded: 0,
+      uploaded: 0, // Assuming 'uploaded' is a boolean
       ratings: {
         RatingsKeys.cleanliness: (starsBloc.newRatings[RatingsKeys.cleanliness] ?? 0.0).toInt(),
-        RatingsKeys.waitingTime: (starsBloc.newRatings[RatingsKeys.waitingTime] ?? 0).toInt(),
-        RatingsKeys.service: (starsBloc.newRatings[RatingsKeys.service] ?? 0).toInt(),
-        RatingsKeys.foodQuality: (starsBloc.newRatings[RatingsKeys.foodQuality] ?? 0).toInt(),
+        RatingsKeys.waitingTime: (starsBloc.newRatings[RatingsKeys.waitingTime] ?? 0.0).toInt(),
+        RatingsKeys.service: (starsBloc.newRatings[RatingsKeys.service] ?? 0.0).toInt(),
+        RatingsKeys.foodQuality: (starsBloc.newRatings[RatingsKeys.foodQuality] ?? 0.0).toInt(),
       },
       selectedCategories: foodCategoryBloc.selectedCategories.map((category) => category.name).toList(),
     );
 
-    try {
-      // Acceder al repository para guardar el borrador
-      final reviewDraftRepository = RepositoryProvider.of<ReviewDraftRepository>(context);
-      // await reviewDraftRepository.killDatabase();
-      await reviewDraftRepository.insertDraft(draft);
-      print("Draft saved successfully!");
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Draft saved successfully")));
-    } catch (e) {
-      print("Error saving draft: $e");
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error saving draft")));
-    }
+    BlocProvider.of<ReviewDraftBloc>(context).add(AddDraft(draft));
   }
 
   @override
@@ -140,7 +129,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
             context: context,
             builder: (context) => AlertDialog(
               title: const Text('Would you like yo save this review as a draft?'),
-              content: const Text('This will delete your latest review?'),
+              content: const Text('This will delete your latest draft'),
               actions: <Widget>[
                 TextButton(
                   child: const Text('Yes'),

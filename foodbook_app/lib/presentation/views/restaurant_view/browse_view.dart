@@ -4,6 +4,7 @@ import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
@@ -57,7 +58,6 @@ class BrowseView extends StatelessWidget {
             elevation: 0, // Remove shadow
             actions: [
               IconButton(
-                
                 icon: const Icon(Icons.account_circle, color:  Color.fromARGB(255, 0, 140, 255)), // Profile icon
                 onPressed: () {
                   //Navigate to the profile view
@@ -88,11 +88,13 @@ class BrowseView extends StatelessWidget {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
-                              // Navigate to another view when the restaurant card is clicked
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SpotDetail(restaurant: state.restaurants[index], reviewDraftRepository: ReviewDraftRepository(DatabaseProvider())),
+                                  builder: (context) => BlocProvider.value(
+                                    value: BlocProvider.of<ReviewDraftBloc>(context),
+                                    child: SpotDetail(restaurant: state.restaurants[index]),
+                                  ),
                                 ),
                               );
                             },
