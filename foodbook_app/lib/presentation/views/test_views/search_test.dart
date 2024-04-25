@@ -32,7 +32,7 @@ class _SearchPage2State extends State<SearchPage2> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         actions: [
             Container(
               width: MediaQuery.of(context).size.width * 0.5, // 40% of screen width
