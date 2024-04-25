@@ -4,6 +4,8 @@ import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
+import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
@@ -93,7 +95,7 @@ class _ForYouViewState extends State<ForYouView> {
                                         ),
                                       ),
                                     ],
-                                    child: SpotDetail(restaurant: state.recommendedRestaurants[index]),
+                                    child: SpotDetail(restaurantId: state.recommendedRestaurants[index].id),
                                   ),
                                 ),
                               );

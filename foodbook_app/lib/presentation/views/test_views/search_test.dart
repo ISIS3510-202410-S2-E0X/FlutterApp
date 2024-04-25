@@ -102,6 +102,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
     );
   }
 
+
   @override
   Widget buildResults(BuildContext context) {
     return MultiBlocProvider(
@@ -140,7 +141,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                                   RepositoryProvider.of<ReviewDraftRepository>(context)),
                             ),
                           ],
-                          child: SpotDetail(restaurant: state.restaurants[index]),
+                          child: SpotDetail(restaurant: state.restaurants[index].id),
                         ),
                       ),
                     );
@@ -150,14 +151,21 @@ class CustomSearchDelegate extends SearchDelegate<String> {
               },
             );
           } else if (state is RestaurantsLoadFailure) {
-            return Center(child: Text("No results found for: $query"));
-          } else {
-            return Center(child: Text("No results found for: $query"));
-          }
-        },
-      ),
-    );
-  }
+              return Center(child: Text("No results found for: $query"));
+            }
+          );
+        } 
+        else if (state is RestaurantsLoadFailure) {
+          return Center(child: Text("No results found for: $query"));
+        } 
+        else {
+          return Center(child: Text("No results found for: $query"));
+        }
+      },
+    ),
+  );
+}
+
 
   @override
   Widget buildSuggestions(BuildContext context) {

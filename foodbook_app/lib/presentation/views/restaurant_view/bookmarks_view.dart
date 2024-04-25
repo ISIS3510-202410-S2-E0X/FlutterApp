@@ -4,6 +4,8 @@ import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_event.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_state.dart';
+import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
+import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
@@ -67,13 +69,13 @@ class _BookmarksViewState extends State<BookmarksView> {
                     final restaurant = state.bookmarkedRestaurants[index];
                     return GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SpotDetail(restaurant: restaurant),
-                          ),
-                        );
-                      },
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SpotDetail(restaurantId: state.bookmarkedRestaurants[index].id),
+                                ),
+                              );
+                            },
                       child: RestaurantCard(restaurant: restaurant),
                     );
                   },
@@ -91,12 +93,17 @@ class _BookmarksViewState extends State<BookmarksView> {
                           itemCount: state.successfullyLoaded.length,
                           itemBuilder: (context, index) {
                             final restaurant = state.successfullyLoaded[index];
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MultiBlocProvider(
+                            return GestureDetector(
+                              onTap: () async {
+                                final restaurantId = restaurant.id;
+
+                                // Use a RestaurantBloc event to fetch the restaurant details
+                                context.read<SpotDetailBloc>().add(FetchRestaurantDetail(restaurantId));
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MultiBlocProvider(
                                         providers: [
                                           BlocProvider<ReviewDraftBloc>(
                                             create: (context) => ReviewDraftBloc(
@@ -104,13 +111,13 @@ class _BookmarksViewState extends State<BookmarksView> {
                                             ),
                                           ),
                                         ],
-                                        child: SpotDetail(restaurant: restaurant),
+                                        child: SpotDetail(restaurantId: restaurantId),
                                       ),
-                                    ),
-                                  );
-                                },
-                                child: RestaurantCard(restaurant: restaurant),
-                              );
+                                  ),
+                                );
+                              },
+                              child: RestaurantCard(restaurant: restaurant),
+                            );
                           },
                         ),
                       ),

@@ -3,12 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
+import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
+import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_state.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_state.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/repositories/category_repository.dart';
+import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
 import 'package:foodbook_app/presentation/views/review_view/restaurant_reviews_view.dart';
@@ -16,12 +20,37 @@ import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_map.da
 
 
 class SpotDetail extends StatelessWidget {
+  final String restaurantId;
+
+  const SpotDetail({Key? key, required this.restaurantId}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<SpotDetailBloc>(
+      create: (context) => SpotDetailBloc(
+        RepositoryProvider.of<RestaurantRepository>(context),
+      )..add(FetchRestaurantDetail(restaurantId)),
+      child: BlocBuilder<SpotDetailBloc, SpotDetailState>(
+        builder: (context, state) {
+          if (state is SpotDetailLoadInProgress) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is SpotDetailLoadSuccess) {
+            return SpotDetailView(restaurant: state.restaurant);
+          } else if (state is SpotDetailLoadFailure) {
+            return SpotDetailViewFailure(message: 'Failed to load restaurant.');
+          } else {
+            return const Center(child: Text('Unknown error.'));
+          }
+        },
+      ),
+    );
+  }
+}
+
+class SpotDetailView extends StatelessWidget {
   final Restaurant restaurant;
 
-  const SpotDetail({
-    super.key,
-    required this.restaurant,
-  });
+  const SpotDetailView({Key? key, required this.restaurant}) : super(key: key);
 
   void _navigateToReviewPage(BuildContext context, { bool continueDraft = false }) {
     ReviewDraftBloc reviewDraftBloc = BlocProvider.of<ReviewDraftBloc>(context);
@@ -274,6 +303,30 @@ class SpotDetail extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+// If the SpotDetailLoadFailure state is emitted, the SpotDetailView widget will show the back button in the app bar and a failure message in the center of the screen.
+class SpotDetailViewFailure extends StatelessWidget {
+  final String message;
+
+  const SpotDetailViewFailure({Key? key, required this.message}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: Center(
+        child: Text(message),
       ),
     );
   }

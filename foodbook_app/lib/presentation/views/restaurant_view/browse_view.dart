@@ -6,8 +6,11 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
+import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
+import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
+import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/profile_view/profile_view.dart';
@@ -93,7 +96,7 @@ class BrowseView extends StatelessWidget {
                                 MaterialPageRoute(
                                   builder: (context) => BlocProvider.value(
                                     value: BlocProvider.of<ReviewDraftBloc>(context),
-                                    child: SpotDetail(restaurant: state.restaurants[index]),
+                                    child: SpotDetail(restaurantId: state.restaurants[index].id),
                                   ),
                                 ),
                               );

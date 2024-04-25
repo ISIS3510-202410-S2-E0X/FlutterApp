@@ -9,6 +9,7 @@ import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/data_access_objects/shared_preferences_dao.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/auth_repository.dart';
+import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
@@ -74,53 +75,51 @@ Future<void> requestLocationPermission() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-   @override
-   Widget build(BuildContext context) {
-     return MultiRepositoryProvider(
-        providers: [
-          RepositoryProvider<AuthRepository>(
-            create: (context) => AuthRepository(),
-          ),
-          RepositoryProvider<ReviewDraftRepository>(
-            create: (context) => ReviewDraftRepository(DatabaseProvider()),
-          ),
-        ],
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(
-                authRepository: RepositoryProvider.of<AuthRepository>(context, listen: false),
-              ),
-            ),
-            BlocProvider<UserBloc>(
-              create: (context) => UserBloc(),
-            ),
-            BlocProvider<ReviewDraftBloc>(
-              create: (context) => ReviewDraftBloc(
-                RepositoryProvider.of<ReviewDraftRepository>(context, listen: false),
-              ),
-            ),
-          ],
-          child: MaterialApp(
-            title: 'FoodBook',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: const SignInView(),
-          ),
+  @override
+  Widget build(BuildContext context) {
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<AuthRepository>(
+          create: (context) => AuthRepository(),
         ),
-      );
+        RepositoryProvider<RestaurantRepository>(
+          create: (context) => RestaurantRepository(),
+        ),
+        RepositoryProvider<ReviewDraftRepository>(
+          create: (context) => ReviewDraftRepository(DatabaseProvider()),
+        ),
+        // Add other repositories here if needed
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthBloc>(
+            create: (context) => AuthBloc(
+              authRepository: RepositoryProvider.of<AuthRepository>(context),
+            ),
+          ),
+          BlocProvider<UserBloc>(
+            create: (context) => UserBloc()
+          ),
+          BlocProvider<ReviewDraftBloc>(
+            create: (context) => ReviewDraftBloc(
+              RepositoryProvider.of<ReviewDraftRepository>(context, listen: false),
+            ),
+          ),
+          // Add other BlocProviders here if needed
+        ],
+        child: MaterialApp(
+          title: 'FoodBook',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: const SignInView(),
+          // Define the routing and other MaterialApp properties here
+        ),
+      ),
+    );
   }
-
-//   Widget build(BuildContext context) {
-//   return MaterialApp(
-//     title: 'FoodBook App',
-//     home: BlocProvider(
-//       create: (context) => SearchBloc(),
-//       child: SearchPage2(),
-//     ),
-//   );
-// }
-
 }
+
+
+
 
