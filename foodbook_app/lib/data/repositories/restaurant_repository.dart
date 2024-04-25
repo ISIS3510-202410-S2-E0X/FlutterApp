@@ -33,17 +33,18 @@ class RestaurantRepository {
               reviews.add(ReviewDTO.fromJson(reviewSnapshot.data() as Map<String, dynamic>).toModel());
             }
           }
+          restaurant.reviews = reviews;
         }
-        restaurant.reviews = reviews;
+        restaurants.add(restaurant);
       }
-      restaurants.add(restaurant);
+      return restaurants;
     }
-    return restaurants;
-  } on FirebaseException catch (e) {
+    on FirebaseException catch (e) {
     print("Failed to fetch restaurants with error '${e.code}': ${e.message}");
-    return restaurants;
+    return [];
+    }
   }
-}
+
   Future<List<Restaurant>> fetchRestaurantsFromCache() async {
     List<Restaurant> restaurants = [];
     List<String> restaurantNames = await _restaurantsCacheDAO.getCachedRestaurants();

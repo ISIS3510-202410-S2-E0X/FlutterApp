@@ -9,10 +9,10 @@ class RestaurantsCacheDAO {
 
   Future<void> cacheRestaurant( Restaurant restaurant) async {
    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> bookmarks = prefs.getStringList(_cachedKey) ?? [];
-    if (!bookmarks.contains(restaurant.name)) {
-      bookmarks.add(restaurant.name);
-      await prefs.setStringList(_cachedKey, bookmarks);
+    List<String> cache = prefs.getStringList(_cachedKey) ?? [];
+    if (!cache.contains(restaurant.name)) {
+      cache.add(restaurant.name);
+      await prefs.setStringList(_cachedKey, cache);
     }
     await prefs.setString(restaurant.name, serializeRestaurant(restaurant));
   }
