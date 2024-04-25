@@ -133,7 +133,7 @@ Widget buildResults(BuildContext context) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SpotDetail(restaurant: state.restaurants[index]),
+                      builder: (context) => SpotDetail(restaurantId: state.restaurants[index].id),
                     ),
                   );
                 },
