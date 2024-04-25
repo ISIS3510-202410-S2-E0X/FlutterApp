@@ -6,9 +6,13 @@ import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_e
 import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_event.dart';
+import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_state.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
+import 'package:foodbook_app/data/dtos/category_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
@@ -24,8 +28,13 @@ import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_s
 
 class CategoriesAndStarsView extends StatefulWidget {
   final Restaurant restaurant;
+  final ReviewDraft? initialReview;
 
-  const CategoriesAndStarsView({super.key, required this.restaurant});
+  const CategoriesAndStarsView({
+    super.key,
+    required this.restaurant,
+    this.initialReview,  
+  });
 
   @override
   State<CategoriesAndStarsView> createState() => _CategoriesAndStarsViewState();
@@ -41,6 +50,30 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
+    BlocProvider.of<StarsBloc>(context).add(InitializeRatings({
+      RatingsKeys.cleanliness: 0.0,
+      RatingsKeys.waitingTime: 0.0,
+      RatingsKeys.service: 0.0,
+      RatingsKeys.foodQuality: 0.0,
+    }));
+
+    if (widget.initialReview != null) {
+      reviewTitle = widget.initialReview!.title;
+      reviewContent = widget.initialReview!.content;
+      imageUrl = widget.initialReview!.image;
+      print('INITIAL REVIEW: ${widget.initialReview!.selectedCategories}');
+      
+      BlocProvider.of<FoodCategoryBloc>(context).add(SetInitialCategoriesEvent(widget.initialReview!.selectedCategories));
+      
+      // Reloads the widget so that the selected categories are displayed -> bug..?
+      WidgetsBinding.instance.addPostFrameCallback((_) {   
+        context.read<FoodCategoryBloc>().add(LoadSelectedCategoriesEvent());
+      });
+
+      if (widget.initialReview!.ratings.isNotEmpty) {
+        BlocProvider.of<StarsBloc>(context).add(InitializeRatings(widget.initialReview!.ratings));
+      }
+    }
   }
 
   @override
@@ -75,7 +108,12 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
               )
             ),
           ],
-          child: TextAndImagesView(restaurant: widget.restaurant),
+          child: TextAndImagesView(
+            restaurant: widget.restaurant,
+            reviewTitle: reviewTitle,
+            reviewContent: reviewContent,
+            imageUrl: imageUrl
+          ),
         ),
       ),
     );
@@ -93,13 +131,11 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
     print('IMAGEN: $imageUrl');
   }
 
-  void _saveDraft() async {
-    // Acceder a los BLoCs para obtener datos necesarios
+  ReviewDraft _getUpdatedValues() {
     final userBlocState = BlocProvider.of<UserBloc>(context).state;
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
     final starsBloc = BlocProvider.of<StarsBloc>(context);
 
-    // Suponemos que AuthenticatedUserState contiene el email del usuario
     ReviewDraft draft = ReviewDraft(
       user: userBlocState.email,
       title: reviewTitle,
@@ -108,23 +144,53 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
       spot: widget.restaurant.name,
       uploaded: 0,
       ratings: {
-        RatingsKeys.cleanliness: (starsBloc.newRatings[RatingsKeys.cleanliness] ?? 0.0).toInt(),
-        RatingsKeys.waitingTime: (starsBloc.newRatings[RatingsKeys.waitingTime] ?? 0).toInt(),
-        RatingsKeys.service: (starsBloc.newRatings[RatingsKeys.service] ?? 0).toInt(),
-        RatingsKeys.foodQuality: (starsBloc.newRatings[RatingsKeys.foodQuality] ?? 0).toInt(),
+        RatingsKeys.cleanliness: (starsBloc.newRatings[RatingsKeys.cleanliness] ?? 0.0),
+        RatingsKeys.waitingTime: (starsBloc.newRatings[RatingsKeys.waitingTime] ?? 0.0),
+        RatingsKeys.service: (starsBloc.newRatings[RatingsKeys.service] ?? 0.0),
+        RatingsKeys.foodQuality: (starsBloc.newRatings[RatingsKeys.foodQuality] ?? 0.0),
       },
-      selectedCategories: foodCategoryBloc.selectedCategories.map((category) => category.name).toList(),
+      selectedCategories: foodCategoryBloc.selectedCategories.map((category) => CategoryDTO(name: category.name)).toList(),
     );
 
-    try {
-      // Acceder al repository para guardar el borrador
-      final reviewDraftRepository = RepositoryProvider.of<ReviewDraftRepository>(context);
-      await reviewDraftRepository.insertDraft(draft);
-      print("Draft saved successfully!");
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Draft saved successfully")));
-    } catch (e) {
-      print("Error saving draft: $e");
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error saving draft")));
+    return draft;
+  }
+
+  void _onBackPressed() async {
+    final shouldSaveDraft = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Would you like to save this review as a draft?'),
+        content: const Text('This will overwrite your latest draft from this spot'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Yes'),
+            onPressed: () => Navigator.of(context).pop('Yes'),
+          ),
+          TextButton(
+            child: const Text('No'),
+            onPressed: () => Navigator.of(context).pop('No'),
+          ),
+          TextButton(
+            child: const Text('Continue Editing'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldSaveDraft == 'Yes') {
+      final draft = _getUpdatedValues();
+
+      // if it is a loaded draft, update it. Otherwise, add a new one.
+      if (widget.initialReview != null) {
+        BlocProvider.of<ReviewDraftBloc>(context).add(UpdateDraft(draft, widget.restaurant.name));
+      } else {
+        BlocProvider.of<ReviewDraftBloc>(context).add(AddDraft(draft));
+      }
+
+      Navigator.of(context).pop();
+    } else if (shouldSaveDraft == 'No') {
+      Navigator.of(context).pop();
     }
   }
 
@@ -134,37 +200,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
       canPop: false, 
       onPopInvoked: (didPop) async {
         if (!didPop) {
-          // Lógica para manejar cuando el usuario intenta salir
-          Object shouldSaveDraft = await showDialog<String>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Confirm Exit'),
-              content: const Text('Do you want to save the review as a draft?'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Yes'),
-                  onPressed: () => Navigator.of(context).pop('Yes'), // llamar función para salir y guardar
-                ),
-                TextButton(
-                  child: const Text('No'),
-                  onPressed: () => Navigator.of(context).pop('No'), // llamar función para salir y no guardar
-                ),
-                TextButton(
-                  child: const Text('Continue Editing'),
-                  onPressed: () => Navigator.of(context).pop('Continue'),
-                ),
-              ],
-            ),
-          ) ?? false;
-
-          if (shouldSaveDraft != 'Continue') {
-            if (shouldSaveDraft == 'Yes') {
-              // Lógica para guardar el borrador
-              _saveDraft();
-            }
-            // ignore: use_build_context_synchronously
-            Navigator.of(context).pop();
-          }
+          _onBackPressed();
         }
       },
       child: Scaffold(
@@ -269,9 +305,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
                         return MultiSelectChip(
                           [category.name],
                           const [''],
-                          onSelectionChanged: (selectedCategories) {
-                            // TO-DO: actions when selected categories change
-                          },
+                          onSelectionChanged: (selectedCategories) {/* ... */},
                           maxSelection: 3,
                         );
                       },
@@ -290,9 +324,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
                         return MultiSelectChip(
                           [category.name],
                           categoriesSelected.map((e) => e.name).toList(),
-                          onSelectionChanged: (selectedCategories) {
-                            // TO-DO: actions when selected categories change
-                          },
+                          onSelectionChanged: (selectedCategories) {/* ... */},
                           maxSelection: 3,
                         );
                       },
@@ -307,7 +339,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
                       
                       context.read<FoodCategoryBloc>().add(LoadSelectedCategoriesEvent());
                     });
-
+            
                     return const Center(child: CircularProgressIndicator());
                   } else {
                     return const Center(child: Text('Please wait...'));
@@ -317,19 +349,24 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ListView(
-                  children: const <Widget>[
-                    SizedBox(height: 9),
-                    RatingCategory(category: 'Cleanliness', initialRating: 0),
-                    SizedBox(height: 1),
-                    RatingCategory(category: 'Waiting Time', initialRating: 0),
-                    SizedBox(height: 1),
-                    RatingCategory(category: 'Service', initialRating: 0),
-                    SizedBox(height: 1),
-                    RatingCategory(category: 'Food Quality', initialRating: 0),
-                    SizedBox(height: 5),
-                  ],
+                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
+                child: BlocBuilder<StarsBloc, ReviewState>(
+                  builder: (context, state) {
+                    return ListView(
+                      children: [
+                        const SizedBox(height: 40),
+                        if (state is ReviewRatings) ...[
+                          RatingCategory(category: 'Cleanliness', initialRating: state.ratings['cleanliness'] ?? 0.0),
+                          const SizedBox(height: 1),
+                          RatingCategory(category: 'Waiting Time', initialRating: state.ratings['waitTime'] ?? 0.0),
+                          const SizedBox(height: 1),
+                          RatingCategory(category: 'Service', initialRating: state.ratings['service'] ?? 0.0),
+                          const SizedBox(height: 1),
+                          RatingCategory(category: 'Food Quality', initialRating: state.ratings['foodQuality'] ?? 0.0),
+                        ]
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
