@@ -145,13 +145,16 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
           );
         } else {
           return Center(
-            child: Container(
+            child: Center(
+              child: Container(
               child: Text(
                 'No connection, please make sure you have internet access before attempting to login.',
                 style: TextStyle(
-                  color: Colors.red,
-                  fontSize: screenSize.width * 0.04,
+                color: Colors.red,
+                fontSize: screenSize.width * 0.04,
                 ),
+                textAlign: TextAlign.center,
+              ),
               ),
             ),
           );
