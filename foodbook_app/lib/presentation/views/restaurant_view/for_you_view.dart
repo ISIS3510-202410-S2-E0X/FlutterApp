@@ -6,9 +6,12 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
+import 'package:foodbook_app/data/data_sources/database_provider.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
@@ -84,7 +87,16 @@ class _ForYouViewState extends State<ForYouView> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => SpotDetail(restaurantId: state.recommendedRestaurants[index].id),
+                                  builder: (context) => MultiBlocProvider(
+                                    providers: [
+                                      BlocProvider<ReviewDraftBloc>(
+                                        create: (context) => ReviewDraftBloc(
+                                          RepositoryProvider.of<ReviewDraftRepository>(context)
+                                        ),
+                                      ),
+                                    ],
+                                    child: SpotDetail(restaurantId: state.recommendedRestaurants[index].id),
+                                  ),
                                 ),
                               );
                             },

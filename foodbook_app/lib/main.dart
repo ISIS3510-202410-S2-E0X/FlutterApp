@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/data_access_objects/shared_preferences_dao.dart';
+import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/auth_repository.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
 import 'package:foodbook_app/notifications/background_task.dart';
@@ -82,6 +85,9 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<RestaurantRepository>(
           create: (context) => RestaurantRepository(),
         ),
+        RepositoryProvider<ReviewDraftRepository>(
+          create: (context) => ReviewDraftRepository(DatabaseProvider()),
+        ),
         // Add other repositories here if needed
       ],
       child: MultiBlocProvider(
@@ -93,7 +99,12 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider<UserBloc>(
             create: (context) => UserBloc()
+          ),
+          BlocProvider<ReviewDraftBloc>(
+            create: (context) => ReviewDraftBloc(
+              RepositoryProvider.of<ReviewDraftRepository>(context, listen: false),
             ),
+          ),
           // Add other BlocProviders here if needed
         ],
         child: MaterialApp(

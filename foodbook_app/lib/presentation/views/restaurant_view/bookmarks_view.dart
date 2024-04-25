@@ -6,7 +6,10 @@ import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_event.dart';
 import 'package:foodbook_app/bloc/bookmark_view_bloc/bookmark_view_state.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
+import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
@@ -100,7 +103,16 @@ class _BookmarksViewState extends State<BookmarksView> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => SpotDetail(restaurantId: restaurantId),
+                                    builder: (context) => MultiBlocProvider(
+                                        providers: [
+                                          BlocProvider<ReviewDraftBloc>(
+                                            create: (context) => ReviewDraftBloc(
+                                              RepositoryProvider.of<ReviewDraftRepository>(context)
+                                            ),
+                                          ),
+                                        ],
+                                        child: SpotDetail(restaurantId: restaurantId),
+                                      ),
                                   ),
                                 );
                               },

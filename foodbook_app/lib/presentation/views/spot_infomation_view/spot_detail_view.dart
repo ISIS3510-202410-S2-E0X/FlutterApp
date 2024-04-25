@@ -6,8 +6,11 @@ import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_state.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_state.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/repositories/category_repository.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
@@ -48,6 +51,97 @@ class SpotDetailView extends StatelessWidget {
   final Restaurant restaurant;
 
   const SpotDetailView({Key? key, required this.restaurant}) : super(key: key);
+
+  void _navigateToReviewPage(BuildContext context, { bool continueDraft = false }) {
+    ReviewDraftBloc reviewDraftBloc = BlocProvider.of<ReviewDraftBloc>(context);
+
+    if (continueDraft) {
+      print('Continuing draft');
+      reviewDraftBloc.add(LoadDraftsBySpot(restaurant.name));
+
+      reviewDraftBloc.stream.firstWhere((state) => state is ReviewLoaded).then((state) {
+        if (state is ReviewLoaded && state.drafts.isNotEmpty) {
+          print('Draft found, navigating with draft');
+          _pushCategoriesAndStarsView(context, state.drafts.first);
+        } else {
+          print('No draft found, navigating to new review page');
+          _pushCategoriesAndStarsView(context);
+        }
+      }).catchError((error) {
+        // Manejar cualquier error que pueda ocurrir durante el proceso
+        print('Error: $error');
+        _pushCategoriesAndStarsView(context); // Navegar sin borrador si hay un error
+      });
+    } else {
+      print('Starting new draft');
+      _pushCategoriesAndStarsView(context);
+    }
+  }
+
+  void _pushCategoriesAndStarsView(BuildContext context, [ReviewDraft? draft]) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider<ReviewDraftBloc>(
+                create: (context) => ReviewDraftBloc(
+                  ReviewDraftRepository(DatabaseProvider())
+                ),
+              ),
+              BlocProvider<FoodCategoryBloc>(
+                create: (context) => FoodCategoryBloc(
+                  categoryRepository: CategoryRepository(),
+                  maxSelection: 3,
+                  minSelection: 1,
+                ),
+              ),
+              BlocProvider<StarsBloc>(
+                create: (context) => StarsBloc(),
+              ),
+            ],
+            child: CategoriesAndStarsView(restaurant: restaurant, initialReview: draft),
+          );
+        },
+      ),
+    );
+  }
+
+  void _checkForUnfinishedReview(BuildContext context) {
+    final reviewDraftBloc = BlocProvider.of<ReviewDraftBloc>(context);
+    reviewDraftBloc.add(CheckUnfinishedDraft(restaurant.name));
+
+    reviewDraftBloc.stream.firstWhere((state) => state is UnfinishedDraftExists || state is NoUnifishedReviews).then((state) {
+      if (state is UnfinishedDraftExists) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Unfinished Review'),
+            content: const Text('You have an unfinished draft. Would you like to continue?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _navigateToReviewPage(context, continueDraft: true);
+                },
+                child: const Text('Continue Draft'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _navigateToReviewPage(context, continueDraft: false);
+                },
+                child: const Text('Start New'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        // No hay borrador inacabado, procede con un nuevo borrador
+        _navigateToReviewPage(context, continueDraft: false);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,41 +267,9 @@ class SpotDetailView extends StatelessWidget {
             backgroundColor: Colors.blue, // Button color
             minimumSize: const Size(double.infinity, 50),
           ),
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return MultiRepositoryProvider(
-                    providers: [
-                      RepositoryProvider<ReviewDraftRepository>(
-                        create: (context) => ReviewDraftRepository(DatabaseProvider()),
-                      ),
-                    ],                  
-                    child: MultiBlocProvider(
-                      providers: [
-                        BlocProvider<FoodCategoryBloc>(
-                          create: (context) => FoodCategoryBloc(
-                            categoryRepository: CategoryRepository(),
-                            maxSelection: 3,
-                            minSelection: 1,
-                          ),
-                        ),
-                        BlocProvider<StarsBloc>(
-                          create: (context) => StarsBloc(),
-                        ),
-                        BlocProvider<ReviewDraftBloc>(
-                          create: (context) => ReviewDraftBloc(ReviewDraftRepository(DatabaseProvider())),
-                        )
-                      ],
-                      child: CategoriesAndStarsView(restaurant: restaurant),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
-          child: const Text('Leave a review', style:TextStyle(color:Colors.white)),
-        ),
+          onPressed: () => _checkForUnfinishedReview(context),
+          child: const Text('Leave a review', style: TextStyle(color:Colors.white)),
+        )
       ),
     );
   }

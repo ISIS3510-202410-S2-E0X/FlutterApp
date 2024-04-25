@@ -23,7 +23,7 @@ class _MultiSelectChipState extends State<MultiSelectChip> {
   void initState() {
     super.initState();
     selectedCategories = List.from(widget.initialSelectedCategories);
-    print('Initial selected categories: $selectedCategories');
+    print('Initial selected categories (widget): $selectedCategories');
   }
 
   @override
