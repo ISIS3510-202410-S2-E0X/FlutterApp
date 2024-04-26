@@ -176,7 +176,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                   }
                   cameraStatus = await Permission.camera.status;                  
                   if (cameraStatus.isPermanentlyDenied) {
-                      openAppSettings();
+                    openAppSettings();
                   }
                 },
               ),
