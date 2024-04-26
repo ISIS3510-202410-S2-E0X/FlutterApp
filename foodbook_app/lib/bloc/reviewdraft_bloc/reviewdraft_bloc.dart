@@ -53,7 +53,7 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
 
   Future<void> _onCheckUnfinishedDraft(CheckUnfinishedDraft event, Emitter<ReviewDraftState> emit) async {
     try {
-      final drafts = await reviewDraftRepository.getDraftsBySpot(event.restaurantId);
+      final drafts = await reviewDraftRepository.getDraftsBySpot(event.restaurant);
       if (drafts.isNotEmpty) {
         emit(UnfinishedDraftExists(drafts.isNotEmpty));
       } else {

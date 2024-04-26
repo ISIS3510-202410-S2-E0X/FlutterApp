@@ -17,7 +17,7 @@ class ReviewDraftRepository {
   }
 
   Future<List<ReviewDraft>> getDraftsBySpot(String spot) async {
-    await dbProvider.killDatabase();
+    // await dbProvider.killDatabase();
     final db = await dbProvider.getDatabase();
     var res = await db.query(
       "ReviewDrafts",
@@ -25,6 +25,7 @@ class ReviewDraftRepository {
       whereArgs: [spot]
     );
 
+    print('RES: $res');
     if (res.length == 1) {
       return res.map((c) => ReviewDraftDTO.fromJson(c).toModel()).toList();
     }

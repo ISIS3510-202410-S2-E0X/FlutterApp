@@ -99,7 +99,7 @@ class RestaurantRepository {
 
   Future<List<dynamic>> getRestaurantsIdsFromIntAPI(String username) async {
     print("fetching recommended restaurants for $username...");
-    final response = await http.get(Uri.parse('https://foodbook-app-backend.vercel.app/recommendation/asalgadom'));
+    final response = await http.get(Uri.parse('https://foodbook-app-backend.vercel.app/recommendation/$username'));
     print('RESPONSE: ${response.body}, ${response.statusCode}');
     if (response.statusCode == 404) {
       throw Exception('Leave reviews to get personalized recommendations!');

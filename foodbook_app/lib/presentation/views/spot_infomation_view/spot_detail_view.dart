@@ -50,7 +50,7 @@ class SpotDetail extends StatelessWidget {
 class SpotDetailView extends StatelessWidget {
   final Restaurant restaurant;
 
-  const SpotDetailView({Key? key, required this.restaurant}) : super(key: key);
+  const SpotDetailView({super.key, required this.restaurant});
 
   void _navigateToReviewPage(BuildContext context, { bool continueDraft = false }) {
     ReviewDraftBloc reviewDraftBloc = BlocProvider.of<ReviewDraftBloc>(context);
@@ -110,7 +110,7 @@ class SpotDetailView extends StatelessWidget {
   void _checkForUnfinishedReview(BuildContext context) {
     final reviewDraftBloc = BlocProvider.of<ReviewDraftBloc>(context);
     reviewDraftBloc.add(CheckUnfinishedDraft(restaurant.name));
-
+    
     reviewDraftBloc.stream.firstWhere((state) => state is UnfinishedDraftExists || state is NoUnifishedReviews).then((state) {
       if (state is UnfinishedDraftExists) {
         showDialog(
@@ -267,39 +267,7 @@ class SpotDetailView extends StatelessWidget {
             backgroundColor: Colors.blue, // Button color
             minimumSize: const Size(double.infinity, 50),
           ),
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return MultiRepositoryProvider(
-                    providers: [
-                      RepositoryProvider<ReviewDraftRepository>(
-                        create: (context) => ReviewDraftRepository(DatabaseProvider()),
-                      ),
-                    ],                  
-                    child: MultiBlocProvider(
-                      providers: [
-                        BlocProvider<FoodCategoryBloc>(
-                          create: (context) => FoodCategoryBloc(
-                            categoryRepository: CategoryRepository(),
-                            maxSelection: 3,
-                            minSelection: 1,
-                          ),
-                        ),
-                        BlocProvider<StarsBloc>(
-                          create: (context) => StarsBloc(),
-                        ),
-                        BlocProvider<ReviewDraftBloc>(
-                          create: (context) => ReviewDraftBloc(ReviewDraftRepository(DatabaseProvider())),
-                        )
-                      ],
-                      child: CategoriesAndStarsView(restaurant: restaurant),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
+          onPressed: () => _checkForUnfinishedReview(context),
           child: const Text('Leave a review', style:TextStyle(color:Colors.white)),
         ),
       ),
