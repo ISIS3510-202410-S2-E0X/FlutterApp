@@ -17,7 +17,6 @@ class FoodCategoryBloc extends Bloc<FoodCategoryEvent, FoodCategoryState> {
     on<LoadCategoriesEvent>(_onLoadCategories);
     on<LoadSelectedCategoriesEvent>(_onLoadSelectedCategories);
     on<SearchCategoriesEvent>(_onSearchCategories);
-    on<SetInitialCategoriesEvent>(_onSetInitialCategories);
     
     add(LoadCategoriesEvent());
   }
@@ -74,11 +73,5 @@ class FoodCategoryBloc extends Bloc<FoodCategoryEvent, FoodCategoryState> {
     } catch (e) {
       emit(FoodCategoryError(e.toString())); 
     }
-  }
-
-  Future<void> _onSetInitialCategories(SetInitialCategoriesEvent event, Emitter<FoodCategoryState> emit) async {
-    final categories = await categoryRepository.getAllCategories();
-    selectedCategories = event.initialCategories;
-    emit(FoodCategorySelected(categories, selectedCategories));
   }
 }

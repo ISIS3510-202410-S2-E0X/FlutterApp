@@ -11,9 +11,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       try {
         final user = _firebaseAuth.currentUser;
         if (user != null) {
-          print('User is authenticated: ${user.displayName}');
-          emit(AuthenticatedUserState(user.displayName!, user.email!, user.photoURL!));
-          print("authenticated state emitted");
+          print('User is authenticated: ${user.email}');
+          emit(AuthenticatedUserState(user.email!));
         } else {
           emit(UnauthenticatedUserState());
         }

@@ -3,7 +3,7 @@ import 'package:foodbook_app/data/models/review.dart';
 // import 'package:intl/intl.dart'; 
 
 class ReviewDTO {
-  final Map<String, String> user;
+  final String user;
   final String? title;
   final String? content;
   final Timestamp date;
@@ -64,10 +64,8 @@ class ReviewDTO {
       ratings[key] = (value as num).toDouble();
     });
 
-    Map<String, String> userData = {'id': json['user']['id'], 'name': json['user']['name']};
-
     return ReviewDTO(
-      user: userData,
+      user: json['user'] as String,
       title: json['title'],
       content: json['content'],
       date: json['date'] as Timestamp,

@@ -7,8 +7,3 @@ class ReviewRatingChanged extends ReviewEvent {
 
   ReviewRatingChanged(this.category, this.rating);
 }
-
-class InitializeRatings extends ReviewEvent {
-  final Map<String, double> initialRatings;
-  InitializeRatings(this.initialRatings);
-}

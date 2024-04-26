@@ -16,6 +16,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Authenticated());
       } catch (e) {
         emit(AuthError(e.toString()));
+        emit(UnAuthenticated());
       }
     });
     on<SignOutRequested>((event, emit) async {
@@ -25,16 +26,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(UnAuthenticated());
       } catch (e) {
         emit(AuthError(e.toString()));
+        emit(UnAuthenticated());
       }
-    });
-    on<ResetState>((event, emit) async {  
-      emit(UnAuthenticated());
-    });
-    on<NoInternet>((event, emit) async {
-      emit(AuthError("No Internet Connection"));
-    });
-    on<InternetRecovered>((event, emit) async {
-      emit(UnAuthenticated());
     });
   }
 }
