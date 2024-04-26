@@ -157,21 +157,24 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
               ),
             ),
           );
-        } else {
+        } else if (state is AuthError) {
           return Center(
             child: Center(
               child: Container(
-              child: Text(
-                'No connection, please make sure you have internet access before attempting to login.',
-                style: TextStyle(
-                color: Colors.red,
-                fontSize: screenSize.width * 0.04,
-                ),
-                textAlign: TextAlign.center,
-              ),
+          child: Text(
+            'Authentication error. Please try again.',
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: screenSize.width * 0.04,
+            ),
+            textAlign: TextAlign.center,
+          ),
               ),
             ),
           );
+        }
+        else{
+          return const CircularProgressIndicator();
         }
       },
     );
