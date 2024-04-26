@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:foodbook_app/data/data_access_objects/shared_preferences_dao.dar
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/auth_repository.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
+import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
@@ -105,7 +107,12 @@ class MyApp extends StatelessWidget {
               RepositoryProvider.of<ReviewDraftRepository>(context, listen: false),
             ),
           ),
-          // Add other BlocProviders here if needed
+          BlocProvider<ReviewBloc>(
+            create: (context) => ReviewBloc(
+              reviewRepository: ReviewRepository(),
+              restaurantRepository: RestaurantRepository(),
+            ),
+          )
         ],
         child: MaterialApp(
           title: 'FoodBook',

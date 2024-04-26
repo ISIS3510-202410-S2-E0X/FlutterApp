@@ -1,14 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_event.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_state.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
+import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
+import 'package:foodbook_app/data/dtos/category_dto.dart';
+import 'package:foodbook_app/data/dtos/review_dto.dart';
+import 'package:foodbook_app/data/models/review.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/profile_view/profile_view.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
@@ -20,9 +32,73 @@ import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_car
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 
 
-
-class BrowseView extends StatelessWidget {
+class BrowseView extends StatefulWidget {
   BrowseView({Key? key}) : super(key: key);
+
+  @override
+  State<BrowseView> createState() => _BrowseViewState();
+}
+
+class _BrowseViewState extends State<BrowseView> {
+
+  @override
+  void initState() {
+    super.initState();
+    _checkConnectionPostReviews();
+  }
+
+  List<Review> _getReviewsToUpload(BuildContext context) {
+    final reviewDraftBloc = BlocProvider.of<ReviewDraftBloc>(context);
+    final userBloc = BlocProvider.of<UserBloc>(context);
+    final userState = userBloc.state;
+
+    context.read<UserBloc>().add(GetCurrentUser());
+
+    String? userDisplayName;
+    String? userEmail;
+    List<Review> reviewsToUpload = [];
+    if (userState is AuthenticatedUserState) {
+      userDisplayName = userState.displayName;
+      userEmail = userState.email;
+    }
+    reviewDraftBloc.add(LoadDraftsToUpload());
+    if (reviewDraftBloc.state is ReviewLoaded) {
+      final draftToUpload = (reviewDraftBloc.state as ReviewLoaded).drafts;
+      for (var draft in draftToUpload) {
+        Review review = Review(
+          user: { 'id': userEmail ?? '', 'name': userDisplayName ?? ''},
+          title: draft.title,
+          content: draft.content,
+          date: Timestamp.fromDate(DateTime.now()),
+          imageUrl: null,
+          ratings: draft.ratings,
+          selectedCategories: (draft.selectedCategories).map((e) => e.name).toList(),
+          spot: draft.spot
+        );
+        reviewsToUpload.add(review);
+      }
+    }
+
+    return reviewsToUpload;
+  }
+
+  Future<void> _checkConnectionPostReviews() async {
+    print('REVISANDO CONEXIÓN - BrowseView');
+    var connectivityResult = await Connectivity().checkConnectivity();
+    print(connectivityResult);
+    if (connectivityResult[0] != ConnectivityResult.none) {
+      print('HAY INTERNET!');
+      List<Review> reviewsToUpload = _getReviewsToUpload(context);
+      if (reviewsToUpload.isNotEmpty) {
+        for (var eachReview in reviewsToUpload) {
+          BlocProvider.of<ReviewBloc>(context).add(CreateReviewEvent(ReviewDTO.fromModel(eachReview), eachReview.spot!));
+          print('POSTING TO-UPLOAD REVIEWS!');
+          Future.delayed(const Duration(seconds: 2));
+          // TODO -> when this finished, send a notification to the user.
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

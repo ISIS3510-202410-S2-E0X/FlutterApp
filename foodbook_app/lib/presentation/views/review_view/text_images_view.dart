@@ -52,12 +52,10 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   int _times = 0;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
-  final Connectivity _connectivity = Connectivity();
 
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<ReviewDraftBloc>(context).add(LoadDraftsToUpload());
 
     if (widget.reviewTitle != null) {
       _titleController.text = widget.reviewTitle!;
@@ -69,7 +67,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   }
 
   Future<bool> _updateConnectionStatus(BuildContext context) async {
-    print('REVISANDO CONEXIÓN');
+    print('REVISANDO CONEXIÓN - TextAndImagesView');
     var connectivityResult = await Connectivity().checkConnectivity();
     print(connectivityResult);
     if (connectivityResult[0] == ConnectivityResult.none) {
@@ -187,7 +185,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
-  String? _name;
+  Map<String, String>? _name;
   String? _uploadedImageUrl;
   Future saveImage() async {
     if (_image == null) return; 
@@ -256,7 +254,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           BlocListener<UserBloc, UserState>(
             listener: (context, state) {
               if (state is AuthenticatedUserState) {
-                _name = state.displayName;
+                _name = {'id': state.email, 'name': state.displayName};
                 if (_image == null && _times == 0) {
                   createReview(_name!, null);
                   cancelSingleTask("reviewReminder");
@@ -374,7 +372,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
-  void createReview(String userName, String? uploadedImageUrl) async {
+  void createReview(Map<String, String> userName, String? uploadedImageUrl) async {
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
     final starsBloc = BlocProvider.of<StarsBloc>(context);
 

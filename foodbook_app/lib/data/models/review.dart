@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Review {
-  final String user;
+  final Map<String, String> user;
   final String? title;
   final String? content;
   final Timestamp date;
   final String? imageUrl;
   final Map<String, double> ratings;
   final List<String> selectedCategories;
+  String? spot;
 
   Review({
     required this.user,
@@ -17,6 +18,7 @@ class Review {
     required this.imageUrl,
     required this.ratings,
     required this.selectedCategories,
+    this.spot,
   });
 }
 
