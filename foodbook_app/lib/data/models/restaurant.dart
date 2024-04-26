@@ -1,7 +1,6 @@
 import 'package:foodbook_app/data/models/review.dart';
 
 class Restaurant {
-  final String id;
   final String name;
   final List<String> categories;
   final List<String> imagePaths;
@@ -15,9 +14,9 @@ class Restaurant {
   final int waitTimeMin;
   final int waitTimeMax;
   final String priceRange;
+  final bool bookmarked;
 
   Restaurant({
-    required this.id,
     required this.name,
     required this.categories,
     required this.imagePaths,
@@ -31,5 +30,6 @@ class Restaurant {
     required this.waitTimeMin,
     required this.waitTimeMax,
     required this.priceRange,
+    required this.bookmarked,
   });
 }

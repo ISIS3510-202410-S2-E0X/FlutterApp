@@ -52,14 +52,6 @@ class FoodCategoryMinSelectionReached extends FoodCategoryState {
   List<Object> get props => [message];
 }
 
-class FoodCategoryInitialSelection extends FoodCategoryState {
-  final List<CategoryDTO> selectedCategories;
-  FoodCategoryInitialSelection(this.selectedCategories);
-  
-  @override
-  List<Object?> get props => [selectedCategories];
-}
-
 class FoodCategoryError extends FoodCategoryState {
   final String error;
 

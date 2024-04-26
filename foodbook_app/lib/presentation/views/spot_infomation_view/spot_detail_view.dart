@@ -1,157 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
-import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
-import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
-import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_state.dart';
-import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
-import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
-import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_state.dart';
-import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
-import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/repositories/category_repository.dart';
-import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
-import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
 import 'package:foodbook_app/presentation/views/review_view/restaurant_reviews_view.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_map.dart';
 
 
 class SpotDetail extends StatelessWidget {
-  final String restaurantId;
-
-  const SpotDetail({Key? key, required this.restaurantId}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider<SpotDetailBloc>(
-      create: (context) => SpotDetailBloc(
-        RepositoryProvider.of<RestaurantRepository>(context),
-      )..add(FetchRestaurantDetail(restaurantId)),
-      child: BlocBuilder<SpotDetailBloc, SpotDetailState>(
-        builder: (context, state) {
-          if (state is SpotDetailLoadInProgress) {
-            return Scaffold(
-              body: Container(
-                color: Colors.white, // Set the Container color to white
-                width: double.infinity, // Fill the screen width
-                height: double.infinity, // Fill the screen height
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            );
-          } else if (state is SpotDetailLoadSuccess) {
-            return SpotDetailView(restaurant: state.restaurant);
-          } else if (state is SpotDetailLoadFailure) {
-            return SpotDetailViewFailure(message: 'Failed to load restaurant.');
-          } else {
-            return const Center(child: Text('Unknown error.'));
-          }
-        },
-      ),
-    );
-  }
-}
-
-class SpotDetailView extends StatelessWidget {
   final Restaurant restaurant;
 
-  const SpotDetailView({super.key, required this.restaurant});
-
-  void _navigateToReviewPage(BuildContext context, { bool continueDraft = false }) {
-    ReviewDraftBloc reviewDraftBloc = BlocProvider.of<ReviewDraftBloc>(context);
-
-    if (continueDraft) {
-      print('Continuing draft');
-      reviewDraftBloc.add(LoadDraftsBySpot(restaurant.name));
-
-      reviewDraftBloc.stream.firstWhere((state) => state is ReviewLoaded).then((state) {
-        if (state is ReviewLoaded && state.drafts.isNotEmpty) {
-          print('Draft found, navigating with draft');
-          _pushCategoriesAndStarsView(context, state.drafts.first);
-        } else {
-          print('No draft found, navigating to new review page');
-          _pushCategoriesAndStarsView(context);
-        }
-      }).catchError((error) {
-        // Manejar cualquier error que pueda ocurrir durante el proceso
-        print('Error: $error');
-        _pushCategoriesAndStarsView(context); // Navegar sin borrador si hay un error
-      });
-    } else {
-      print('Starting new draft');
-      _pushCategoriesAndStarsView(context);
-    }
-  }
-
-  void _pushCategoriesAndStarsView(BuildContext context, [ReviewDraft? draft]) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider<ReviewDraftBloc>(
-                create: (context) => ReviewDraftBloc(
-                  ReviewDraftRepository(DatabaseProvider())
-                ),
-              ),
-              BlocProvider<FoodCategoryBloc>(
-                create: (context) => FoodCategoryBloc(
-                  categoryRepository: CategoryRepository(),
-                  maxSelection: 3,
-                  minSelection: 1,
-                ),
-              ),
-              BlocProvider<StarsBloc>(
-                create: (context) => StarsBloc(),
-              ),
-            ],
-            child: CategoriesAndStarsView(restaurant: restaurant, initialReview: draft),
-          );
-        },
-      ),
-    );
-  }
-
-  void _checkForUnfinishedReview(BuildContext context) {
-    final reviewDraftBloc = BlocProvider.of<ReviewDraftBloc>(context);
-    reviewDraftBloc.add(CheckUnfinishedDraft(restaurant.name));
-    
-    reviewDraftBloc.stream.firstWhere((state) => state is UnfinishedDraftExists || state is NoUnifishedReviews).then((state) {
-      if (state is UnfinishedDraftExists) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Unfinished Review'),
-            content: const Text('You have an unfinished draft. Would you like to continue?'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _navigateToReviewPage(context, continueDraft: true);
-                },
-                child: const Text('Continue Draft'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _navigateToReviewPage(context, continueDraft: false);
-                },
-                child: const Text('Start New'),
-              ),
-            ],
-          ),
-        );
-      } else {
-        // No hay borrador inacabado, procede con un nuevo borrador
-        _navigateToReviewPage(context, continueDraft: false);
-      }
-    });
-  }
+  const SpotDetail({super.key, required this.restaurant});
 
   @override
   Widget build(BuildContext context) {
@@ -277,7 +138,29 @@ class SpotDetailView extends StatelessWidget {
             backgroundColor: Colors.blue, // Button color
             minimumSize: const Size(double.infinity, 50),
           ),
-          onPressed: () => _checkForUnfinishedReview(context),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  return MultiBlocProvider(
+                    providers: [
+                      BlocProvider<FoodCategoryBloc>(
+                        create: (context) => FoodCategoryBloc(
+                          categoryRepository: CategoryRepository(),
+                          maxSelection: 3,
+                          minSelection: 1,
+                        ),
+                      ),
+                      BlocProvider<StarsBloc>(
+                        create: (context) => StarsBloc(),
+                      ),
+                    ],
+                    child: CategoriesAndStarsView(restaurant: restaurant),
+                  );
+                },
+              ),
+            );
+          },
           child: const Text('Leave a review', style:TextStyle(color:Colors.white)),
         ),
       ),
@@ -313,30 +196,6 @@ class SpotDetailView extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-// If the SpotDetailLoadFailure state is emitted, the SpotDetailView widget will show the back button in the app bar and a failure message in the center of the screen.
-class SpotDetailViewFailure extends StatelessWidget {
-  final String message;
-
-  const SpotDetailViewFailure({Key? key, required this.message}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: Center(
-        child: Text(message),
       ),
     );
   }
