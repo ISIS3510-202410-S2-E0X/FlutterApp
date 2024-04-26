@@ -108,9 +108,9 @@ class _BookmarksViewState extends State<BookmarksView> {
                       );
                     } else if (state is BookmarksLoadFailure) {
                       //The message changes if there is 1 or more than 1 restaurant that couldn't be loaded
-                      final failureMessage = state.failedToLoadNames.length == 1
-                          ? "The bookmarked restaurant: ${state.failedToLoadNames.first} is not in cache and couldn't be accessed through network. Try again with an internet connection."
-                          : "The bookmarked restaurants: ${state.failedToLoadNames.join(', ')} are not in cache and couldn't be accessed through network. Try again with an internet connection.";
+                      //final failureMessage = state.failedToLoadNames.length == 1
+                      //    ? "The bookmarked restaurant: ${state.failedToLoadNames.first} is not in cache and couldn't be accessed through network. Try again with an internet connection."
+                      //    : "The bookmarked restaurants: ${state.failedToLoadNames.join(', ')} are not in cache and couldn't be accessed through network. Try again with an internet connection.";
                       return Column(
                         children: [
                           if (state.successfullyLoaded.isNotEmpty)
@@ -147,10 +147,10 @@ class _BookmarksViewState extends State<BookmarksView> {
                                 },
                               ),
                             ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(failureMessage, textAlign: TextAlign.center),
-                          ),
+                          //Padding(
+                          //  padding: const EdgeInsets.all(8.0),
+                          //  child: Text(failureMessage, textAlign: TextAlign.center),
+                          //),
                         ],
                       );
                     }
