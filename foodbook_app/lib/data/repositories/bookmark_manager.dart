@@ -86,9 +86,11 @@ class BookmarkManager {
       final User? user = FirebaseAuth.instance.currentUser;
 
       if (user == null || user.email == null) {
+        //Eliminates the @gmail.com
         throw Exception('User is not logged in or email is null.');
       }
       else {
+        final correo = user.email!.replaceAll('@gmail.com', '');
         //Checks if user has bookmarks in prefs with getBookmarkedRestaurants
         List<String> bookmarks = await getBookmarkedRestaurants();
 
@@ -96,15 +98,15 @@ class BookmarkManager {
         // It adds the email as id of the collection and a variable called 'userId' with the user's email
         // It also adds a boolean variable called 'usage' with the value true even if it is already in the collection
         if (bookmarks.isNotEmpty) {
-          DocumentSnapshot<Map<String, dynamic>> userSnapshot = await FirebaseFirestore.instance.collection('bookmarksUsage').doc(user.email).get();
+          DocumentSnapshot<Map<String, dynamic>> userSnapshot = await FirebaseFirestore.instance.collection('bookmarksUsage').doc(correo).get();
           if (!userSnapshot.exists) {
-            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(user.email).set({
-              'userId': user.email,
+            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(correo).set({
+              'userId': correo,
               'usage': true
             });
           }
           else {
-            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(user.email).update({
+            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(correo).update({
               'usage': true
             });
           }
@@ -115,13 +117,13 @@ class BookmarkManager {
         else {
           DocumentSnapshot<Map<String, dynamic>> userSnapshot = await FirebaseFirestore.instance.collection('bookmarksUsage').doc(user.email).get();
           if (!userSnapshot.exists) {
-            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(user.email).set({
-              'userId': user.email,
+            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(correo).set({
+              'userId': correo,
               'usage': false
             });
           }
           else {
-            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(user.email).update({
+            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(correo).update({
               'usage': false
             });
           }

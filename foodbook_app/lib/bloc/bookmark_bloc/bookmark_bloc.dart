@@ -20,6 +20,8 @@ class BookmarkBloc extends Bloc<BookmarkEvent, BookmarkState> {
         await bookmarkManager.bookmarkRestaurant(event.restaurant);
       }
       emit(BookmarkLoaded(!isBookmarked));
+      //Toggles bookmark usage in firestore
+      await bookmarkManager.toggleBookmarkUsage();
     });
 
 
