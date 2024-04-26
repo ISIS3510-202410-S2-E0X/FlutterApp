@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:foodbook_app/data/dtos/restaurant_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
@@ -77,6 +78,61 @@ class BookmarkManager {
   Future<List<String>> getBookmarkedRestaurants() async {
     final prefs = await _getPrefs();
     return prefs.getStringList(_bookmarksKey) ?? [];
+  }
+
+  Future<void> toggleBookmarkUsage() async {
+    try {
+
+      final User? user = FirebaseAuth.instance.currentUser;
+
+      if (user == null || user.email == null) {
+        //Eliminates the @gmail.com
+        throw Exception('User is not logged in or email is null.');
+      }
+      else {
+        final correo = user.email!.replaceAll('@gmail.com', '');
+        //Checks if user has bookmarks in prefs with getBookmarkedRestaurants
+        List<String> bookmarks = await getBookmarkedRestaurants();
+
+        // If user has bookmarks, it will add the user's email if it is not already in the collection bookmarksUsage
+        // It adds the email as id of the collection and a variable called 'userId' with the user's email
+        // It also adds a boolean variable called 'usage' with the value true even if it is already in the collection
+        if (bookmarks.isNotEmpty) {
+          DocumentSnapshot<Map<String, dynamic>> userSnapshot = await FirebaseFirestore.instance.collection('bookmarksUsage').doc(correo).get();
+          if (!userSnapshot.exists) {
+            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(correo).set({
+              'userId': correo,
+              'usage': true
+            });
+          }
+          else {
+            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(correo).update({
+              'usage': true
+            });
+          }
+        }
+        // If user has no bookmarks, it will add the user's email if it is not already in the collection bookmarksUsage
+        // It adds the email as id of the collection and a variable called 'userId' with the user's email
+        // It also adds a boolean variable called 'usage' with the value false even if it is already in the collection
+        else {
+          DocumentSnapshot<Map<String, dynamic>> userSnapshot = await FirebaseFirestore.instance.collection('bookmarksUsage').doc(user.email).get();
+          if (!userSnapshot.exists) {
+            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(correo).set({
+              'userId': correo,
+              'usage': false
+            });
+          }
+          else {
+            await FirebaseFirestore.instance.collection('bookmarksUsage').doc(correo).update({
+              'usage': false
+            });
+          }
+        } 
+      }
+    } catch (e) {
+      print('Failed to toggle bookmark usage with error: $e');
+      rethrow;
+    }
   }
 
 }
