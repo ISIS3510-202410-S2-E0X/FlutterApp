@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
@@ -11,11 +12,15 @@ import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_sta
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
+import 'package:foodbook_app/data/dtos/category_dto.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
@@ -28,13 +33,15 @@ class TextAndImagesView extends StatefulWidget {
   final String? reviewContent;
   final String? imageUrl;
   final Restaurant restaurant;
+  final bool wasLoaded;
 
   const TextAndImagesView({
     super.key,
     required this.restaurant,
     this.reviewTitle,
     this.reviewContent,
-    this.imageUrl
+    this.imageUrl,
+    required this.wasLoaded
   });
 
   @override
@@ -59,6 +66,62 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     if (widget.reviewContent != null) {
       _commentController.text = widget.reviewContent!;
     }
+  }
+
+  Future<bool> _updateConnectionStatus(BuildContext context) async {
+    print('REVISANDO CONEXIÓN - TextAndImagesView');
+    var connectivityResult = await Connectivity().checkConnectivity();
+    print(connectivityResult);
+    if (connectivityResult[0] == ConnectivityResult.none) {
+      print('No hay conexión a Internet.');
+      final draft = _getUpdatedValues();
+      BlocProvider.of<ReviewDraftBloc>(context).add(AddDraftToUpload(draft));
+      // Muestra un Snackbar indicando la falta de conexión
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No hay conexión a Internet.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      // Navega a la vista BrowseView
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) {
+          return BlocProvider<BrowseBloc>(
+            create: (context) => BrowseBloc(
+              restaurantRepository: RestaurantRepository(),
+              reviewRepository: ReviewRepository(),
+            )..add(LoadRestaurants()),
+            child: BrowseView(),
+          );
+        }),
+      );
+      return false;
+    }
+    return true;
+  }
+
+  ReviewDraft _getUpdatedValues() {
+    final userBlocState = BlocProvider.of<UserBloc>(context).state;
+    final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
+    final starsBloc = BlocProvider.of<StarsBloc>(context);
+
+    ReviewDraft draft = ReviewDraft(
+      user: userBlocState.email,
+      title: _titleController.text,
+      content: _commentController.text,
+      image: "", // TODO: Change to actual image
+      spot: widget.restaurant.name,
+      uploaded: 0,
+      ratings: {
+        RatingsKeys.cleanliness: (starsBloc.newRatings[RatingsKeys.cleanliness] ?? 0.0),
+        RatingsKeys.waitingTime: (starsBloc.newRatings[RatingsKeys.waitingTime] ?? 0.0),
+        RatingsKeys.service: (starsBloc.newRatings[RatingsKeys.service] ?? 0.0),
+        RatingsKeys.foodQuality: (starsBloc.newRatings[RatingsKeys.foodQuality] ?? 0.0),
+      },
+      selectedCategories: foodCategoryBloc.selectedCategories.map((category) => CategoryDTO(name: category.name)).toList(),
+    );
+
+    return draft;
   }
 
   Future<void> getImage() async {
@@ -124,7 +187,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
-  String? _name;
+  Map<String, String>? _name;
   String? _uploadedImageUrl;
   Future saveImage() async {
     if (_image == null) return; 
@@ -156,22 +219,25 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
         ),
         actions: [
           OutlinedButton(
-            onPressed: () => {
-              context.read<UserBloc>().add(GetCurrentUser()),
-              saveImage(),
-              Navigator.of(context).push(
+            onPressed: () async {
+              final isConnected = await _updateConnectionStatus(context);
+              if (!isConnected) return;
+              if (widget.wasLoaded) {
+                BlocProvider.of<ReviewDraftBloc>(context).add(DeleteDraft(widget.restaurant.name));
+              }
+              context.read<UserBloc>().add(GetCurrentUser());
+              saveImage();
+              Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) {
                   return BlocProvider<BrowseBloc>(
-                    create: (context) =>
-                        BrowseBloc(
-                            restaurantRepository: RestaurantRepository(),
-                            reviewRepository: ReviewRepository(),
-                          )
-                          ..add(LoadRestaurants()),
+                    create: (context) => BrowseBloc(
+                      restaurantRepository: RestaurantRepository(),
+                      reviewRepository: ReviewRepository(),
+                    )..add(LoadRestaurants()),
                     child: BrowseView(),
                   );
                 }),
-              ),
+              );
             },
             style: OutlinedButton.styleFrom(
               side: BorderSide.none,
@@ -193,7 +259,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           BlocListener<UserBloc, UserState>(
             listener: (context, state) {
               if (state is AuthenticatedUserState) {
-                _name = state.displayName;
+                _name = {'id': state.email, 'name': state.displayName};
                 if (_image == null && _times == 0) {
                   createReview(_name!, null);
                   cancelSingleTask("reviewReminder");
@@ -311,7 +377,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
-  void createReview(String userName, String? uploadedImageUrl) async {
+  void createReview(Map<String, String> userName, String? uploadedImageUrl) async {
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
     final starsBloc = BlocProvider.of<StarsBloc>(context);
 

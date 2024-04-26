@@ -13,12 +13,15 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
     on<UpdateDraft>(_onUpdateDraft);
     on<DeleteDraft>(_onDeleteDraft);
     on<CheckUnfinishedDraft>(_onCheckUnfinishedDraft);
+    on<AddDraftToUpload>(_onAddDraftToUpload);
+    on<LoadDraftsToUpload>(_onLoadDraftsToUpload);
   }
 
   Future<void> _onLoadDrafts(LoadDrafts event, Emitter<ReviewDraftState> emit) async {
     emit(ReviewLoading());
     try {
       final drafts = await reviewDraftRepository.getAllDrafts();
+      print(drafts);
       emit(ReviewLoaded(drafts));
     } catch (e) {
       emit(ReviewError());
@@ -47,7 +50,7 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
   }
 
   Future<void> _onDeleteDraft(DeleteDraft event, Emitter<ReviewDraftState> emit) async {
-    await reviewDraftRepository.deleteDraft(event.id);
+    await reviewDraftRepository.deleteDraft(event.spot);
     add(LoadDrafts());
   }
 
@@ -59,6 +62,24 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
       } else {
         emit(NoUnifishedReviews());
       }
+    } catch (e) {
+      emit(ReviewError());
+    }
+  }
+
+  Future<void> _onAddDraftToUpload(AddDraftToUpload event, Emitter<ReviewDraftState> emit) async {
+    await reviewDraftRepository.insertDraftsToUpload(event.draft);
+    add(LoadDrafts());
+  }
+
+  Future<void> _onLoadDraftsToUpload(LoadDraftsToUpload event, Emitter<ReviewDraftState> emit) async {
+    emit(ReviewLoading());
+    try {
+      final drafts = await reviewDraftRepository.getAllDraftsToUpload();
+      for (var draft in drafts) {
+        print('DRAFTS: ${draft.spot}');
+      }
+      emit(ReviewLoaded(drafts));
     } catch (e) {
       emit(ReviewError());
     }

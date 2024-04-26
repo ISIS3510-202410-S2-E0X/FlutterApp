@@ -19,6 +19,13 @@ class AddDraft extends ReviewDraftEvent {
   AddDraft(this.draft);
 }
 
+class AddDraftToUpload extends ReviewDraftEvent {
+  final ReviewDraft draft;
+  AddDraftToUpload(this.draft);
+}
+
+class LoadDraftsToUpload extends ReviewDraftEvent {}
+
 class UpdateDraft extends ReviewDraftEvent {
   final ReviewDraft draft;
   final String spot;
@@ -26,8 +33,8 @@ class UpdateDraft extends ReviewDraftEvent {
 }
 
 class DeleteDraft extends ReviewDraftEvent {
-  final int id;
-  DeleteDraft(this.id);
+  final String spot;
+  DeleteDraft(this.spot);
 }
 
 class CheckUnfinishedDraft extends ReviewDraftEvent {
