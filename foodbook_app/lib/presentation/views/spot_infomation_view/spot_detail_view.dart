@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
@@ -33,7 +34,16 @@ class SpotDetail extends StatelessWidget {
       child: BlocBuilder<SpotDetailBloc, SpotDetailState>(
         builder: (context, state) {
           if (state is SpotDetailLoadInProgress) {
-            return const Center(child: CircularProgressIndicator());
+            return Scaffold(
+              body: Container(
+                color: Colors.white, // Set the Container color to white
+                width: double.infinity, // Fill the screen width
+                height: double.infinity, // Fill the screen height
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            );
           } else if (state is SpotDetailLoadSuccess) {
             return SpotDetailView(restaurant: state.restaurant);
           } else if (state is SpotDetailLoadFailure) {
