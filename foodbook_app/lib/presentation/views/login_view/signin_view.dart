@@ -162,7 +162,7 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
             child: Center(
               child: Container(
           child: Text(
-            'Authentication error. Please try again.',
+            'No connection, please make sure you have internet access before attempting to login.',
             style: TextStyle(
               color: Colors.red,
               fontSize: screenSize.width * 0.04,

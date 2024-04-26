@@ -40,7 +40,8 @@ class BrowseView extends StatefulWidget {
 }
 
 class _BrowseViewState extends State<BrowseView> {
-
+  final Connectivity _connectivity = Connectivity();
+  Stream<List<ConnectivityResult>> get _connectivityStream => _connectivity.onConnectivityChanged;
   @override
   void initState() {
     super.initState();
@@ -106,100 +107,118 @@ class _BrowseViewState extends State<BrowseView> {
       create: (context) => BookmarkBloc(
         BookmarkManager(), 
       ),
-      child: PopScope(
-        canPop: false,
-        child: Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.white, // Set AppBar background to white
-            title: Row(
-              children: [
-                const Text(
-                  'Browse',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black, // Title color
-                  ),
+      child: StreamBuilder<ConnectivityResult>(
+        stream: _connectivityStream.asyncExpand((results) => Stream.fromIterable(results)),
+        builder: (context, snapshot) {
+          bool isOffline = snapshot.data == ConnectivityResult.none || snapshot.connectionState == ConnectionState.none;
+
+          return PopScope(
+            canPop: false,
+            child: Scaffold(
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                backgroundColor: Colors.white, // Set AppBar background to white
+                title: Row(
+                  children: [
+                    const Text(
+                      'Browse',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black, // Title color
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.58, // Adjust the width as needed
+                      height: kToolbarHeight, // Constrain the height of the SearchPage2 widget
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context)),
+                      ),
+                    ),
+                  ],
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.58, // Adjust the width as needed
-                  height: kToolbarHeight, // Constrain the height of the SearchPage2 widget
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context)),
+                elevation: 0, // Remove shadow
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.account_circle, color:  Color.fromARGB(255, 0, 140, 255)), // Profile icon
+                    onPressed: () {
+                      //Navigate to the profile view
+                      context.read<UserBloc>().add(GetCurrentUser());
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProfileView()),
+                      );
+                    },
                   ),
-                ),
-              ],
-            ),
-            elevation: 0, // Remove shadow
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.account_circle, color:  Color.fromARGB(255, 0, 140, 255)), // Profile icon
-                onPressed: () {
-                  //Navigate to the profile view
-                  context.read<UserBloc>().add(GetCurrentUser());
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ProfileView()),
-                  );
-                },
+                ],
               ),
-            ],
-          ),
-          backgroundColor: Colors.grey[200], // Set the background color to grey
-          body: Column(
-            children: [
-              Divider(
-                height: 1, // Height of the divider line
-                color: Colors.grey[300], // Color of the divider line
-              ),
-              Expanded(
-                child: BlocBuilder<BrowseBloc, BrowseState>(
-                  builder: (context, state) {
-                    if (state is RestaurantsLoadInProgress) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is RestaurantsLoadSuccess) {
-                      return ListView.builder(
-                        itemCount: state.restaurants.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => BlocProvider.value(
-                                    value: BlocProvider.of<ReviewDraftBloc>(context),
-                                    child: SpotDetail(restaurantId: state.restaurants[index].id),
-                                  ),
-                                ),
+              backgroundColor: Colors.grey[200], // Set the background color to grey
+              body: Column(
+                children: [
+                  if (isOffline)
+                    const Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.signal_wifi_off, color: Colors.grey),
+                          SizedBox(width: 8),
+                          Text('Offline', style: TextStyle(color: Colors.grey)),
+                        ],
+                      ),
+                    ),
+                  Divider(
+                    height: 1, // Height of the divider line
+                    color: Colors.grey[300], // Color of the divider line
+                  ),
+                  Expanded(
+                    child: BlocBuilder<BrowseBloc, BrowseState>(
+                      builder: (context, state) {
+                        if (state is RestaurantsLoadInProgress) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (state is RestaurantsLoadSuccess) {
+                          return ListView.builder(
+                            itemCount: state.restaurants.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BlocProvider.value(
+                                        value: BlocProvider.of<ReviewDraftBloc>(context),
+                                        child: SpotDetail(restaurantId: state.restaurants[index].id),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: RestaurantCard(restaurant: state.restaurants[index]),
                               );
                             },
-                            child: RestaurantCard(restaurant: state.restaurants[index]),
                           );
-                        },
-                      );
-                    } else if (state is RestaurantsLoadFailure) {
-                      return const Center(child: Text('Failed to load restaurants'));
-                    }
-                    // If the initial state is RestaurantsInitial or any other unexpected state
-                    return const Center(child: Text('Start browsing by applying some filters!'));
-                  },
-                ),
+                        } else if (state is RestaurantsLoadFailure) {
+                          return const Center(child: Text('Failed to load restaurants'));
+                        }
+                        // If the initial state is RestaurantsInitial or any other unexpected state
+                        return const Center(child: Text('Start browsing by applying some filters!'));
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          bottomNavigationBar: CustomNavigationBar(
-            selectedIndex: 0, // Set the selected index to 1
-            onItemTapped: (int index) {
-              // Handle navigation to different views
-              if (index == 1) {
-                Navigator.pushNamed(context, 'package:foodbook_app/presentation/views/restaurant_views/login_view.dart');
-              } else if (index == 2) {
-                Navigator.pushNamed(context, '/bookmarks');
-              }
-            },
-          ),
-        ),
+              bottomNavigationBar: CustomNavigationBar(
+                selectedIndex: 0, // Set the selected index to 1
+                onItemTapped: (int index) {
+                  // Handle navigation to different views
+                  if (index == 1) {
+                    Navigator.pushNamed(context, 'package:foodbook_app/presentation/views/restaurant_views/login_view.dart');
+                  } else if (index == 2) {
+                    Navigator.pushNamed(context, '/bookmarks');
+                  }
+                },
+              ),
+            ),
+          );
+        },
       ),
     );
   }
