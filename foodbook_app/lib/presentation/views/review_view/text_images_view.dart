@@ -77,23 +77,35 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
       final draft = _getUpdatedValues();
       BlocProvider.of<ReviewDraftBloc>(context).add(AddDraftToUpload(draft));
       // Muestra un Snackbar indicando la falta de conexión
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No hay conexión a Internet.'),
-          duration: Duration(seconds: 3),
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //     content: Text('No hay conexión a Internet.'),
+      //     duration: Duration(seconds: 3),
+      //   ),
+      // );
+      final shouldSaveDraft = await showDialog<String>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('No connection'),
+          content: const Text("We couldn't upload your review, but don't worry, we'll do it once you have connection"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () => 
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) {
+                  return BlocProvider<BrowseBloc>(
+                    create: (context) => BrowseBloc(
+                      restaurantRepository: RestaurantRepository(),
+                      reviewRepository: ReviewRepository(),
+                    )..add(LoadRestaurants()),
+                    child: BrowseView(),
+                  );
+                }),
+              ),
+            ),
+          ],
         ),
-      );
-      // Navega a la vista BrowseView
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) {
-          return BlocProvider<BrowseBloc>(
-            create: (context) => BrowseBloc(
-              restaurantRepository: RestaurantRepository(),
-              reviewRepository: ReviewRepository(),
-            )..add(LoadRestaurants()),
-            child: BrowseView(),
-          );
-        }),
       );
       return false;
     }
