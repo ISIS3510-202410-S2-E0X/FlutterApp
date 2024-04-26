@@ -33,8 +33,8 @@ class UpdateDraft extends ReviewDraftEvent {
 }
 
 class DeleteDraft extends ReviewDraftEvent {
-  final int id;
-  DeleteDraft(this.id);
+  final String spot;
+  DeleteDraft(this.spot);
 }
 
 class CheckUnfinishedDraft extends ReviewDraftEvent {

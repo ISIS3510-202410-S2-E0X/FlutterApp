@@ -45,6 +45,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
   String? reviewTitle;
   String? reviewContent;
   String? imageUrl;
+  bool? wasLoaded;
 
   @override
   void initState() {
@@ -112,7 +113,8 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
             restaurant: widget.restaurant,
             reviewTitle: reviewTitle,
             reviewContent: reviewContent,
-            imageUrl: imageUrl
+            imageUrl: imageUrl,
+            wasLoaded: widget.initialReview != null,
           ),
         ),
       ),
@@ -123,6 +125,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
         reviewTitle = result['reviewTitle'];
         reviewContent = result['reviewContent'];
         imageUrl = result['imageUrl'];
+        wasLoaded = widget.initialReview != null;
       });
     }
 
