@@ -82,7 +82,8 @@ class _BookmarksViewState extends State<BookmarksView> {
           backgroundColor: Colors.grey[200],
           body: BlocBuilder<BookmarkInternetViewBloc, BookmarkInternetViewState>(
             builder: (context, connectivityState) {
-              bool isOffline = connectivityState is BookmarksNoInternet || snapshot.data == ConnectivityResult.none || snapshot.connectionState == ConnectionState.none;
+              bool isOffline = ( snapshot.connectionState == ConnectionState.waiting && connectivityState is BookmarksNoInternet ) || snapshot.data == ConnectivityResult.none || snapshot.connectionState == ConnectionState.none;
+              //context.read<BookmarkInternetViewBloc>().add(BookmarksAccessInternet());
               return Column(
                 children: [
                   if (isOffline) // This line shows or hides the offline message
