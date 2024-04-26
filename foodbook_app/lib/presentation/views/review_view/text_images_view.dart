@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
@@ -11,11 +12,15 @@ import 'package:foodbook_app/bloc/review_bloc/image_upload_bloc/image_upload_sta
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_event.dart';
 import 'package:foodbook_app/bloc/review_bloc/stars_bloc/stars_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
+import 'package:foodbook_app/data/dtos/category_dto.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
+import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
@@ -24,11 +29,23 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class TextAndImagesView extends StatefulWidget {
+  final String? reviewTitle;
+  final String? reviewContent;
+  final String? imageUrl;
   final Restaurant restaurant;
+  final bool wasLoaded;
 
-  const TextAndImagesView({super.key, required this.restaurant});
+  const TextAndImagesView({
+    super.key,
+    required this.restaurant,
+    this.reviewTitle,
+    this.reviewContent,
+    this.imageUrl,
+    required this.wasLoaded
+  });
 
   @override
+  // ignore: library_private_types_in_public_api
   _TextAndImagesViewState createState() => _TextAndImagesViewState();
 }
 
@@ -37,6 +54,75 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   int _times = 0;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.reviewTitle != null) {
+      _titleController.text = widget.reviewTitle!;
+    }
+
+    if (widget.reviewContent != null) {
+      _commentController.text = widget.reviewContent!;
+    }
+  }
+
+  Future<bool> _updateConnectionStatus(BuildContext context) async {
+    print('REVISANDO CONEXIÓN - TextAndImagesView');
+    var connectivityResult = await Connectivity().checkConnectivity();
+    print(connectivityResult);
+    if (connectivityResult[0] == ConnectivityResult.none) {
+      print('No hay conexión a Internet.');
+      final draft = _getUpdatedValues();
+      BlocProvider.of<ReviewDraftBloc>(context).add(AddDraftToUpload(draft));
+      // Muestra un Snackbar indicando la falta de conexión
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No hay conexión a Internet.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      // Navega a la vista BrowseView
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) {
+          return BlocProvider<BrowseBloc>(
+            create: (context) => BrowseBloc(
+              restaurantRepository: RestaurantRepository(),
+              reviewRepository: ReviewRepository(),
+            )..add(LoadRestaurants()),
+            child: BrowseView(),
+          );
+        }),
+      );
+      return false;
+    }
+    return true;
+  }
+
+  ReviewDraft _getUpdatedValues() {
+    final userBlocState = BlocProvider.of<UserBloc>(context).state;
+    final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
+    final starsBloc = BlocProvider.of<StarsBloc>(context);
+
+    ReviewDraft draft = ReviewDraft(
+      user: userBlocState.email,
+      title: _titleController.text,
+      content: _commentController.text,
+      image: "", // TODO: Change to actual image
+      spot: widget.restaurant.name,
+      uploaded: 0,
+      ratings: {
+        RatingsKeys.cleanliness: (starsBloc.newRatings[RatingsKeys.cleanliness] ?? 0.0),
+        RatingsKeys.waitingTime: (starsBloc.newRatings[RatingsKeys.waitingTime] ?? 0.0),
+        RatingsKeys.service: (starsBloc.newRatings[RatingsKeys.service] ?? 0.0),
+        RatingsKeys.foodQuality: (starsBloc.newRatings[RatingsKeys.foodQuality] ?? 0.0),
+      },
+      selectedCategories: foodCategoryBloc.selectedCategories.map((category) => CategoryDTO(name: category.name)).toList(),
+    );
+
+    return draft;
+  }
 
   Future<void> getImage() async {
     final ImagePicker picker = ImagePicker();
@@ -101,10 +187,9 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
-  String? _email;
+  Map<String, String>? _name;
   String? _uploadedImageUrl;
   Future saveImage() async {
-    print('Saving image...');
     if (_image == null) return; 
     final imageUploadBloc = BlocProvider.of<ImageUploadBloc>(context);
     imageUploadBloc.add(ImageUploadRequested(_image!));
@@ -112,7 +197,16 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false, 
+      onPopInvoked: (didPop) async {
+        Navigator.of(context).pop({
+          'reviewTitle': _titleController.text,
+          'reviewContent': _commentController.text,
+          'imageUrl': _uploadedImageUrl,
+        });
+    },
+    child: Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
         backgroundColor: Colors.white,
@@ -125,23 +219,25 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
         ),
         actions: [
           OutlinedButton(
-            onPressed: () => {
-
-              context.read<UserBloc>().add(GetCurrentUser()),
-              saveImage(),
-              Navigator.of(context).push(
+            onPressed: () async {
+              final isConnected = await _updateConnectionStatus(context);
+              if (!isConnected) return;
+              if (widget.wasLoaded) {
+                BlocProvider.of<ReviewDraftBloc>(context).add(DeleteDraft(widget.restaurant.name));
+              }
+              context.read<UserBloc>().add(GetCurrentUser());
+              saveImage();
+              Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) {
                   return BlocProvider<BrowseBloc>(
-                    create: (context) =>
-                        BrowseBloc(
-                            restaurantRepository: RestaurantRepository(),
-                            reviewRepository: ReviewRepository(),
-                          )
-                          ..add(LoadRestaurants()),
+                    create: (context) => BrowseBloc(
+                      restaurantRepository: RestaurantRepository(),
+                      reviewRepository: ReviewRepository(),
+                    )..add(LoadRestaurants()),
                     child: BrowseView(),
                   );
                 }),
-              ),
+              );
             },
             style: OutlinedButton.styleFrom(
               side: BorderSide.none,
@@ -163,10 +259,9 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           BlocListener<UserBloc, UserState>(
             listener: (context, state) {
               if (state is AuthenticatedUserState) {
-                _email = state.email;
+                _name = {'id': state.email, 'name': state.displayName};
                 if (_image == null && _times == 0) {
-                  print('No image to upload, creating review...');
-                  createReview(_email!, null);
+                  createReview(_name!, null);
                   cancelSingleTask("reviewReminder");
                   initializeBackgroundTaskReminder();
                 }
@@ -181,7 +276,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
               if (state is ImageUploadSuccess) {
                 _uploadedImageUrl = state.imageUrl;
                 if (context.read<UserBloc>().state is AuthenticatedUserState && _times == 0) {
-                  createReview(_email!, _uploadedImageUrl!);
+                  createReview(_name!, _uploadedImageUrl!);
                 }
               } else if (state is ImageUploadFailure) {
                 // Manejo del error
@@ -192,6 +287,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
         ],
         child: buildForm(),
       ),
+     ),
     );
   }
 
@@ -281,7 +377,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
-  void createReview(String userEmail, String? uploadedImageUrl) async {
+  void createReview(Map<String, String> userName, String? uploadedImageUrl) async {
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
     final starsBloc = BlocProvider.of<StarsBloc>(context);
 
@@ -291,7 +387,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     final selectedCategoriesString = selectedCategories.map((category) => category.name).toList();
     
     ReviewDTO newReview = ReviewDTO(
-      user: userEmail.replaceFirst("@gmail.com", ""),
+      user: userName,
       title: _titleController.text.isNotEmpty ? _titleController.text : null,
       content: _commentController.text.isNotEmpty ? _commentController.text : null,
       date: Timestamp.fromDate(DateTime.now()), // _formatCurrentDate(),
@@ -305,9 +401,9 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
       BlocProvider.of<ReviewBloc>(context).add(CreateReviewEvent(newReview, widget.restaurant.name));
       _resetFormAndImage();
       _times = 1;
-      // TO-DO: show a success message
+      // TODO: Mostrar mensaje de éxito
     } catch (e) {
-      // TO-DO: show an error message
+      print('Error creating review: $e');
     }
   }
 

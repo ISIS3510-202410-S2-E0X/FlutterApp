@@ -1,27 +1,47 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/search_bloc/search_state.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
+import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
+import 'package:http/http.dart';
 
 class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
   final RestaurantRepository restaurantRepository;
   final ReviewRepository reviewRepository;
+  final SharedPreferencesRepository repository = SharedPreferencesRepository();
 
   BrowseBloc({required this.restaurantRepository, required this.reviewRepository}) : super(RestaurantsInitial()) {
     on<LoadRestaurants>(_onLoadRestaurants);
     on<FilterRestaurants>(_onFilterRestaurants);
     on<FetchRecommendedRestaurants>(_onFetchRecommendedRestaurants);
+    on<SearchWord2>(_onSearchWord);
+    on<SearchButtonPressed2>(_onSearchButtonPressed);
+    on<AddSuggestion2>(_onAddSuggestion);
     //on<ToggleBookmark>(_onToggleBookmark);
   }
 
   void _onLoadRestaurants(LoadRestaurants event, Emitter<BrowseState> emit) async {
     emit(RestaurantsLoadInProgress());
-    await Future.delayed(const Duration(seconds: 1));
+    
     try {
       final restaurants = await restaurantRepository.fetchRestaurants();
-      emit(RestaurantsLoadSuccess(restaurants));
+      if (restaurants.isEmpty) {
+        final cachedRests = await restaurantRepository.fetchRestaurantsFromCache();
+        if (cachedRests.isEmpty) {
+          emit(RestaurantsLoadFailure('No restaurants found'));
+        }
+        
+        emit(RestaurantsLoadSuccess(cachedRests));
+
+      }
+      if (restaurants.isNotEmpty) {
+        emit(RestaurantsLoadSuccess(restaurants));
+      }
+      
     } catch (error) {
       emit(RestaurantsLoadFailure(error.toString()));
     }
@@ -29,6 +49,8 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
 
   void _onFilterRestaurants(FilterRestaurants event, Emitter<BrowseState> emit) async {
     emit(RestaurantsLoadInProgress());
+    await repository.saveSearchTerm(event.name!);
+    print("Saving the query to search history: ${event.name}");
     try {
       final restaurants = await restaurantRepository.fetchRestaurants();
       final filteredRestaurants = _applyFilters(
@@ -37,13 +59,17 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
         event.category,
         restaurants,
       );
+      if (filteredRestaurants.isEmpty) {
+        emit(RestaurantsLoadFailure('No restaurants found'));
+        return;
+      }
       emit(RestaurantsLoadSuccess(filteredRestaurants));
     } catch (error) {
       emit(RestaurantsLoadFailure(error.toString()));
     }
   }
 
-  void _onFetchRecommendedRestaurants(FetchRecommendedRestaurants event, Emitter<BrowseState> emit) async {
+    void _onFetchRecommendedRestaurants(FetchRecommendedRestaurants event, Emitter<BrowseState> emit) async {
     emit(RestaurantsLoadInProgress());
     try {
       var ids = [];
@@ -61,11 +87,39 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
       }
       
       emit(RestaurantsRecommendationLoadSuccess(recommendedRestaurants));
-    } catch (error) {
+    }
+    on ClientException catch (e) {
+      try{
+        print("fetching fyp from cache");
+        var restaurants = await restaurantRepository.fetchCachedFYP();
+        print("length fyp cache: ${restaurants.length}");
+        if (restaurants.isEmpty) {
+          emit(RestaurantsLoadFailure("hmm something went wrong, please verify you’re connected to the internet"));
+        }else{
+        emit(RestaurantsRecommendationLoadSuccess(restaurants));
+        }
+      } catch (e) {
+        emit(RestaurantsLoadFailure("hmm something went wrong, please verify you’re connected to the internet"));
+      }
+    } 
+    catch (error) {
+      print("Error fetching recommended restaurants: $error");
       emit(RestaurantsLoadFailure(error.toString()));
     }
   }
-
+  void _onSearchWord(SearchWord2 event, Emitter<BrowseState> emit) async {
+      try {
+        emit(SearchLoading2());
+      } catch (e) {
+        emit(SearchFailure2(e.toString()));
+      }
+  }
+  void _onSearchButtonPressed(SearchButtonPressed2 event, Emitter<BrowseState> emit) async {
+    emit(SearchLoading2());
+  }
+  void _onAddSuggestion(AddSuggestion2 event, Emitter<BrowseState> emit) async {
+    emit(SearchFinalized());
+  }
   List<Restaurant> _applyFilters(
     String? name,
     String? price,

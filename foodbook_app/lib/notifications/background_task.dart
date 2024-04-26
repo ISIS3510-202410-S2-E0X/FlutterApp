@@ -29,8 +29,8 @@ void callbackDispatcher() {
         if (distance > 1000) {
           NotificationService.showNotification(
             id: 1,
-            title: 'Hungry?',
-            body: "Choose what you will eat today and leave a review!",
+            title: "Hungry? It's lunchtime!",
+            body: "Looks like you're on campus, find a spot or rate the one you've been at!",
           );
         }
         return Future.value(true);

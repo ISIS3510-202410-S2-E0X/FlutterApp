@@ -1,3 +1,4 @@
+
 abstract class UserState {
   String get email => '';
 }
@@ -5,9 +6,11 @@ abstract class UserState {
 class UserAuthInitial extends UserState {}
 
 class AuthenticatedUserState extends UserState {
+  final String displayName;
   @override
   final String email;
-  AuthenticatedUserState(this.email);
+  final String profileImageUrl ;
+  AuthenticatedUserState(this.displayName, this.email,this.profileImageUrl);
 }
 
 class UnauthenticatedUserState extends UserState {}

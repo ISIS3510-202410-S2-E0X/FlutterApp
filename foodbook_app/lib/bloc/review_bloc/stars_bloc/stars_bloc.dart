@@ -7,6 +7,7 @@ class StarsBloc extends Bloc<ReviewEvent, ReviewState> {
 
   StarsBloc() : super(ReviewInitial()) {
     on<ReviewRatingChanged>(_onReviewRatingChanged);
+    on<InitializeRatings>(_onInitializeRatings);
   }
 
   void _onReviewRatingChanged(
@@ -29,5 +30,14 @@ class StarsBloc extends Bloc<ReviewEvent, ReviewState> {
 
       // We emit a new state with the updated ratings
       emit(ReviewRatings(newRatings));
+  }
+
+  void _onInitializeRatings(InitializeRatings event, Emitter<ReviewState> emit) {
+    newRatings = Map.from(event.initialRatings);
+    print('Initial Ratings: $newRatings');
+    for (var key in newRatings.keys) {
+      add(ReviewRatingChanged(key, newRatings[key]!));
+    }
+    emit(ReviewRatings(newRatings));
   }
 }
