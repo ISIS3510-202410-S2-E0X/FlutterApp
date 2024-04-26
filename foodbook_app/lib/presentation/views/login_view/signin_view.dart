@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
-import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
@@ -41,21 +40,8 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
         if (state is Authenticated) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) {
-              return MultiBlocProvider(
-                providers: [
-                  BlocProvider<BrowseBloc>(
-                    create: (context) => BrowseBloc(
-                      restaurantRepository: RestaurantRepository(),
-                      reviewRepository: ReviewRepository(),
-                    )..add(LoadRestaurants()),
-                  ),
-                  BlocProvider(
-                    create: (context) => ReviewBloc(
-                      reviewRepository: ReviewRepository(),
-                      restaurantRepository: RestaurantRepository(),
-                    ),
-                  )
-                ],
+              return BlocProvider<BrowseBloc>(
+                create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(LoadRestaurants()),
                 child: BrowseView(),
               );
             }),
@@ -157,22 +143,26 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
               ),
             ),
           );
-        } else {
+        } else if (state is AuthError) {
           return Center(
             child: Center(
               child: Container(
-              child: Text(
-                'No connection, please make sure you have internet access before attempting to login.',
-                style: TextStyle(
-                color: Colors.red,
-                fontSize: screenSize.width * 0.04,
-                ),
-                textAlign: TextAlign.center,
-              ),
+          child: Text(
+            'Authentication error. Please try again.',
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: screenSize.width * 0.04,
+            ),
+            textAlign: TextAlign.center,
+          ),
               ),
             ),
           );
         }
+        else {
+          return const CircularProgressIndicator();
+        }
+
       },
     );
   }
@@ -184,11 +174,11 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('No Internet Connection'),
-            content: Text('Please check your internet connection and try again.'),
+            title: const Text('No Internet Connection'),
+            content: const Text('Please check your internet connection and try again.'),
             actions: <Widget>[
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                   BlocProvider.of<AuthBloc>(context).add(NoInternet());
