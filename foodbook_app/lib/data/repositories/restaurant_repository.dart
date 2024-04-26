@@ -146,5 +146,18 @@ class RestaurantRepository {
       return null;
     }
   }
+  Future<List<Restaurant>> fetchCachedFYP() async {
+    List<Restaurant> restaurants = [];
+    List<String> restaurantNames = await _restaurantsCacheDAO.getCachedRestaurantFYP();
+    if (restaurantNames.isNotEmpty) {
+      for (var name in restaurantNames) {
+        var details = await _restaurantsCacheDAO.findRestaurantByName(name);
+        if (details != null) {
+          restaurants.add(details);
+        }
+      }
+    }
+    return restaurants;
+  }
   
 }
