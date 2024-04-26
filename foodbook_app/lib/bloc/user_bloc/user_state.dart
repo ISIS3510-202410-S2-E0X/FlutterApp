@@ -6,7 +6,6 @@ abstract class UserState {
 class UserAuthInitial extends UserState {}
 
 class AuthenticatedUserState extends UserState {
-  @override
   final String displayName;
   @override
   final String email;

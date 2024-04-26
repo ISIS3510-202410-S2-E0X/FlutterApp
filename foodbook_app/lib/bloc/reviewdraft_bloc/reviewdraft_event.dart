@@ -19,6 +19,13 @@ class AddDraft extends ReviewDraftEvent {
   AddDraft(this.draft);
 }
 
+class AddDraftToUpload extends ReviewDraftEvent {
+  final ReviewDraft draft;
+  AddDraftToUpload(this.draft);
+}
+
+class LoadDraftsToUpload extends ReviewDraftEvent {}
+
 class UpdateDraft extends ReviewDraftEvent {
   final ReviewDraft draft;
   final String spot;

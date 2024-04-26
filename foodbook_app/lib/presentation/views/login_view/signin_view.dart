@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
+import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
@@ -40,8 +41,21 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
         if (state is Authenticated) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) {
-              return BlocProvider<BrowseBloc>(
-                create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(LoadRestaurants()),
+              return MultiBlocProvider(
+                providers: [
+                  BlocProvider<BrowseBloc>(
+                    create: (context) => BrowseBloc(
+                      restaurantRepository: RestaurantRepository(),
+                      reviewRepository: ReviewRepository(),
+                    )..add(LoadRestaurants()),
+                  ),
+                  BlocProvider(
+                    create: (context) => ReviewBloc(
+                      reviewRepository: ReviewRepository(),
+                      restaurantRepository: RestaurantRepository(),
+                    ),
+                  )
+                ],
                 child: BrowseView(),
               );
             }),

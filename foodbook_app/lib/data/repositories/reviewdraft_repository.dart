@@ -17,7 +17,7 @@ class ReviewDraftRepository {
   }
 
   Future<List<ReviewDraft>> getDraftsBySpot(String spot) async {
-    // await dbProvider.killDatabase();
+    await dbProvider.killDatabase();
     final db = await dbProvider.getDatabase();
     var res = await db.query(
       "ReviewDrafts",
@@ -61,6 +61,21 @@ class ReviewDraftRepository {
   Future<void> deleteAllDrafts() async {
     final db = await dbProvider.getDatabase();
     await db.delete('ReviewDrafts');
+  }
+
+  Future<void> insertDraftsToUpload(ReviewDraft draft) async {
+    final db = await dbProvider.getDatabase();
+    print('SAVING: ${ReviewDraftDTO.fromModel(draft).toJson()}');
+    await db.insert('ToUpload', ReviewDraftDTO.fromModel(draft).toJson());
+  }
+
+  Future<List<ReviewDraft>> getAllDraftsToUpload() async {
+    final db = await dbProvider.getDatabase();
+    var res = await db.query("ToUpload");
+
+    return res.isNotEmpty
+        ? res.map((c) => ReviewDraftDTO.fromJson(c).toModel()).toList()
+        : [];
   }
 
   Future<void> killDatabase() async {
