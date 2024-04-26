@@ -33,13 +33,15 @@ class TextAndImagesView extends StatefulWidget {
   final String? reviewContent;
   final String? imageUrl;
   final Restaurant restaurant;
+  final bool wasLoaded;
 
   const TextAndImagesView({
     super.key,
     required this.restaurant,
     this.reviewTitle,
     this.reviewContent,
-    this.imageUrl
+    this.imageUrl,
+    required this.wasLoaded
   });
 
   @override
@@ -220,6 +222,9 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
             onPressed: () async {
               final isConnected = await _updateConnectionStatus(context);
               if (!isConnected) return;
+              if (widget.wasLoaded) {
+                BlocProvider.of<ReviewDraftBloc>(context).add(DeleteDraft(widget.restaurant.name));
+              }
               context.read<UserBloc>().add(GetCurrentUser());
               saveImage();
               Navigator.of(context).pushReplacement(

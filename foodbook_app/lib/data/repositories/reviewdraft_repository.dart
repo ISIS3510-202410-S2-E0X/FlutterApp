@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:foodbook_app/data/dtos/reviewdraft_dto.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 
 class ReviewDraftRepository {
   final DatabaseProvider dbProvider;
+  final _fireCloud = FirebaseFirestore.instance.collection("unfinishedReviews");
 
   ReviewDraftRepository(this.dbProvider);
 
@@ -33,9 +36,64 @@ class ReviewDraftRepository {
     return [];
   }
 
+  Future<String?> findId(String spot) async {
+    try {
+      QuerySnapshot docs = await _fireCloud.get();
+      List<DocumentSnapshot> foundDocs = [];
+      String? id ;
+      for (var doc in docs.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        print(data);
+        if (data['spot'] == spot) {
+            id = doc.id;
+            break;
+        }
+      }
+
+      return id;
+    } on FirebaseException catch (e) {
+      if (kDebugMode) {
+        print("Failed with error '${e.code}': ${e.message}");
+      }
+      throw FirebaseException(
+        plugin: 'cloud_firestore',
+        message: "Failed to get review: '${e.code}': ${e.message}",
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future updateUnifinishedDraftCount(String spot, bool add) async {
+    try {
+      String? id = await findId(spot);
+      DocumentSnapshot<Map<String, dynamic>> reviewRef = await _fireCloud.doc(id).get();
+      if (add) {
+        await reviewRef.reference.update({
+          'count': FieldValue.increment(1)
+        });
+      } else {
+        await reviewRef.reference.update({
+          'count': FieldValue.increment(-1)
+        });
+      }
+    } on FirebaseException catch (e) {
+      if (kDebugMode) {
+        print("Failed with error '${e.code}': ${e.message}");
+      }
+      throw FirebaseException(
+        plugin: 'cloud_firestore',
+        message: "Failed to get review: '${e.code}': ${e.message}"
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   Future<void> insertDraft(ReviewDraft draft) async {
     final db = await dbProvider.getDatabase();
     print('SAVING: ${ReviewDraftDTO.fromModel(draft).toJson()}');
+    await updateUnifinishedDraftCount(draft.spot!, true);
     await db.insert('ReviewDrafts', ReviewDraftDTO.fromModel(draft).toJson());
   }
 
@@ -49,13 +107,14 @@ class ReviewDraftRepository {
     );
   }
 
-  Future<void> deleteDraft(int id) async {
+  Future<void> deleteDraft(String spot) async {
     final db = await dbProvider.getDatabase();
     await db.delete(
       'ReviewDrafts',
-      where: 'id = ?',
-      whereArgs: [id]
+      where: 'spot = ?',
+      whereArgs: [spot]
     );
+    await updateUnifinishedDraftCount(spot, false);
   }
 
   Future<void> deleteAllDrafts() async {
