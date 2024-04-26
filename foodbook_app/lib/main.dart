@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_internet_view_bloc/bookmark_internet_view_bloc.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
@@ -106,6 +107,9 @@ class MyApp extends StatelessWidget {
             create: (context) => ReviewDraftBloc(
               RepositoryProvider.of<ReviewDraftRepository>(context, listen: false),
             ),
+          ),
+          BlocProvider<BookmarkInternetViewBloc>(
+            create: (context) => BookmarkInternetViewBloc(),
           ),
           BlocProvider<ReviewBloc>(
             create: (context) => ReviewBloc(
