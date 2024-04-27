@@ -22,6 +22,7 @@ import 'package:foodbook_app/data/dtos/category_dto.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/review.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
+import 'package:foodbook_app/notifications/background_task.dart';
 import 'package:foodbook_app/presentation/views/profile_view/profile_view.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/views/test_views/search_test.dart';
@@ -93,10 +94,12 @@ class _BrowseViewState extends State<BrowseView> {
       if (reviewsToUpload.isNotEmpty) {
         for (var eachReview in reviewsToUpload) {
           BlocProvider.of<ReviewBloc>(context).add(CreateReviewEvent(ReviewDTO.fromModel(eachReview), eachReview.spot!));
+          BlocProvider.of<ReviewDraftBloc>(context).add(DeleteDraft(eachReview.spot!));
           print('POSTING TO-UPLOAD REVIEWS!');
           Future.delayed(const Duration(seconds: 2));
           // TODO -> when this finished, send a notification to the user.
         }
+        draftsLoadNotification();
       }
     }
   }

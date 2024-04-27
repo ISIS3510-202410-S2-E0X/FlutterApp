@@ -42,6 +42,13 @@ void callbackDispatcher() {
           
           );
         return Future.value(true);
+      case 'task_drafts_loaded_notification':
+        NotificationService.showNotification(
+          id: 3,
+          title: "Reviews Uploaded",
+          body: "The reviews you created w/o connection have been uploaded"
+        );
+        return Future.value(true);
       default:
         print("Task no reconocida: $task");
         break;
@@ -91,5 +98,8 @@ void initializeBackgroundTask() {
   print("background task initialized");
 }
 
-
+void draftsLoadNotification() {
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  Workmanager().registerOneOffTask('drafts_loaded_notification', 'task_drafts_loaded_notification');
+}
 
