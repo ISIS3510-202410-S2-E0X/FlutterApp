@@ -271,7 +271,7 @@ class SpotDetailView extends StatelessWidget {
                                           borderRadius: BorderRadius.circular(8.0),
                                         ),
                                         child: Text(
-                                          category,
+                                          category.replaceAll('.', ' '),
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold, // Set the text to bold
                                           ),
