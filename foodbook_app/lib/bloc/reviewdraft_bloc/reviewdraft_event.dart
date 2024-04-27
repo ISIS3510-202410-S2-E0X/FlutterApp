@@ -24,6 +24,8 @@ class AddDraftToUpload extends ReviewDraftEvent {
   AddDraftToUpload(this.draft);
 }
 
+class DeleteDraftToUpload extends ReviewDraftEvent {}
+
 class LoadDraftsToUpload extends ReviewDraftEvent {}
 
 class UpdateDraft extends ReviewDraftEvent {

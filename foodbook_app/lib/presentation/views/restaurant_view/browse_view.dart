@@ -41,6 +41,7 @@ class BrowseView extends StatefulWidget {
 }
 
 class _BrowseViewState extends State<BrowseView> {
+  int _times = 0;
   final Connectivity _connectivity = Connectivity();
   Stream<List<ConnectivityResult>> get _connectivityStream => _connectivity.onConnectivityChanged;
   
@@ -67,18 +68,18 @@ class _BrowseViewState extends State<BrowseView> {
     reviewDraftBloc.add(LoadDraftsToUpload());
     if (reviewDraftBloc.state is ReviewLoaded) {
       final draftToUpload = (reviewDraftBloc.state as ReviewLoaded).drafts;
-      for (var draft in draftToUpload) {
-        Review review = Review(
-          user: { 'id': userEmail ?? '', 'name': userDisplayName ?? ''},
-          title: draft.title,
-          content: draft.content,
-          date: Timestamp.fromDate(DateTime.now()),
-          imageUrl: null,
-          ratings: draft.ratings,
-          selectedCategories: (draft.selectedCategories).map((e) => e.name).toList(),
-          spot: draft.spot
-        );
-        reviewsToUpload.add(review);
+        for (var draft in draftToUpload) {
+          Review review = Review(
+            user: { 'id': userEmail ?? '', 'name': userDisplayName ?? ''},
+            title: draft.title,
+            content: draft.content,
+            date: Timestamp.fromDate(DateTime.now()),
+            imageUrl: null,
+            ratings: draft.ratings,
+            selectedCategories: (draft.selectedCategories).map((e) => e.name).toList(),
+            spot: draft.spot
+          );
+          reviewsToUpload.add(review);
       }
     }
 
@@ -86,20 +87,26 @@ class _BrowseViewState extends State<BrowseView> {
   }
 
   Future<void> _checkConnectionPostReviews() async {
+    _times += 1;
     print('REVISANDO CONEXIÓN - BrowseView');
     var connectivityResult = await Connectivity().checkConnectivity();
     print(connectivityResult);
     if (connectivityResult[0] != ConnectivityResult.none) {
       print('HAY INTERNET!');
       List<Review> reviewsToUpload = _getReviewsToUpload(context);
-      if (reviewsToUpload.isNotEmpty) {
+      print('SIZE REVIEWS TO UPLOAD: ${reviewsToUpload.length}');
+      if (reviewsToUpload.isNotEmpty && _times == 1) {
+        print('ENTRO ACÁ $_times');
         for (var eachReview in reviewsToUpload) {
           BlocProvider.of<ReviewBloc>(context).add(CreateReviewEvent(ReviewDTO.fromModel(eachReview), eachReview.spot!));
-          BlocProvider.of<ReviewDraftBloc>(context).add(DeleteDraft(eachReview.spot!));
+          context.read<ReviewDraftBloc>().add(DeleteDraft(eachReview.spot!));
           print('POSTING TO-UPLOAD REVIEWS!');
-          Future.delayed(const Duration(seconds: 2));
+          // Future.delayed(const Duration(seconds: 2));
           // TODO -> when this finished, send a notification to the user.
         }
+        context.read<ReviewDraftBloc>().add(DeleteDraftToUpload());
+        context.read<ReviewDraftBloc>().add(LoadDraftsToUpload());
+        _times = 0;
         draftsLoadNotification();
       }
     }

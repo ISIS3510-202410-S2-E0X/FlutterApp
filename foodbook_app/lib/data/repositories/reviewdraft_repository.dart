@@ -128,6 +128,11 @@ class ReviewDraftRepository {
     await db.insert('ToUpload', ReviewDraftDTO.fromModel(draft).toJson());
   }
 
+  Future<void> deleteDraftsToUpload() async {
+    final db = await dbProvider.getDatabase();
+    await db.delete('ToUpload');
+  }
+
   Future<List<ReviewDraft>> getAllDraftsToUpload() async {
     final db = await dbProvider.getDatabase();
     var res = await db.query("ToUpload");
