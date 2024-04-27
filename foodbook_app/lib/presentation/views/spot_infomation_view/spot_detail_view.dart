@@ -64,13 +64,13 @@ class _SpotDetailState extends State<SpotDetail> {
       // Check if the state is SpotDetailLoadFailure and there is an internet connection
       if (currentState is SpotDetailLoadFailure) {
         // If there is an internet connection, try to fetch the restaurant details again
-        context.read<SpotDetailBloc>().add(FetchRestaurantDetail(currentState.restaurantId));
+        context.read<SpotDetailBloc>().add(FetchRestaurantDetail(currentState.restaurantId)); }
     } else {
       // If there is no internet connection, inform the relevant bloc
       context.read<BookmarkInternetViewBloc>().add(BookmarksAccessNoInternet());
     } 
   }
-  }
+  
 
 
   @override
@@ -203,6 +203,7 @@ class SpotDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isOffline = false;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -220,7 +221,7 @@ class SpotDetailView extends StatelessWidget {
       ),
       body: BlocBuilder<BookmarkInternetViewBloc, BookmarkInternetViewState>(
             builder: (context, connectivityState) {
-              bool isOffline = connectivityState is BookmarksNoInternet;
+              isOffline = connectivityState is BookmarksNoInternet;
               //context.read<BookmarkInternetViewBloc>().add(BookmarksAccessInternet());
               return Column(
                 children: [
@@ -331,18 +332,33 @@ class SpotDetailView extends StatelessWidget {
             );
           }
         ),
+      // ...
       bottomNavigationBar: Container(
-        color: Colors.grey[200], // Grey background for the bottom bar
-        padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue, // Button color
-            minimumSize: const Size(double.infinity, 50),
-          ),
-          onPressed: () => _checkForUnfinishedReview(context),
-          child: const Text('Leave a review', style:TextStyle(color:Colors.white)),
+      color: Color.fromARGB(255, 252, 252, 252), // Grey background for the bottom bar
+      padding: const EdgeInsets.all(16.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue, // Button color
+          minimumSize: const Size(double.infinity, 50),
         ),
+        onPressed: () {
+          if (isOffline) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Try connecting online to leave a review'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          } else {
+            _checkForUnfinishedReview(context);
+          }
+        },
+        child: const Text('Leave a review', style: TextStyle(color: Colors.white)),
       ),
+    ),
+
+// ...
+
     );
   }
 
