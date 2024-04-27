@@ -45,8 +45,18 @@ class RestaurantDTO {
 
   static RestaurantDTO fromJson(String restaurantId, Map<String, dynamic> json) {
     
-    // Assuming 'json' is your JSON object that contains the categories list.
-    var categories = (json['categories'] as List).map((item) => item['name'] as String).toList();
+    var categoriesJson = json['categories'] as List;
+    var categories = categoriesJson.map((item) => {
+      'name': item['name'] as String,
+      'count': item['count'] as int // Ensure 'count' is treated as an integer
+    }).toList();
+
+    // Sort the categories by count in descending order
+    categories.sort((a, b) => (b['count'] as int).compareTo(a['count'] as int)); // Cast to int explicitly here
+
+    // Format the categories into 'name(count)' format and keep it as a list
+    var formattedCategories = categories.map((item) => '${item['name']}.(${item['count']})').toList();
+
     var imageLinks = List<String>.from(json['imageLinks'] ?? []);
     var location = List<double>.from(json['location-arr'] ?? []);
 
@@ -64,7 +74,7 @@ class RestaurantDTO {
     return RestaurantDTO(
         id: restaurantId,
         name: json['name'] as String? ?? 'Unknown',
-        categories: categories,
+        categories: formattedCategories,
         imageLinks: imageLinks,
         location: location,
         waitTime: waitTime,
