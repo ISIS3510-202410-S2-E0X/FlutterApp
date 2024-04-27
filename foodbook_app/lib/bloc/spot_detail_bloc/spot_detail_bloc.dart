@@ -23,10 +23,10 @@ class SpotDetailBloc extends Bloc<SpotDetailEvent, SpotDetailState> {
       if (restaurant != null) {
         emit(SpotDetailLoadSuccess(restaurant));
       } else {
-        emit(SpotDetailLoadFailure('Restaurant not found.'));
+        emit(SpotDetailLoadFailure(event.restaurantId));
       }
     } catch (e) {
-      emit(SpotDetailLoadFailure(e.toString()));
+      emit(SpotDetailLoadFailure(event.restaurantId));
     }
   }
 }

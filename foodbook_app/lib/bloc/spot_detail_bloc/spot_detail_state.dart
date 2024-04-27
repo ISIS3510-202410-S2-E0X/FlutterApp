@@ -12,6 +12,7 @@ class SpotDetailLoadSuccess extends SpotDetailState {
 }
 
 class SpotDetailLoadFailure extends SpotDetailState {
-  final String message;
-  SpotDetailLoadFailure(this.message);
+  final String restaurantId;
+  SpotDetailLoadFailure(this.restaurantId);
 }
+
