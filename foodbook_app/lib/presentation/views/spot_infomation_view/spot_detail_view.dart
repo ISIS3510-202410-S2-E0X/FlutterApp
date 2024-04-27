@@ -57,10 +57,19 @@ class _SpotDetailState extends State<SpotDetail> {
     if (hasConnection) {
       // If there is an internet connection, try to fetch the restaurant details again
       context.read<BookmarkInternetViewBloc>().add(BookmarksAccessInternet());
+
+      // Access the current state of SpotDetailBloc
+      final currentState = context.read<SpotDetailBloc>().state;
+
+      // Check if the state is SpotDetailLoadFailure and there is an internet connection
+      if (currentState is SpotDetailLoadFailure) {
+        // If there is an internet connection, try to fetch the restaurant details again
+        context.read<SpotDetailBloc>().add(FetchRestaurantDetail(currentState.restaurantId));
     } else {
       // If there is no internet connection, inform the relevant bloc
       context.read<BookmarkInternetViewBloc>().add(BookmarksAccessNoInternet());
     } 
+  }
   }
 
 
