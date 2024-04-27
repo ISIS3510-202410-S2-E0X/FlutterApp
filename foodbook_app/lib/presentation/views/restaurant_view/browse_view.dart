@@ -43,6 +43,7 @@ class BrowseView extends StatefulWidget {
 class _BrowseViewState extends State<BrowseView> {
   final Connectivity _connectivity = Connectivity();
   Stream<List<ConnectivityResult>> get _connectivityStream => _connectivity.onConnectivityChanged;
+  
   @override
   void initState() {
     super.initState();
@@ -114,7 +115,6 @@ class _BrowseViewState extends State<BrowseView> {
         stream: _connectivityStream.asyncExpand((results) => Stream.fromIterable(results)),
         builder: (context, snapshot) {
           bool isOffline = snapshot.data == ConnectivityResult.none || snapshot.connectionState == ConnectionState.none;
-
           return PopScope(
             canPop: false,
             child: Scaffold(

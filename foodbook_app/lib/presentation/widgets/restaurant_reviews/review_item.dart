@@ -7,8 +7,13 @@ import 'package:intl/intl.dart'; // Asegúrate de tener intl en tu pubspec.yaml 
 
 class ReviewItem extends StatelessWidget {
   final Review review;
+  final bool isOffline;
 
-  const ReviewItem({Key? key, required this.review}) : super(key: key);
+  const ReviewItem({
+    super.key,
+    required this.review,
+    required this.isOffline
+  });
 
   Widget _buildRatingStars(int rating) {
     return Row(
@@ -35,14 +40,21 @@ class ReviewItem extends StatelessWidget {
             review.title != null ? Text(review.title!, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)) : const SizedBox.shrink(),
             const SizedBox(height: 4),
             // Text('by ${review.user} - ${DateFormat('dd/MM/yyyy').format(review.date)}'),
-            Text('by ${review.user} - ${DateFormat('dd/MM/yyyy HH:mm:ss').format(review.date.toDate())}'),
+            Text('by ${review.user['name']} - ${DateFormat('dd/MM/yyyy HH:mm:ss').format(review.date.toDate())}'),
             const SizedBox(height: 10),
             review.content != null ? Text(review.content!) : const SizedBox.shrink(),
             const SizedBox(height: 10),
             // ignore: avoid_print
-            if (review.imageUrl != null) Image.network(
+            if (review.imageUrl != null && !isOffline) Image.network(
               review.imageUrl!,
               fit: BoxFit.cover,
+            ),
+            if (isOffline) Center(
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: Image.asset('lib/presentation/images/review-detail-no-connection.jpeg'
+                ),
+              )
             ),
             const SizedBox(height: 10),
             Row(
