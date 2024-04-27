@@ -299,7 +299,7 @@ class SpotDetailView extends StatelessWidget {
                                         MaterialPageRoute(builder: (context) => ReviewListView(restaurant: restaurant)),
                                       );
                                     },
-                                    child: const Text('See more', style: TextStyle(color: Colors.blue)),
+                                    child: Text('See more (${restaurant.reviews.length})', style: TextStyle(color: Colors.blue)),
                                   ),
                                 ],
                               ),
