@@ -6,6 +6,7 @@ import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
   final ReviewDraftRepository reviewDraftRepository;
 
+
   ReviewDraftBloc(this.reviewDraftRepository) : super(ReviewInitial()) {
     on<LoadDrafts>(_onLoadDrafts);
     on<LoadDraftsBySpot>(_onLoadDraftsBySpot);

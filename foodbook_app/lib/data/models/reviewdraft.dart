@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:foodbook_app/data/dtos/category_dto.dart';
 
 class ReviewDraft {
@@ -5,6 +7,7 @@ class ReviewDraft {
   final String? title;
   final String? content;
   final String? image;
+  final File? imageFile;
   final String? spot;
   final int uploaded; // SQLite no maneja Boolean, así que se convierte a int
   final Map<String, double> ratings;
@@ -19,6 +22,7 @@ class ReviewDraft {
     required this.uploaded,
     required this.ratings,
     required this.selectedCategories,
+    required this.imageFile, String? imagePath,
   });
 }
 

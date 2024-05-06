@@ -14,10 +14,26 @@ class FileManagerDAO {
 }
 
 
-  Future<void> saveImage(File imageFile, String imageName) async {
-  final file = await _localFile(imageName);
-  // Write the file
-  await file.writeAsBytes(imageFile.readAsBytesSync());
+  Future<String> saveImage(File image, String spot) async {
+  // Get the application documents directory.
+  final directory = await getApplicationDocumentsDirectory();
+
+  // Path for the 'review drafts' folder.
+  final localpath = Directory('${directory.path}/review drafts');
+
+  // Check if 'review drafts' directory exists, if not, create it.
+  if (!await localpath.exists()) {
+    await localpath.create(recursive: true);
+  }
+
+  // Define the file path for the new image.
+  final String filePath = '${localpath.path}${spot}Draft.jpg';
+
+  // Save the image to the file.
+  await image.copy(filePath);
+
+  // Return the file path where the image is saved.
+  return filePath;
 }
 
   Future<File?> getImage(String imageName) async {

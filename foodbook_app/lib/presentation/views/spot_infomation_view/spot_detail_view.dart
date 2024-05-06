@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,10 +14,12 @@ import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_state.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_bloc.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_event.dart';
 import 'package:foodbook_app/bloc/spot_detail_bloc/spot_detail_state.dart';
+import 'package:foodbook_app/data/data_access_objects/file_manager_dao.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/repositories/category_repository.dart';
+import 'package:foodbook_app/data/repositories/file_manager_repository.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/presentation/views/review_view/categories_stars_view.dart';
@@ -145,7 +148,7 @@ class SpotDetailView extends StatelessWidget {
             providers: [
               BlocProvider<ReviewDraftBloc>(
                 create: (context) => ReviewDraftBloc(
-                  ReviewDraftRepository(DatabaseProvider())
+                  ReviewDraftRepository(DatabaseProvider()), 
                 ),
               ),
               BlocProvider<FoodCategoryBloc>(

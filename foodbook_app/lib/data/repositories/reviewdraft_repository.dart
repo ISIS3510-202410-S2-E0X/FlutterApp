@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:foodbook_app/data/data_access_objects/file_manager_dao.dart';
 import 'package:foodbook_app/data/dtos/reviewdraft_dto.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
@@ -7,6 +10,7 @@ import 'package:foodbook_app/data/data_sources/database_provider.dart';
 class ReviewDraftRepository {
   final DatabaseProvider dbProvider;
   final _fireCloud = FirebaseFirestore.instance.collection("unfinishedReviews");
+  final FileManagerDAO _fileManagerDAO = FileManagerDAO();
 
   ReviewDraftRepository(this.dbProvider);
 
@@ -91,11 +95,21 @@ class ReviewDraftRepository {
   }
 
   Future<void> insertDraft(ReviewDraft draft) async {
+    final imageFile = draft.imageFile;
+    if (imageFile != null) {
+      await saveImage(imageFile, draft.spot!);
+    }
     final db = await dbProvider.getDatabase();
     print('SAVING: ${ReviewDraftDTO.fromModel(draft).toJson()}');
     await updateUnifinishedDraftCount(draft.spot!, true);
     await db.insert('ReviewDrafts', ReviewDraftDTO.fromModel(draft).toJson());
   }
+
+  Future<String> saveImage(File imageFile, String spotName) async {
+    final savedPath = _fileManagerDAO.saveImage(imageFile, spotName);
+    return savedPath;
+  }
+
 
   Future<void> updateDraft(ReviewDraft draft, String spot) async {
     final db = await dbProvider.getDatabase();

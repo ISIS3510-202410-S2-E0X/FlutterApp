@@ -51,7 +51,6 @@ class TextAndImagesView extends StatefulWidget {
 
 class _TextAndImagesViewState extends State<TextAndImagesView> {
   File? _image;
-  String? _imagePath;
   int _times = 0;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
@@ -132,6 +131,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
         RatingsKeys.foodQuality: (starsBloc.newRatings[RatingsKeys.foodQuality] ?? 0.0),
       },
       selectedCategories: foodCategoryBloc.selectedCategories.map((category) => CategoryDTO(name: category.name)).toList(),
+      imageFile: _image,
     );
 
     return draft;
@@ -161,7 +161,6 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     if (pickedFile != null) {
                       setState(() {
                         _image = File(pickedFile.path);
-                        _imagePath = pickedFile.path;
                       });
                     }
                   }
@@ -185,7 +184,6 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     if (pickedFile != null) {
                       setState(() {
                         _image = File(pickedFile.path);
-                        _imagePath = pickedFile.path; 
                       });
                     }
                   }
@@ -219,7 +217,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           'reviewTitle': _titleController.text,
           'reviewContent': _commentController.text,
           'imageUrl': _uploadedImageUrl,
-          'imagePath': _imagePath,
+          'image': _image,
         });
     },
     child: Scaffold(
