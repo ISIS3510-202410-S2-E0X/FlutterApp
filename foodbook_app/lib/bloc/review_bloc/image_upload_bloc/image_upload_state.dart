@@ -13,7 +13,6 @@ class ImageUploadInProgress extends ImageUploadState {}
 
 class ImageUploadSuccess extends ImageUploadState {
   final String imageUrl;
-  //final String imagePath;
 
   const ImageUploadSuccess(this.imageUrl);
 

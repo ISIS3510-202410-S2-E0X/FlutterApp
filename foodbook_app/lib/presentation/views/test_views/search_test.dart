@@ -6,6 +6,7 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
+import 'package:foodbook_app/bloc/search_bloc/search_state.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
@@ -137,8 +138,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                           providers: [
                             BlocProvider<ReviewDraftBloc>(
                               create: (context) => ReviewDraftBloc(
-                                  RepositoryProvider.of<ReviewDraftRepository>(context)
-                                  ),
+                                  RepositoryProvider.of<ReviewDraftRepository>(context)),
                             ),
                           ],
                           child: SpotDetail(restaurantId: state.restaurants[index].id),

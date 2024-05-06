@@ -16,7 +16,6 @@ class ImageUploadBloc extends Bloc<ImageUploadEvent, ImageUploadState> {
     try {
       emit(ImageUploadInProgress());
       final imageUrl = await reviewRepository.saveImage(event.image);
-      //final imagePath = event.image.path;
       emit(ImageUploadSuccess(imageUrl));
     } catch (error) {
       emit(ImageUploadFailure(error.toString()));

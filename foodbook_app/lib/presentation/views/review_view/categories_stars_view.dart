@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,7 +46,6 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
   String? reviewContent;
   String? imageUrl;
   bool? wasLoaded;
-  File? imageFile;
 
   @override
   void initState() {
@@ -128,7 +125,6 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
         reviewTitle = result['reviewTitle'];
         reviewContent = result['reviewContent'];
         imageUrl = result['imageUrl'];
-        imageFile = result['imageFile'];
         wasLoaded = widget.initialReview != null;
       });
     }
@@ -157,7 +153,6 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
         RatingsKeys.foodQuality: (starsBloc.newRatings[RatingsKeys.foodQuality] ?? 0.0),
       },
       selectedCategories: foodCategoryBloc.selectedCategories.map((category) => CategoryDTO(name: category.name)).toList(),
-      imageFile: imageFile,
     );
 
     return draft;

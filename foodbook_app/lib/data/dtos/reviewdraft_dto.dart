@@ -1,6 +1,3 @@
-import 'dart:ffi';
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:foodbook_app/data/dtos/category_dto.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
@@ -14,8 +11,7 @@ class ReviewDraftDTO {
   final int uploaded;
   final Map<String, double> ratings;
   final List<CategoryDTO> selectedCategories;
-  final File? imageFile;
-  
+
   ReviewDraftDTO({
     required this.user,
     required this.title,
@@ -24,8 +20,7 @@ class ReviewDraftDTO {
     required this.spot,
     required this.uploaded,
     required this.ratings,
-    required this.selectedCategories, 
-    required this.imageFile,
+    required this.selectedCategories,
   });
 
   factory ReviewDraftDTO.fromModel(ReviewDraft review) {
@@ -38,7 +33,6 @@ class ReviewDraftDTO {
       uploaded: review.uploaded,
       ratings: review.ratings,
       selectedCategories: review.selectedCategories,
-      imageFile: review.imageFile,
     );
   }
 
@@ -52,7 +46,6 @@ class ReviewDraftDTO {
       uploaded: uploaded,
       ratings: ratings,
       selectedCategories: selectedCategories,
-      imageFile: imageFile,
     );
   }
 
@@ -95,7 +88,6 @@ class ReviewDraftDTO {
         RatingsKeys.waitingTime: json['waitTime'].toDouble(),
       },
       selectedCategories: jsonCategories.map((category) => CategoryDTO.fromJson(category)).toList(),
-      imageFile: null,
     );
   }
 }

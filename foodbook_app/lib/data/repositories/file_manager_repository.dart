@@ -7,9 +7,8 @@ class FileManagerRepository {
 
   FileManagerRepository(this._fileManagerDAO);
 
-  Future<String> saveImage(File imageFile, String spotName) async {
-    final savedPath = _fileManagerDAO.saveImage(imageFile, spotName);
-    return savedPath;
+  Future<void> saveImage(File imageFile, String imageName) async {
+    await _fileManagerDAO.saveImage(imageFile, imageName);
   }
 
   Future<File?> getImage(String imageName) async {
