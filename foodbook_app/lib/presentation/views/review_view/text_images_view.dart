@@ -51,6 +51,7 @@ class TextAndImagesView extends StatefulWidget {
 
 class _TextAndImagesViewState extends State<TextAndImagesView> {
   File? _image;
+  String? _imagePath;
   int _times = 0;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
@@ -160,6 +161,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     if (pickedFile != null) {
                       setState(() {
                         _image = File(pickedFile.path);
+                        _imagePath = pickedFile.path;
                       });
                     }
                   }
@@ -183,6 +185,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     if (pickedFile != null) {
                       setState(() {
                         _image = File(pickedFile.path);
+                        _imagePath = pickedFile.path; 
                       });
                     }
                   }
@@ -216,6 +219,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           'reviewTitle': _titleController.text,
           'reviewContent': _commentController.text,
           'imageUrl': _uploadedImageUrl,
+          'imagePath': _imagePath,
         });
     },
     child: Scaffold(
@@ -239,7 +243,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
               }
               context.read<UserBloc>().add(GetCurrentUser());
               saveImage();
-              Navigator.of(context).pushReplacement(
+              Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) {
                   return BlocProvider<BrowseBloc>(
                     create: (context) => BrowseBloc(
