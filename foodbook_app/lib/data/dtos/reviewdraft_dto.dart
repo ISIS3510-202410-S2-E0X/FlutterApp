@@ -78,7 +78,7 @@ class ReviewDraftDTO {
       user: json['user'] as String,
       title: json['title'] as String?,
       content: json['content'] as String?,
-      image: json['imageR'] as String?,
+      image: json['image'] as String?,
       spot: json['spot'] as String?,
       uploaded: json['uploaded'] as int,
       ratings: {

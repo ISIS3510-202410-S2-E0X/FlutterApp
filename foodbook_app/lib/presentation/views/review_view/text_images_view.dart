@@ -215,9 +215,15 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
   Map<String, String>? _name;
   String? _uploadedImageUrl;
   Future saveImage() async {
-    if (_image == null) return; 
+    print('Saving image...');
+    print("Image path: ${_image!.path}");
+    if (_image == null) {
+      print("imagen nula");
+      return;
+    } 
     final imageUploadBloc = BlocProvider.of<ImageUploadBloc>(context);
     imageUploadBloc.add(ImageUploadRequested(_image!));
+    if (_image == null) return; 
   }
 
   @override
