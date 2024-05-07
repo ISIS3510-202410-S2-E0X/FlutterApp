@@ -71,6 +71,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     if (widget.imageUrl != null) {
       print('Image URL: ${widget.imageUrl}');
       _image = File(widget.imageUrl!);
+      _imagePath = _image!.path;
     }
   }
 
@@ -144,67 +145,71 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
 
   Future<void> getImage() async {
     final ImagePicker picker = ImagePicker();
-    
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: Wrap(
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: const Text('Gallery'),
-                onTap: () async {
-                  Navigator.of(context).pop(); // Cierra el modal
-                  var storageStatus = await Permission.storage.status; // Para Android
-                  if (!storageStatus.isGranted) {
-                    await Permission.storage.request(); // Para Android
-                  }
-                  storageStatus = await Permission.storage.status; // Actualiza el estado para Android
-                  if (storageStatus.isGranted) {
-                    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-                    if (pickedFile != null) {
-                      setState(() {
-                        _image = File(pickedFile.path);
-                        _imagePath = pickedFile.path;
-                      });
+    if (!widget.wasLoaded && _image == null) {
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return SafeArea(
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Gallery'),
+                  onTap: () async {
+                    Navigator.of(context).pop(); // Cierra el modal
+                    var storageStatus = await Permission.storage.status; // Para Android
+                    if (!storageStatus.isGranted) {
+                      await Permission.storage.request(); // Para Android
                     }
-                  }
-                storageStatus = await Permission.camera.status;                    
-                  if (storageStatus.isPermanentlyDenied) {
-                    openAppSettings();
-                  }
-                }),
-              ListTile(
-                leading: const Icon(Icons.photo_camera),
-                title: const Text('Camera'),
-                onTap: () async {
-                  Navigator.of(context).pop();
-                  var cameraStatus = await Permission.camera.status;
-                  if (!cameraStatus.isGranted) {
-                    await Permission.camera.request();
-                  }
-                  cameraStatus = await Permission.camera.status;
-                  if (cameraStatus.isGranted) {
-                    final pickedFile = await picker.pickImage(source: ImageSource.camera);
-                    if (pickedFile != null) {
-                      setState(() {
-                        _image = File(pickedFile.path);
-                        _imagePath = pickedFile.path; 
-                      });
+                    storageStatus = await Permission.storage.status; // Actualiza el estado para Android
+                    if (storageStatus.isGranted) {
+                      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                      if (pickedFile != null) {
+                        setState(() {
+                          _image = File(pickedFile.path);
+                          _imagePath = pickedFile.path;
+                        });
+                      }
                     }
-                  }
-                  cameraStatus = await Permission.camera.status;                  
-                  if (cameraStatus.isPermanentlyDenied) {
-                    openAppSettings();
-                  }
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
+                  storageStatus = await Permission.camera.status;                    
+                    if (storageStatus.isPermanentlyDenied) {
+                      openAppSettings();
+                    }
+                  }),
+                ListTile(
+                  leading: const Icon(Icons.photo_camera),
+                  title: const Text('Camera'),
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    var cameraStatus = await Permission.camera.status;
+                    if (!cameraStatus.isGranted) {
+                      await Permission.camera.request();
+                    }
+                    cameraStatus = await Permission.camera.status;
+                    if (cameraStatus.isGranted) {
+                      final pickedFile = await picker.pickImage(source: ImageSource.camera);
+                      if (pickedFile != null) {
+                        setState(() {
+                          _image = File(pickedFile.path);
+                          _imagePath = pickedFile.path; 
+                        });
+                      }
+                    }
+                    cameraStatus = await Permission.camera.status;                  
+                    if (cameraStatus.isPermanentlyDenied) {
+                      openAppSettings();
+                    }
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+    else {
+      print("Image already uploaded: $_imagePath");
+    }
   }
 
   Map<String, String>? _name;

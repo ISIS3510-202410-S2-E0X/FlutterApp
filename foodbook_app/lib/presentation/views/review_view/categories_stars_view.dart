@@ -64,6 +64,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
       reviewTitle = widget.initialReview!.title;
       reviewContent = widget.initialReview!.content;
       imageUrl = widget.initialReview!.image;
+      print("ESTE ES EL PATH: $imageUrl");
       print('INITIAL REVIEW: ${widget.initialReview!.selectedCategories}');
       
       BlocProvider.of<FoodCategoryBloc>(context).add(SetInitialCategoriesEvent(widget.initialReview!.selectedCategories));
