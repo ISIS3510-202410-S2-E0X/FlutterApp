@@ -14,12 +14,15 @@ class FileManagerDAO {
 }
 
 
-  Future<String> saveImage(File image, String spot) async {
+  Future<String> saveImage(String imagePath, String spot) async {
+  print("Saving image: $imagePath");
+  spot = spot.replaceAll(' ', '');
   // Get the application documents directory.
+  File image = File(imagePath);
   final directory = await getApplicationDocumentsDirectory();
 
   // Path for the 'review drafts' folder.
-  final localpath = Directory('${directory.path}/review drafts');
+  final localpath = Directory('${directory.path}/reviewDrafts');
 
   // Check if 'review drafts' directory exists, if not, create it.
   if (!await localpath.exists()) {
@@ -27,11 +30,11 @@ class FileManagerDAO {
   }
 
   // Define the file path for the new image.
-  final String filePath = '${localpath.path}${spot}Draft.jpg';
+  final String filePath = '${localpath.path}/${spot}Draft.jpg';
 
   // Save the image to the file.
   await image.copy(filePath);
-
+  print("Image saved at: $filePath");
   // Return the file path where the image is saved.
   return filePath;
 }

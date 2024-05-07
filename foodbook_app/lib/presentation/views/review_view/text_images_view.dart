@@ -41,7 +41,7 @@ class TextAndImagesView extends StatefulWidget {
     this.reviewTitle,
     this.reviewContent,
     this.imageUrl,
-    required this.wasLoaded
+    required this.wasLoaded, String? imagePath
   });
 
   @override
@@ -66,6 +66,11 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
 
     if (widget.reviewContent != null) {
       _commentController.text = widget.reviewContent!;
+    }
+    
+    if (widget.imageUrl != null) {
+      print('Image URL: ${widget.imageUrl}');
+      _image = File(widget.imageUrl!);
     }
   }
 
@@ -139,7 +144,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
 
   Future<void> getImage() async {
     final ImagePicker picker = ImagePicker();
-
+    
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {

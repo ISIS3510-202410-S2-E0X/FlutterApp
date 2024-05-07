@@ -46,6 +46,8 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
   String? reviewContent;
   String? imageUrl;
   bool? wasLoaded;
+  
+  String? imagePath;
 
   @override
   void initState() {
@@ -125,13 +127,15 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
         reviewTitle = result['reviewTitle'];
         reviewContent = result['reviewContent'];
         imageUrl = result['imageUrl'];
+        imagePath = result['imagePath'];
         wasLoaded = widget.initialReview != null;
       });
     }
 
     print('TITULO: $reviewTitle');
     print('CONTENIDO: $reviewContent');
-    print('IMAGEN: $imageUrl');
+    print('IMAGEN: $imagePath');
+    print("WAS LOADED: $imageUrl");
   }
 
   ReviewDraft _getUpdatedValues() {
@@ -143,7 +147,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
       user: userBlocState.email,
       title: reviewTitle,
       content: reviewContent,
-      image: imageUrl,
+      image: imagePath,
       spot: widget.restaurant.name,
       uploaded: 0,
       ratings: {
@@ -189,6 +193,8 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
         BlocProvider.of<ReviewDraftBloc>(context).add(UpdateDraft(draft, widget.restaurant.name));
       } else {
         BlocProvider.of<ReviewDraftBloc>(context).add(AddDraft(draft));
+        BlocProvider.of<ReviewDraftBloc>(context).add(LoadDrafts());
+        await Future.delayed(const Duration(milliseconds: 300));
       }
 
       Navigator.of(context).pop();

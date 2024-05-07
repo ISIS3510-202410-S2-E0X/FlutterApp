@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:foodbook_app/data/data_access_objects/file_manager_dao.dart';
 import 'package:foodbook_app/data/dtos/reviewdraft_dto.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
@@ -91,6 +92,12 @@ class ReviewDraftRepository {
   }
 
   Future<void> insertDraft(ReviewDraft draft) async {
+    print('INSERTING DRAFT: ${draft.image}');
+    
+    if (draft.image != null) {
+      draft.image = await FileManagerDAO().saveImage(draft.image!, draft.spot!);
+    }
+    print("New draft image path: ${draft.image}");
     final db = await dbProvider.getDatabase();
     print('SAVING: ${ReviewDraftDTO.fromModel(draft).toJson()}');
     await updateUnifinishedDraftCount(draft.spot!, true);

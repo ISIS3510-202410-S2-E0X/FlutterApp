@@ -1,3 +1,4 @@
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_state.dart';
@@ -42,7 +43,8 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
 
   Future<void> _onAddDraft(AddDraft event, Emitter<ReviewDraftState> emit) async {
     await reviewDraftRepository.insertDraft(event.draft);
-    add(LoadDrafts());
+    print("Adding draft");
+    //add(LoadDrafts());
   }
 
   Future<void> _onUpdateDraft(UpdateDraft event, Emitter<ReviewDraftState> emit) async {
@@ -90,4 +92,5 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
       emit(ReviewError());
     }
   }
+  
 }
