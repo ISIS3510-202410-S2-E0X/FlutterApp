@@ -121,7 +121,7 @@ class ReviewDraftRepository {
       where: 'spot = ?',
       whereArgs: [spot]
     );
-    await updateUnifinishedDraftCount(spot, false);
+    // await updateUnifinishedDraftCount(spot, false);
   }
 
   Future<void> deleteAllDrafts() async {
