@@ -96,7 +96,7 @@ class _SpotDetailState extends State<SpotDetail> {
           } else if (state is SpotDetailLoadSuccess) {
             return SpotDetailView(restaurant: state.restaurant);
           }  else if (state is SpotDetailLoadFailure) {
-            return SpotDetailViewFailure(message: 'Connect again to see the spot detail.');
+            return SpotDetailViewFailure(message: 'Connect again to see the spot detail. Please exit and enter again to the Spot once connection restored.');
           } else {
             return const Center(child: Text('Unknown error.'));
           }
