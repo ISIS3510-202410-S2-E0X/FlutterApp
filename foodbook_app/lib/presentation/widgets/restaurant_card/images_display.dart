@@ -15,15 +15,31 @@ class ImagesDisplay extends StatelessWidget {
   }
 
   // Helper method to determine and return the appropriate image widget
-  Widget _getImageWidget(String imagePath) {
-    if (imagePath.startsWith('data:image')) {
-      // It's a base64 image
-      return Image.memory(_decodeImage(imagePath), fit: BoxFit.cover);
-    } else {
-      // It's a network image
-      return Image.network(imagePath, fit: BoxFit.cover);
-    }
+Widget _getImageWidget(String imagePath) {
+  if (imagePath.startsWith('data:image')) {
+    // It's a base64 image
+    return Image.memory(_decodeImage(imagePath), fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
+      // If error occurs while decoding base64 image, return an empty container
+      return Image.asset(
+          'lib/presentation/images/placeholder_image.png', // Path to your placeholder image
+          fit: BoxFit.cover,
+        );
+    });
+  } else {
+    // It's a network image
+    return Image.network(
+      imagePath,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        // If error occurs while loading network image, return a placeholder image
+        return Image.asset(
+          'lib/presentation/images/placeholder_image.png', // Path to your placeholder image
+          fit: BoxFit.cover,
+        );
+      },
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
