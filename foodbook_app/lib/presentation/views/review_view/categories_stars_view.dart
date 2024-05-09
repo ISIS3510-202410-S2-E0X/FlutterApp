@@ -201,6 +201,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
 
       Navigator.of(context).pop();
     } else if (shouldSaveDraft == 'No') {
+      BlocProvider.of<ReviewDraftBloc>(context).add(UpdateUnfinishedReviewsCount(widget.restaurant.name));
       Navigator.of(context).pop();
     }
   }

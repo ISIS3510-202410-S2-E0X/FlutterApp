@@ -17,6 +17,7 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
     on<AddDraftToUpload>(_onAddDraftToUpload);
     on<LoadDraftsToUpload>(_onLoadDraftsToUpload);
     on<DeleteDraftToUpload>(_onDeleteDraftsToUpload);
+    on<UpdateUnfinishedReviewsCount>(_onUpdateUnfishedReviewsCount);
   }
 
   Future<void> _onLoadDrafts(LoadDrafts event, Emitter<ReviewDraftState> emit) async {
@@ -55,6 +56,10 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
   Future<void> _onDeleteDraft(DeleteDraft event, Emitter<ReviewDraftState> emit) async {
     await reviewDraftRepository.deleteDraft(event.spot);
     add(LoadDrafts());
+  }
+
+  Future<void> _onUpdateUnfishedReviewsCount(UpdateUnfinishedReviewsCount event, Emitter<ReviewDraftState> emit) async {
+    await reviewDraftRepository.updateUnifinishedDraftCount(event.spot, true);
   }
 
   Future<void> _onCheckUnfinishedDraft(CheckUnfinishedDraft event, Emitter<ReviewDraftState> emit) async {

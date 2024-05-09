@@ -100,7 +100,7 @@ class ReviewDraftRepository {
     print("New draft image path: ${draft.image}");
     final db = await dbProvider.getDatabase();
     print('SAVING: ${ReviewDraftDTO.fromModel(draft).toJson()}');
-    await updateUnifinishedDraftCount(draft.spot!, true);
+    // await updateUnifinishedDraftCount(draft.spot!, true);
     await db.insert('ReviewDrafts', ReviewDraftDTO.fromModel(draft).toJson());
   }
 
