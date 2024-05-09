@@ -21,7 +21,7 @@ Widget _getImageWidget(String imagePath) {
     return Image.memory(_decodeImage(imagePath), fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
       // If error occurs while decoding base64 image, return an empty container
       return Image.asset(
-          'lib/presentation/images/placeholder_image.png', // Path to your placeholder image
+          'lib/presentation/images/review-detail-no-connection.jpeg', // Path to your placeholder image
           fit: BoxFit.cover,
         );
     });
@@ -33,7 +33,7 @@ Widget _getImageWidget(String imagePath) {
       errorBuilder: (context, error, stackTrace) {
         // If error occurs while loading network image, return a placeholder image
         return Image.asset(
-          'lib/presentation/images/placeholder_image.png', // Path to your placeholder image
+          'lib/presentation/images/review-detail-no-connection.jpeg', // Path to your placeholder image
           fit: BoxFit.cover,
         );
       },
