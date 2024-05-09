@@ -21,6 +21,7 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
     on<SearchWord2>(_onSearchWord);
     on<SearchButtonPressed2>(_onSearchButtonPressed);
     on<AddSuggestion2>(_onAddSuggestion);
+    on<TooLongSearch>(_onLongsearch);
     //on<ToggleBookmark>(_onToggleBookmark);
   }
 
@@ -119,6 +120,9 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
   }
   void _onAddSuggestion(AddSuggestion2 event, Emitter<BrowseState> emit) async {
     emit(SearchFinalized());
+  }
+  void _onLongsearch(TooLongSearch event, Emitter<BrowseState> emit) async {
+    emit(SearchBlocked());
   }
   List<Restaurant> _applyFilters(
     String? name,

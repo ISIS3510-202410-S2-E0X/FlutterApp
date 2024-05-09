@@ -57,6 +57,15 @@ class SelectSuggested2 extends BrowseEvent {
   List<Object> get props => [suggestion];
 }
 
+class TooLongSearch extends BrowseEvent {
+  final String query;
+
+  TooLongSearch({required this.query});
+
+  @override
+  List<Object> get props => [query];
+}
+
 // class ToggleBookmark extends BrowseEvent {
 //   final String restaurantId;
 

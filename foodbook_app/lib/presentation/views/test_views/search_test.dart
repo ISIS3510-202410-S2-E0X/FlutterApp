@@ -6,7 +6,6 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
-import 'package:foodbook_app/bloc/search_bloc/search_state.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
@@ -104,6 +103,8 @@ class CustomSearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
+    
+
     browseBloc.add(SearchButtonPressed2(query: query));
     return MultiBlocProvider(
       providers: [
@@ -118,14 +119,20 @@ class CustomSearchDelegate extends SearchDelegate<String> {
         bloc: browseBloc,
         builder: (context, state) {
           if (state is SearchLoading2) {
-            print("Saving the query to search history: $query");
-            if (query != '') {
+            if (query != '' && query.length < 25) {
               browseBloc.add(FilterRestaurants(name: query));
+            }
+            else if (query.length >= 25) {
+              browseBloc.add(TooLongSearch(query: query));
             }
             return const Center(child: CircularProgressIndicator());
           } else if (state is RestaurantsLoadInProgress) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is RestaurantsLoadSuccess) {
+          }else if (state is SearchBlocked){
+            return const Center(child: Text("Search limit is 25 characters"));
+          }
+          
+          else if (state is RestaurantsLoadSuccess) {
             return ListView.builder(
               itemCount: state.restaurants.length,
               itemBuilder: (context, index) {
@@ -150,14 +157,15 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                 );
               },
             );
-          } else{
-              return Center(child: Text("No results found for: $query"));
+          } else {
+            return Center(child: Text("No results found for: $query"));
           }
         },
       )
   
     );
   }
+
 
 
   @override
