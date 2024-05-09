@@ -191,6 +191,7 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
 
       // if it is a loaded draft, update it. Otherwise, add a new one.
       if (widget.initialReview != null) {
+        print('UPDATING DRAFT');
         BlocProvider.of<ReviewDraftBloc>(context).add(UpdateDraft(draft, widget.restaurant.name));
       } else {
         BlocProvider.of<ReviewDraftBloc>(context).add(AddDraft(draft));

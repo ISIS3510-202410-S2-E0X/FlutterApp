@@ -87,7 +87,7 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
       for (var draft in drafts) {
         print('DRAFTS: ${draft.spot}');
       }
-      emit(ReviewLoaded(drafts));
+      emit(ReviewToUploadLoaded(drafts));
     } catch (e) {
       emit(ReviewError());
     }

@@ -13,7 +13,7 @@ class DatabaseProvider {
 
   _initDB() async {
     var documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "LoSgDraftsDB_4.db");
+    String path = join(documentsDirectory.path, "LoSgDraftsDB_5.db");
     print("DB path: $path");
     return await openDatabase(path, version: 1, onCreate: (db, version) async {
       await _createDB(db, version);

@@ -66,15 +66,15 @@ class _BrowseViewState extends State<BrowseView> {
       userEmail = userState.email;
     }
     reviewDraftBloc.add(LoadDraftsToUpload());
-    if (reviewDraftBloc.state is ReviewLoaded) {
-      final draftToUpload = (reviewDraftBloc.state as ReviewLoaded).drafts;
+    if (reviewDraftBloc.state is ReviewToUploadLoaded) {
+      final draftToUpload = (reviewDraftBloc.state as ReviewToUploadLoaded).drafts;
         for (var draft in draftToUpload) {
           Review review = Review(
-            user: { 'id': userEmail ?? '', 'name': userDisplayName ?? ''},
+            user: {'id': userEmail ?? '', 'name': userDisplayName ?? ''},
             title: draft.title,
             content: draft.content,
             date: Timestamp.fromDate(DateTime.now()),
-            imageUrl: null,
+            imageUrl: draft.image, // TODO: Implement image upload (save image to storage and get URL)
             ratings: draft.ratings,
             selectedCategories: (draft.selectedCategories).map((e) => e.name).toList(),
             spot: draft.spot
@@ -101,8 +101,6 @@ class _BrowseViewState extends State<BrowseView> {
           BlocProvider.of<ReviewBloc>(context).add(CreateReviewEvent(ReviewDTO.fromModel(eachReview), eachReview.spot!));
           context.read<ReviewDraftBloc>().add(DeleteDraft(eachReview.spot!));
           print('POSTING TO-UPLOAD REVIEWS!');
-          // Future.delayed(const Duration(seconds: 2));
-          // TODO -> when this finished, send a notification to the user.
         }
         context.read<ReviewDraftBloc>().add(DeleteDraftToUpload());
         context.read<ReviewDraftBloc>().add(LoadDraftsToUpload());

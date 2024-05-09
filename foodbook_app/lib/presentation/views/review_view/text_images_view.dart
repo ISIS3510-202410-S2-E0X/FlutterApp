@@ -128,7 +128,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
       user: userBlocState.email,
       title: _titleController.text,
       content: _commentController.text,
-      image: "", // TODO: Change to actual image
+      image: "",
       spot: widget.restaurant.name,
       uploaded: 0,
       ratings: {
@@ -143,69 +143,76 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     return draft;
   }
 
+  Future<void> showMBS(ImagePicker picker) async {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Gallery'),
+                onTap: () async {
+                  Navigator.of(context).pop(); // Cierra el modal
+                  var storageStatus = await Permission.storage.status; // Para Android
+                  if (!storageStatus.isGranted) {
+                    await Permission.storage.request(); // Para Android
+                  }
+                  storageStatus = await Permission.storage.status; // Actualiza el estado para Android
+                  if (storageStatus.isGranted) {
+                    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                    if (pickedFile != null) {
+                      setState(() {
+                        _image = File(pickedFile.path);
+                        _imagePath = pickedFile.path;
+                      });
+                    }
+                  }
+                storageStatus = await Permission.camera.status;                    
+                  if (storageStatus.isPermanentlyDenied) {
+                    openAppSettings();
+                  }
+                }),
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text('Camera'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  var cameraStatus = await Permission.camera.status;
+                  if (!cameraStatus.isGranted) {
+                    await Permission.camera.request();
+                  }
+                  cameraStatus = await Permission.camera.status;
+                  if (cameraStatus.isGranted) {
+                    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+                    if (pickedFile != null) {
+                      setState(() {
+                        _image = File(pickedFile.path);
+                        _imagePath = pickedFile.path; 
+                      });
+                    }
+                  }
+                  cameraStatus = await Permission.camera.status;                  
+                  if (cameraStatus.isPermanentlyDenied) {
+                    openAppSettings();
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> getImage() async {
     final ImagePicker picker = ImagePicker();
     if (!widget.wasLoaded && _image == null) {
-      showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return SafeArea(
-            child: Wrap(
-              children: <Widget>[
-                ListTile(
-                  leading: const Icon(Icons.photo_library),
-                  title: const Text('Gallery'),
-                  onTap: () async {
-                    Navigator.of(context).pop(); // Cierra el modal
-                    var storageStatus = await Permission.storage.status; // Para Android
-                    if (!storageStatus.isGranted) {
-                      await Permission.storage.request(); // Para Android
-                    }
-                    storageStatus = await Permission.storage.status; // Actualiza el estado para Android
-                    if (storageStatus.isGranted) {
-                      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-                      if (pickedFile != null) {
-                        setState(() {
-                          _image = File(pickedFile.path);
-                          _imagePath = pickedFile.path;
-                        });
-                      }
-                    }
-                  storageStatus = await Permission.camera.status;                    
-                    if (storageStatus.isPermanentlyDenied) {
-                      openAppSettings();
-                    }
-                  }),
-                ListTile(
-                  leading: const Icon(Icons.photo_camera),
-                  title: const Text('Camera'),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    var cameraStatus = await Permission.camera.status;
-                    if (!cameraStatus.isGranted) {
-                      await Permission.camera.request();
-                    }
-                    cameraStatus = await Permission.camera.status;
-                    if (cameraStatus.isGranted) {
-                      final pickedFile = await picker.pickImage(source: ImageSource.camera);
-                      if (pickedFile != null) {
-                        setState(() {
-                          _image = File(pickedFile.path);
-                          _imagePath = pickedFile.path; 
-                        });
-                      }
-                    }
-                    cameraStatus = await Permission.camera.status;                  
-                    if (cameraStatus.isPermanentlyDenied) {
-                      openAppSettings();
-                    }
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      );
+      showMBS(picker);
+    }
+    else if (widget.wasLoaded && _image == null) {
+      showMBS(picker);
     }
     else {
       print("Image already uploaded: $_imagePath");
