@@ -11,6 +11,11 @@ class ReviewLoaded extends ReviewDraftState {
   ReviewLoaded(this.drafts);
 }
 
+class ReviewToUploadLoaded extends ReviewDraftState {
+  final List<ReviewDraft> drafts;
+  ReviewToUploadLoaded(this.drafts);
+}
+
 class ReviewDraftLoaded extends ReviewDraftState {
   final ReviewDraft draft;
   ReviewDraftLoaded(this.draft);

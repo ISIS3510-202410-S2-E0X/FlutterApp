@@ -35,6 +35,7 @@ class SpotDetail extends StatefulWidget {
 }
 
 class _SpotDetailState extends State<SpotDetail> {
+  // ignore: unused_field
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
@@ -120,6 +121,7 @@ class SpotDetailView extends StatelessWidget {
       reviewDraftBloc.stream.firstWhere((state) => state is ReviewLoaded).then((state) {
         if (state is ReviewLoaded && state.drafts.isNotEmpty) {
           print('Draft found, navigating with draft');
+          print(state.drafts.first.image); 
           _pushCategoriesAndStarsView(context, state.drafts.first);
         } else {
           print('No draft found, navigating to new review page');

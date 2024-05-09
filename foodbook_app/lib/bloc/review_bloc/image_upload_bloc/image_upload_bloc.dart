@@ -15,6 +15,7 @@ class ImageUploadBloc extends Bloc<ImageUploadEvent, ImageUploadState> {
   FutureOr<void> _onImageUploadRequested(ImageUploadRequested event, Emitter<ImageUploadState> emit) async {
     try {
       emit(ImageUploadInProgress());
+      print('PRINTING IMAGE URL: ${event.image.path}');
       final imageUrl = await reviewRepository.saveImage(event.image);
       emit(ImageUploadSuccess(imageUrl));
     } catch (error) {

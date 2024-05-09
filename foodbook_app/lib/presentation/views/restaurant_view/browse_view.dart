@@ -31,6 +31,7 @@ import 'package:foodbook_app/presentation/widgets/menu/filter_bar.dart';
 import 'package:foodbook_app/presentation/widgets/menu/search_bar.dart';
 import 'package:foodbook_app/presentation/widgets/restaurant_card/restaurant_card.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class BrowseView extends StatefulWidget {
@@ -48,7 +49,20 @@ class _BrowseViewState extends State<BrowseView> {
   @override
   void initState() {
     super.initState();
+    loadTimesFromPrefs();
     _checkConnectionPostReviews();
+  }
+
+  void loadTimesFromPrefs() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _times = prefs.getInt('times') ?? 0;
+    });
+  }
+
+  void saveTimesToPrefs() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('times', _times);
   }
 
   List<Review> _getReviewsToUpload(BuildContext context) {
@@ -66,15 +80,15 @@ class _BrowseViewState extends State<BrowseView> {
       userEmail = userState.email;
     }
     reviewDraftBloc.add(LoadDraftsToUpload());
-    if (reviewDraftBloc.state is ReviewLoaded) {
-      final draftToUpload = (reviewDraftBloc.state as ReviewLoaded).drafts;
+    if (reviewDraftBloc.state is ReviewToUploadLoaded) {
+      final draftToUpload = (reviewDraftBloc.state as ReviewToUploadLoaded).drafts;
         for (var draft in draftToUpload) {
           Review review = Review(
-            user: { 'id': userEmail ?? '', 'name': userDisplayName ?? ''},
+            user: {'id': userEmail ?? '', 'name': userDisplayName ?? ''},
             title: draft.title,
             content: draft.content,
             date: Timestamp.fromDate(DateTime.now()),
-            imageUrl: null,
+            imageUrl: draft.image, // TODO: Implement image upload (save image to storage and get URL)
             ratings: draft.ratings,
             selectedCategories: (draft.selectedCategories).map((e) => e.name).toList(),
             spot: draft.spot
@@ -87,7 +101,6 @@ class _BrowseViewState extends State<BrowseView> {
   }
 
   Future<void> _checkConnectionPostReviews() async {
-    _times += 1;
     print('REVISANDO CONEXIÓN - BrowseView');
     var connectivityResult = await Connectivity().checkConnectivity();
     print(connectivityResult);
@@ -95,18 +108,17 @@ class _BrowseViewState extends State<BrowseView> {
       print('HAY INTERNET!');
       List<Review> reviewsToUpload = _getReviewsToUpload(context);
       print('SIZE REVIEWS TO UPLOAD: ${reviewsToUpload.length}');
-      if (reviewsToUpload.isNotEmpty && _times == 1) {
+      if (reviewsToUpload.isNotEmpty && _times == 0) {
         print('ENTRO ACÁ $_times');
         for (var eachReview in reviewsToUpload) {
           BlocProvider.of<ReviewBloc>(context).add(CreateReviewEvent(ReviewDTO.fromModel(eachReview), eachReview.spot!));
           context.read<ReviewDraftBloc>().add(DeleteDraft(eachReview.spot!));
           print('POSTING TO-UPLOAD REVIEWS!');
-          // Future.delayed(const Duration(seconds: 2));
-          // TODO -> when this finished, send a notification to the user.
         }
         context.read<ReviewDraftBloc>().add(DeleteDraftToUpload());
         context.read<ReviewDraftBloc>().add(LoadDraftsToUpload());
-        _times = 0;
+        _times = 1;
+        saveTimesToPrefs();
         draftsLoadNotification();
       }
     }

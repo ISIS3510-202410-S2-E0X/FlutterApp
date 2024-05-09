@@ -6,7 +6,7 @@ class ReviewDraftDTO {
   final String user;
   final String? title;
   final String? content;
-  final String? image;
+  String? image;
   final String? spot;
   final int uploaded;
   final Map<String, double> ratings;
@@ -16,7 +16,7 @@ class ReviewDraftDTO {
     required this.user,
     required this.title,
     required this.content,
-    required this.image,
+    this.image,
     required this.spot,
     required this.uploaded,
     required this.ratings,
@@ -78,7 +78,7 @@ class ReviewDraftDTO {
       user: json['user'] as String,
       title: json['title'] as String?,
       content: json['content'] as String?,
-      image: json['imageUrl'] as String?,
+      image: json['image'] as String?,
       spot: json['spot'] as String?,
       uploaded: json['uploaded'] as int,
       ratings: {

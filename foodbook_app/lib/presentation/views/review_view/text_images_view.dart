@@ -41,7 +41,7 @@ class TextAndImagesView extends StatefulWidget {
     this.reviewTitle,
     this.reviewContent,
     this.imageUrl,
-    required this.wasLoaded
+    required this.wasLoaded, String? imagePath
   });
 
   @override
@@ -51,6 +51,7 @@ class TextAndImagesView extends StatefulWidget {
 
 class _TextAndImagesViewState extends State<TextAndImagesView> {
   File? _image;
+  String? _imagePath;
   int _times = 0;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
@@ -65,6 +66,12 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
 
     if (widget.reviewContent != null) {
       _commentController.text = widget.reviewContent!;
+    }
+    
+    if (widget.imageUrl != null) {
+      print('Image URL: ${widget.imageUrl}');
+      _image = File(widget.imageUrl!);
+      _imagePath = _image!.path;
     }
   }
 
@@ -121,7 +128,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
       user: userBlocState.email,
       title: _titleController.text,
       content: _commentController.text,
-      image: "", // TODO: Change to actual image
+      image: "",
       spot: widget.restaurant.name,
       uploaded: 0,
       ratings: {
@@ -136,9 +143,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     return draft;
   }
 
-  Future<void> getImage() async {
-    final ImagePicker picker = ImagePicker();
-
+  Future<void> showMBS(ImagePicker picker) async {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -160,6 +165,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     if (pickedFile != null) {
                       setState(() {
                         _image = File(pickedFile.path);
+                        _imagePath = pickedFile.path;
                       });
                     }
                   }
@@ -183,6 +189,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     if (pickedFile != null) {
                       setState(() {
                         _image = File(pickedFile.path);
+                        _imagePath = pickedFile.path; 
                       });
                     }
                   }
@@ -199,12 +206,31 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
+  Future<void> getImage() async {
+    final ImagePicker picker = ImagePicker();
+    if (!widget.wasLoaded && _image == null) {
+      showMBS(picker);
+    }
+    else if (widget.wasLoaded && _image == null) {
+      showMBS(picker);
+    }
+    else {
+      print("Image already uploaded: $_imagePath");
+    }
+  }
+
   Map<String, String>? _name;
   String? _uploadedImageUrl;
   Future saveImage() async {
-    if (_image == null) return; 
+    print('Saving image...');
+    print("Image path: ${_image!.path}");
+    if (_image == null) {
+      print("imagen nula");
+      return;
+    } 
     final imageUploadBloc = BlocProvider.of<ImageUploadBloc>(context);
     imageUploadBloc.add(ImageUploadRequested(_image!));
+    if (_image == null) return; 
   }
 
   @override
@@ -216,6 +242,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           'reviewTitle': _titleController.text,
           'reviewContent': _commentController.text,
           'imageUrl': _uploadedImageUrl,
+          'imagePath': _imagePath,
         });
     },
     child: Scaffold(
@@ -239,7 +266,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
               }
               context.read<UserBloc>().add(GetCurrentUser());
               saveImage();
-              Navigator.of(context).pushReplacement(
+              Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) {
                   return BlocProvider<BrowseBloc>(
                     create: (context) => BrowseBloc(

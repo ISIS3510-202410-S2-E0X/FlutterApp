@@ -70,6 +70,7 @@ class ReviewRepository {
     );
 
     try {
+      print('IMAGEN ACÁ: ${image.path}, ${image.runtimeType}, ${image}');
       await referenceImageToUpload.putFile(File(image.path), metadata);
       String path = await referenceImageToUpload.getDownloadURL();
       return path;
