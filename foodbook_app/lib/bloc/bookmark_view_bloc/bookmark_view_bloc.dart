@@ -42,7 +42,7 @@ class BookmarkViewBloc extends Bloc<BookmarkViewEvent, BookmarkViewState> {
         }
       }
 
-			if (bookmarks.isEmpty || bookmarkedRestaurants.isEmpty) {
+			if (bookmarks.isNotEmpty && bookmarkedRestaurants.isEmpty) {
         emit(BookmarkLoadCompletelyFailed(
           errorMessage: "Failed to load any bookmarked restaurants.",
         ));
