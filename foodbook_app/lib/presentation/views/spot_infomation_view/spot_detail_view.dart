@@ -96,7 +96,7 @@ class _SpotDetailState extends State<SpotDetail> {
           } else if (state is SpotDetailLoadSuccess) {
             return SpotDetailView(restaurant: state.restaurant);
           }  else if (state is SpotDetailLoadFailure) {
-            return SpotDetailViewFailure(message: 'Connect again to see the spot detail.');
+            return SpotDetailViewFailure(message: 'Connect again to see the spot detail. Please exit and enter again to the Spot once connection restored.');
           } else {
             return const Center(child: Text('Unknown error.'));
           }
@@ -416,7 +416,7 @@ class SpotDetailViewFailure extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 64.0), // Adjust the padding as needed
+        padding: const EdgeInsets.only(top: 0.0), // Adjust the padding as needed
         child: Column(
           mainAxisSize: MainAxisSize.min, // Use min to take up less space
           mainAxisAlignment: MainAxisAlignment.start,
@@ -430,7 +430,12 @@ class SpotDetailViewFailure extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20), // Space between the offline icon and the message
-            Text(message),
+            Center(
+              child: Text(
+                message,
+                textAlign: TextAlign.center
+              )
+            ),
           ],
         ),
       ),

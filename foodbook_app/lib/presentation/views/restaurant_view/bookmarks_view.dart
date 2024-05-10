@@ -103,7 +103,14 @@ class _BookmarksViewState extends State<BookmarksView> {
                       builder: (context, state) {
                         if (state is BookmarksLoadInProgress) {
                           return const Center(child: CircularProgressIndicator());
-                        } else if (state is BookmarkedRestaurantsLoaded) {
+                        } else if (state is BookmarkLoadCompletelyFailed) {
+  												 return Center(
+    											 child: Text(
+      										 "Hmm, you've saved bookmarks but there's nothing here. Please verify you are connected to the internet.",
+      										 textAlign: TextAlign.center,
+    												),
+  												);
+												 } else if (state is BookmarkedRestaurantsLoaded) {
                           if (state.bookmarkedRestaurants.isEmpty) {
                             return const Center(child: Text('No bookmarked restaurants.'));
                           }

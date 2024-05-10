@@ -23,3 +23,9 @@ class BookmarksLoadFailure extends BookmarkViewState {
     required this.errorMessage,
   });
 }
+
+class BookmarkLoadCompletelyFailed extends BookmarkViewState {
+  final String errorMessage;
+
+  BookmarkLoadCompletelyFailed({required this.errorMessage});
+}
