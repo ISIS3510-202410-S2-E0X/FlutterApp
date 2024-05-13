@@ -22,7 +22,7 @@ class RestaurantRepository {
         var restaurantData = element.data();
         var restaurantDTO = RestaurantDTO.fromJson(restaurantId, restaurantData);
         Restaurant restaurant = restaurantDTO.toModel();
-        _restaurantsCacheDAO.cacheRestaurantFYP(restaurant);
+        _restaurantsCacheDAO.cacheRestaurant(restaurant);
         print("cached restaurant: ${restaurant.name}");
         var reviewReferences = restaurantData['reviewData']['userReviews'] as List<dynamic>?;
         if (reviewReferences != null) {
@@ -122,7 +122,7 @@ class RestaurantRepository {
       if (restaurantSnapshot.exists && restaurantSnapshot.data() != null) {
         var restaurantDTO = RestaurantDTO.fromJson(restaurantId,restaurantSnapshot.data()!);
         Restaurant restaurant = restaurantDTO.toModel();
-        _restaurantsCacheDAO.cacheRestaurant(restaurant);
+        _restaurantsCacheDAO.cacheRestaurantFYP(restaurant);
         List<dynamic>? reviewRefs = restaurantSnapshot.data()?['reviewData']['userReviews'];
         if (reviewRefs is List<dynamic>) {
         List<Review> reviews = [];
