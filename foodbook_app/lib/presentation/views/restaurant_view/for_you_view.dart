@@ -124,9 +124,9 @@ class _ForYouViewState extends State<ForYouView> {
                               },
                             );
                           } else if (state is RestaurantsLoadFailure) {
-                            return Center(
+                            return const Center(
                               child: Text(
-                                state.error.toString().replaceAll('Exception:', ''),
+                                "hmm something went wrong, please verify you’re connected to the internet",
                                 textAlign: TextAlign.center,
                               ),
                             );

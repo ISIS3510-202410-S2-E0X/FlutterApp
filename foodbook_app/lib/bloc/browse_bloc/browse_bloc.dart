@@ -35,8 +35,9 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
         if (cachedRests.isEmpty) {
           emit(RestaurantsLoadFailure('No restaurants found'));
         }
-        
-        emit(RestaurantsLoadSuccess(cachedRests));
+        if (cachedRests.isNotEmpty) {
+          emit(RestaurantsLoadSuccess(cachedRests));
+        }
 
       }
       if (restaurants.isNotEmpty) {
@@ -61,7 +62,7 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
         restaurants,
       );
       if (filteredRestaurants.isEmpty) {
-        emit(RestaurantsLoadFailure('No restaurants found'));
+        emit(RestaurantsLoadFailure('hmm something went wrong, please verify you’re connected to the internet'));
         return;
       }
       emit(RestaurantsLoadSuccess(filteredRestaurants));

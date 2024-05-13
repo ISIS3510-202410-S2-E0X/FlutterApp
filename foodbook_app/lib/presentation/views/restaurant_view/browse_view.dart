@@ -218,7 +218,13 @@ class _BrowseViewState extends State<BrowseView> {
                             },
                           );
                         } else if (state is RestaurantsLoadFailure) {
-                          return const Center(child: Text('Failed to load restaurants'));
+                          return const Center(
+                            child: Center(
+                              child: Text('hmm something went wrong, please verify you’re connected to the internet',
+                              textAlign: TextAlign.center,
+                              ),
+                            ),
+                            );
                         }
                         // If the initial state is RestaurantsInitial or any other unexpected state
                         return const Center(child: Text('Start browsing by applying some filters!'));
