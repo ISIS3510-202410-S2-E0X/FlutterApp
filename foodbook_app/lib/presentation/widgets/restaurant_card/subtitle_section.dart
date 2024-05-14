@@ -57,9 +57,10 @@ class _SubtitleSectionState extends State<SubtitleSection> {
     return FutureBuilder<Position>(
       future: _determinePosition(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else if (snapshot.hasData) {
+        // if (snapshot.connectionState == ConnectionState.waiting) {
+        //  return CircularProgressIndicator();
+        // } else 
+        if (snapshot.hasData) {
           // Calculate the distance using the user location and restaurant location
           String distance = _calculateDistance(snapshot.data!);
 
