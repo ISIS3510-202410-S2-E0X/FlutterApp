@@ -13,7 +13,7 @@ class SpotMap extends StatefulWidget {
 }
 
 class _SpotMapState extends State<SpotMap> {
-  Completer<GoogleMapController> _controller = Completer();
+  // Completer<GoogleMapController> _controller = Completer();
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +29,9 @@ class _SpotMapState extends State<SpotMap> {
             position: LatLng(widget.restaurant.latitude, widget.restaurant.longitude),
           ),
         },
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
+        // onMapCreated: (GoogleMapController controller) {
+        //  _controller.complete(controller);
+        // },
       ),
     );
   }
