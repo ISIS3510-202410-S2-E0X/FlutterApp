@@ -51,158 +51,102 @@ class _BookmarksViewState extends State<BookmarksView> {
   }
 
   
-
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider<BookmarkBloc>(
-      create: (context) => BookmarkBloc(
-        BookmarkManager(),
-      ),
-      child: StreamBuilder<ConnectivityResult>(
-        stream: _connectivityStream.asyncExpand((results) => Stream.fromIterable(results)),
-        builder: (context, snapshot) {
-        //bool isOffline = snapshot.data == ConnectivityResult.none || snapshot.connectionState == ConnectionState.none;
-        return Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.white,
-            title: const Text(
-              'Bookmarks',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+@override
+Widget build(BuildContext context) {
+  return BlocProvider<BookmarkBloc>(
+    create: (context) => BookmarkBloc(
+      BookmarkManager(),
+    ),
+    child: StreamBuilder<ConnectivityResult>(
+      stream: _connectivityStream.asyncExpand((results) => Stream.fromIterable(results)),
+      builder: (context, snapshot) {
+        return PopScope(
+          canPop: false,
+          child: Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              backgroundColor: Colors.white,
+              title: const Text(
+                'Bookmarks',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
+              actions: const [
+                // FilterBar(),
+              ],
+              elevation: 0,
             ),
-            actions: const [
-              // FilterBar(),
-            ],
-            elevation: 0,
-          ),
-          backgroundColor: Colors.grey[200],
-          body: BlocBuilder<BookmarkInternetViewBloc, BookmarkInternetViewState>(
-            builder: (context, connectivityState) {
-              bool isOffline = ( snapshot.connectionState == ConnectionState.waiting && connectivityState is BookmarksNoInternet ) || snapshot.data == ConnectivityResult.none || snapshot.connectionState == ConnectionState.none;
-              //context.read<BookmarkInternetViewBloc>().add(BookmarksAccessInternet());
-              return Column(
-                children: [
-                  if (isOffline) // This line shows or hides the offline message
-                    const Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.signal_wifi_off, color: Colors.grey),
-                          SizedBox(width: 8),
-                          Text('Offline', style: TextStyle(color: Colors.grey)),
-                        ],
+            backgroundColor: Colors.grey[200],
+            body: BlocBuilder<BookmarkInternetViewBloc, BookmarkInternetViewState>(
+              builder: (context, connectivityState) {
+                bool isOffline = (snapshot.connectionState == ConnectionState.waiting && connectivityState is BookmarksNoInternet) || snapshot.data == ConnectivityResult.none || snapshot.connectionState == ConnectionState.none;
+                return Column(
+                  children: [
+                    if (isOffline)
+                      const Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.signal_wifi_off, color: Colors.grey),
+                            SizedBox(width: 8),
+                            Text('Offline', style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                    Expanded(
+                      child: BlocBuilder<BookmarkViewBloc, BookmarkViewState>(
+                        builder: (context, state) {
+                          if (state is BookmarksLoadInProgress) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (state is BookmarkLoadCompletelyFailed) {
+                            return const Center(
+                              child: Text(
+                                "Hmm, you've saved bookmarks but there's nothing here. Please verify you are connected to the internet.",
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          } else if (state is BookmarkedRestaurantsLoaded) {
+                            if (state.bookmarkedRestaurants.isEmpty) {
+                              return const Center(child: Text('No bookmarked restaurants.'));
+                            }
+                            return ListView.builder(
+                              itemCount: state.bookmarkedRestaurants.length,
+                              itemBuilder: (context, index) {
+                                final restaurant = state.bookmarkedRestaurants[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SpotDetail(restaurantId: restaurant.id),
+                                      ),
+                                    );
+                                  },
+                                  child: RestaurantCard(restaurant: restaurant),
+                                );
+                              },
+                            );
+                          }
+                          return const Center(child: CircularProgressIndicator());
+                        },
                       ),
                     ),
-                  
-                  Expanded(
-                    child: BlocBuilder<BookmarkViewBloc, BookmarkViewState>(
-                      builder: (context, state) {
-                        if (state is BookmarksLoadInProgress) {
-                          return const Center(child: CircularProgressIndicator());
-                        } else if (state is BookmarkLoadCompletelyFailed) {
-  												 return Center(
-    											 child: Text(
-      										 "Hmm, you've saved bookmarks but there's nothing here. Please verify you are connected to the internet.",
-      										 textAlign: TextAlign.center,
-    												),
-  												);
-												 } else if (state is BookmarkedRestaurantsLoaded) {
-                          if (state.bookmarkedRestaurants.isEmpty) {
-                            return const Center(child: Text('No bookmarked restaurants.'));
-                          }
-                          return ListView.builder(
-                            itemCount: state.bookmarkedRestaurants.length,
-                            itemBuilder: (context, index) {
-                              final restaurant = state.bookmarkedRestaurants[index];
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SpotDetail(restaurantId: state.bookmarkedRestaurants[index].id),
-                                    ),
-                                  );
-                                },
-                                child: RestaurantCard(restaurant: restaurant),
-                              );
-                            },
-                          );
-                        } else if (state is BookmarksLoadFailure) {
-                        //The message changes if there is 1 or more than 1 restaurant that couldn't be loaded
-                        //final failureMessage = state.failedToLoadNames.length == 1
-                        //    ? "The bookmarked restaurant: ${state.failedToLoadNames.first} is not in cache and couldn't be accessed through network. Try again with an internet connection."
-                        //    : "The bookmarked restaurants: ${state.failedToLoadNames.join(', ')} are not in cache and couldn't be accessed through network. Try again with an internet connection.";
-                        return Column(
-                          children: [
-                            if (state.successfullyLoaded.isNotEmpty)
-                              Expanded(
-                                child: ListView.builder(
-                                  itemCount: state.successfullyLoaded.length,
-                                  itemBuilder: (context, index) {
-                                    final restaurant = state.successfullyLoaded[index];
-                                      return GestureDetector(
-                                        onTap: ()async {
-                                          final restaurantId = restaurant.id;
-
-                                          // Use a RestaurantBloc event to fetch the restaurant details
-                                          context.read<SpotDetailBloc>().add(FetchRestaurantDetail(restaurantId));
-
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => MultiBlocProvider(
-                                                providers: [
-                                                  BlocProvider<ReviewDraftBloc>(
-                                                    create: (context) => ReviewDraftBloc(
-                                                      RepositoryProvider.of<ReviewDraftRepository>(context)
-                                                    ),
-                                                  ),
-                                                ],
-                                                child: SpotDetail(restaurantId: restaurantId),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: RestaurantCard(restaurant: restaurant),
-                                      );
-                                  },
-                                ),
-                              ),
-                            //Padding(
-                            //  padding: const EdgeInsets.all(8.0),
-                            //  child: Text(failureMessage, textAlign: TextAlign.center),
-                            //),
-                            ],
-                          );
-                        }
-                        // If state is BookmarkViewInitial or any other unhandled state, show a loading indicator
-                        return const Center(child: CircularProgressIndicator());
-                      },
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-          bottomNavigationBar: CustomNavigationBar(
-            selectedIndex: 2,
-            onItemTapped: (int index) {
-              // Implement navigation logic here
-            },
+                  ],
+                );
+              },
+            ),
+            bottomNavigationBar: CustomNavigationBar(
+              selectedIndex: 2,
+              onItemTapped: (int index) {
+                // Implement navigation logic here
+              },
+            ),
           ),
         );
       },
     ),
   );
-  
-  }
-
-
 }
-
-
 
