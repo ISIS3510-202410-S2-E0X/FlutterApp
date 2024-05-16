@@ -45,8 +45,7 @@ class ReviewItem extends StatelessWidget {
             review.content != null ? Text(review.content!) : const SizedBox.shrink(),
             const SizedBox(height: 10),
             // ignore: avoid_print
-            if (review.imageUrl != null && !isOffline) {
-              Image.network(
+            if (review.imageUrl != null && !isOffline) Image.network(
                 review.imageUrl!,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
@@ -57,7 +56,6 @@ class ReviewItem extends StatelessWidget {
                   );
                 },
               ),
-            }
             if (isOffline) Center(
               child: FittedBox(
                 fit: BoxFit.contain,

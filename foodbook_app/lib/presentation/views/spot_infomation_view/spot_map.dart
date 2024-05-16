@@ -29,8 +29,10 @@ class _SpotMapState extends State<SpotMap> {
             position: LatLng(widget.restaurant.latitude, widget.restaurant.longitude),
           ),
         },
+        scrollGesturesEnabled: false, // Deshabilitar el arrastre del mapa
+        zoomControlsEnabled: false,
         // onMapCreated: (GoogleMapController controller) {
-        //  _controller.complete(controller);
+        //   _controller.complete(controller);
         // },
       ),
     );
