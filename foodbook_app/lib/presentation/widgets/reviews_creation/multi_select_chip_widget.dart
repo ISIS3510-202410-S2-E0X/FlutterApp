@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_bloc.dart';
@@ -35,11 +36,19 @@ class _MultiSelectChipState extends State<MultiSelectChip> {
           label: Text(item),
           selected: isSelected,
           onSelected: (selected) {
-            setState(() {
+            setState(() async {
               if (selected) {
-                if (!selectedCategories.contains(item)) {
-                  selectedCategories.add(item);
-                  BlocProvider.of<FoodCategoryBloc>(context).add(SelectCategoryEvent(item));
+                var connectivityResult = await Connectivity().checkConnectivity();
+                if (connectivityResult[0] == ConnectivityResult.none) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('No internet connection. Try connceting to continue with the review!'),
+                    duration: Duration(seconds: 2),
+                  ));
+                } else {
+                  if (!selectedCategories.contains(item)) {
+                    selectedCategories.add(item);
+                    BlocProvider.of<FoodCategoryBloc>(context).add(SelectCategoryEvent(item));
+                }
                 }
               } else {
                 selectedCategories.remove(item);
