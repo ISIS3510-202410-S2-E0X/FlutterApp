@@ -46,9 +46,16 @@ class ReviewItem extends StatelessWidget {
             const SizedBox(height: 10),
             // ignore: avoid_print
             if (review.imageUrl != null && !isOffline) Image.network(
-              review.imageUrl!,
-              fit: BoxFit.cover,
-            ),
+                review.imageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  // If there is an error in loading the image from the network, show a placeholder image
+                  return Image.asset(
+                    'lib/presentation/images/review-detail-no-connection.jpeg', // Path to your placeholder image
+                    fit: BoxFit.cover,
+                  );
+                },
+              ),
             if (isOffline) Center(
               child: FittedBox(
                 fit: BoxFit.contain,
