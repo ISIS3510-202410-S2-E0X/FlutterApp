@@ -97,7 +97,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           content: const Text("We couldn't upload your review, but don't worry, we'll do it once you have connection"),
           actions: <Widget>[
             TextButton(
-              child: const Text('Ok'),
+              child: const Text('OK'),
               onPressed: () => 
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) {
@@ -117,6 +117,16 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
       return false;
     }
     return true;
+  }
+
+  void _onBackWOInternetPressed() async {
+    showDialog<String>(
+      context: context,
+      builder: (context) => const AlertDialog(
+        title: Text('No connection'),
+        content: Text("Please make sure you are connected to go back to the categories view."),
+      ),
+    );
   }
 
   ReviewDraft _getUpdatedValues() {
@@ -238,12 +248,19 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     return PopScope(
       canPop: false, 
       onPopInvoked: (didPop) async {
-        Navigator.of(context).pop({
-          'reviewTitle': _titleController.text,
-          'reviewContent': _commentController.text,
-          'imageUrl': _uploadedImageUrl,
-          'imagePath': _imagePath,
-        });
+        if (!didPop) {
+            var connectivityResult = await Connectivity().checkConnectivity();
+            if (connectivityResult[0] == ConnectivityResult.none) {
+                _onBackWOInternetPressed();
+            } else {
+              Navigator.of(context).pop({
+              'reviewTitle': _titleController.text,
+              'reviewContent': _commentController.text,
+              'imageUrl': _uploadedImageUrl,
+              'imagePath': _imagePath,
+            });
+          }
+        }
     },
     child: Scaffold(
       appBar: AppBar(
