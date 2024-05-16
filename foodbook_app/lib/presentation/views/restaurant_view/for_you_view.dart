@@ -2,6 +2,9 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_internet_view_bloc/bookmark_internet_view_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_internet_view_bloc/bookmark_internet_view_event.dart';
+import 'package:foodbook_app/bloc/bookmark_internet_view_bloc/bookmark_internet_view_state.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
@@ -31,9 +34,19 @@ class _ForYouViewState extends State<ForYouView> {
   @override
   void initState() {
     super.initState();
+    checkConnection();
     // Solicita el usuario actual tan pronto como el widget se inicialice.
     BlocProvider.of<UserBloc>(context, listen: false).add(GetCurrentUser());
     
+  }
+  Future<void> checkConnection() async {
+    // Get the current connectivity status
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult[0] == ConnectivityResult.none) {
+      context.read<BookmarkInternetViewBloc>().add(BookmarksAccessNoInternet());
+    } else {
+      context.read<BookmarkInternetViewBloc>().add(BookmarksAccessInternet());
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -72,84 +85,89 @@ class _ForYouViewState extends State<ForYouView> {
                   elevation: 10,
                 ),
                 backgroundColor: Colors.grey[200],
-                body: Column(
-                  children: [
-                    if (isOffline)
-                      const Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.signal_wifi_off, color: Colors.grey),
-                            SizedBox(width: 8),
-                            Text('Offline', style: TextStyle(color: Colors.grey)),
-                          ],
+                body:
+                        BlocBuilder<BookmarkInternetViewBloc, BookmarkInternetViewState>(
+                          builder: (context, connectivityState) {
+                            return Column(
+                              children: [
+                                if (isOffline || connectivityState is BookmarksNoInternet && snapshot.connectionState == ConnectionState.waiting )
+                                  const Center(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.signal_wifi_off, color: Colors.grey),
+                                        SizedBox(width: 8),
+                                        Text('Offline', style: TextStyle(color: Colors.grey)),
+                                      ],
+                                    ),
+                                  ),
+                                Divider(
+                                  height: 1,
+                                  color: Colors.grey[300],
+                                ),
+                                Expanded(
+                                  child: BlocBuilder<BrowseBloc, BrowseState>(
+                                    builder: (context, state) {
+                                      if (state is RestaurantsLoadInProgress) {
+                                        return const Center(child: CircularProgressIndicator());
+                                      } else if (state is RestaurantsRecommendationLoadSuccess) {
+                                        if (state.recommendedRestaurants.isEmpty) {
+                                          return const Center(child: Text('No restaurants to show'));
+                                        }
+                                        return ListView.builder(
+                                          itemCount: state.recommendedRestaurants.length,
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => MultiBlocProvider(
+                                                      providers: [
+                                                        BlocProvider<ReviewDraftBloc>(
+                                                          create: (context) => ReviewDraftBloc(
+                                                            RepositoryProvider.of<ReviewDraftRepository>(context)
+                                                          ),
+                                                        ),
+                                                      ],
+                                                      child: SpotDetail(restaurantId: state.recommendedRestaurants[index].id),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              child: RestaurantCard(restaurant: state.recommendedRestaurants[index]),
+                                            );
+                                          },
+                                        );
+                                      } else if (state is RestaurantsLoadFailure) {
+                                        return const Center(
+                                          child: Text(
+                                            "hmm something went wrong, please verify you’re connected to the internet",
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        );
+                                      }
+                                      return const Center(child: Text('No restaurants to show'));
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        bottomNavigationBar: CustomNavigationBar(
+                          selectedIndex: 1,
+                          onItemTapped: (int index) {
+                            if (index == 0) {
+                              Navigator.pushNamed(context, '/browse');
+                            } else if (index == 2) {
+                              Navigator.pushNamed(context, '/bookmarks');
+                            }
+                          },
                         ),
                       ),
-                    Divider(
-                      height: 1,
-                      color: Colors.grey[300],
                     ),
-                    Expanded(
-                      child: BlocBuilder<BrowseBloc, BrowseState>(
-                        builder: (context, state) {
-                          if (state is RestaurantsLoadInProgress) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (state is RestaurantsRecommendationLoadSuccess) {
-                            if (state.recommendedRestaurants.isEmpty) {
-                              return const Center(child: Text('No restaurants to show'));
-                            }
-                            return ListView.builder(
-                              itemCount: state.recommendedRestaurants.length,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MultiBlocProvider(
-                                          providers: [
-                                            BlocProvider<ReviewDraftBloc>(
-                                              create: (context) => ReviewDraftBloc(
-                                                RepositoryProvider.of<ReviewDraftRepository>(context)
-                                              ),
-                                            ),
-                                          ],
-                                          child: SpotDetail(restaurantId: state.recommendedRestaurants[index].id),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: RestaurantCard(restaurant: state.recommendedRestaurants[index]),
-                                );
-                              },
-                            );
-                          } else if (state is RestaurantsLoadFailure) {
-                            return const Center(
-                              child: Text(
-                                "hmm something went wrong, please verify you’re connected to the internet",
-                                textAlign: TextAlign.center,
-                              ),
-                            );
-                          }
-                          return const Center(child: Text('No restaurants to show'));
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                bottomNavigationBar: CustomNavigationBar(
-                  selectedIndex: 1,
-                  onItemTapped: (int index) {
-                    if (index == 0) {
-                      Navigator.pushNamed(context, '/browse');
-                    } else if (index == 2) {
-                      Navigator.pushNamed(context, '/bookmarks');
-                    }
-                  },
-                ),
-              ),
-            ),
-          );
+                  );
         },
       ),
     );

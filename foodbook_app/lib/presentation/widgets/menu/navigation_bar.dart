@@ -44,8 +44,15 @@ class CustomNavigationBar extends StatelessWidget {
         
         if (index == 0) {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => BlocProvider<BrowseBloc>(
-              create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(LoadRestaurants()),
+            builder: (context) => MultiBlocProvider(
+              providers: [
+                BlocProvider<BrowseBloc>(
+                  create: (context) => BrowseBloc(restaurantRepository: RestaurantRepository(), reviewRepository: ReviewRepository())..add(LoadRestaurants()),         
+                ),
+                 BlocProvider<BookmarkInternetViewBloc>(
+                  create: (context) => BookmarkInternetViewBloc(),
+                )
+              ],
               child: BrowseView(),
             ),
           ));
@@ -59,6 +66,9 @@ class CustomNavigationBar extends StatelessWidget {
                 BlocProvider<UserBloc>(
                   create: (context) => UserBloc(),
                 ),
+                BlocProvider<BookmarkInternetViewBloc>(
+                  create: (context) => BookmarkInternetViewBloc(),
+                )
               ],
               child: ForYouView(),
             ),
@@ -78,7 +88,7 @@ class CustomNavigationBar extends StatelessWidget {
                     create: (context) => BookmarkInternetViewBloc(),
                   ),
                 ],
-                child: BookmarksView(),
+                child: const BookmarksView(),
               ),
             ),
           );
