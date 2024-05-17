@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:foodbook_app/data/data_sources/user_reviews_sa.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/review.dart';
 
@@ -86,5 +87,15 @@ class ReviewRepository {
     final ref = FirebaseStorage.instance.ref().child(fullPath);
     final String downloadUrl = await ref.getDownloadURL();
     return NetworkImage(downloadUrl);
+  }
+
+  Future<List<Review>> fetchUserReviews(String mail, String name) async {
+    var cutmail = mail.split('@')[0];
+    var res = await UserReviewsServiceAdapter().getUserReviews(cutmail, name);
+
+    List<Review> revs = res
+          .map((c) => ReviewDTO.fromJson(c).toModel())
+          .toList();
+    return revs;
   }
 }

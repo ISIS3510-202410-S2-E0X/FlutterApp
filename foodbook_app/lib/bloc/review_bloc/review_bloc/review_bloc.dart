@@ -11,6 +11,7 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
   ReviewBloc({required this.reviewRepository, required this.restaurantRepository})
       : super(InitialState()) {
     on<CreateReviewEvent>(_onCreateReviewEvent);
+    on<FetchUserReviews>(_onGetUserReviews);
   }
 
   Future<void> _onCreateReviewEvent(CreateReviewEvent event, Emitter<ReviewState> emit) async {
@@ -28,4 +29,15 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
       emit(ReviewError(e.toString()));
     }
   }
+  Future<void> _onGetUserReviews(FetchUserReviews event, Emitter<ReviewState> emit) async {
+    emit(ReviewLoading());
+    try {
+      final userReviews = await reviewRepository.fetchUserReviews(event.userId, event.userName);
+      emit(ReviewFetchUserReviewsSuccess(userReviews));
+    } catch (e) {
+      emit(ReviewError(e.toString()));
+    }
+  }
+
+
 }
