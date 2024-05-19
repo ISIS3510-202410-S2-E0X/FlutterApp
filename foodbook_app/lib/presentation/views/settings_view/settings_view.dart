@@ -16,6 +16,10 @@ class SettingsPage extends StatelessWidget {
           ),
           body: ListView(
             children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('NOTIFICATIONS', style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold)),
+              ),
               SwitchListTile(
                 title: Text('Days since last review'),
                 value: state.daysSinceLastReviewEnabled,
@@ -42,6 +46,24 @@ class SettingsPage extends StatelessWidget {
                   context.read<SettingsBloc>().add(UpdateLunchTime(value));
                 },
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Text(
+                  "Changes in the number of days will be reflected once you make a new review or the last scheduled notification is sent",
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ),
+              SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('OTHER', style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.bold)),
+              ),
+              ListTile(
+                title: Text('Report a Bug'),
+                onTap: () {
+                  // Implement your navigation or functionality to report a bug
+                },
+              ),
             ],
           ),
         );
@@ -63,7 +85,7 @@ class SettingsPage extends StatelessWidget {
             )),
             onChanged: (int? newValue) {
               context.read<SettingsBloc>().add(UpdateNumberOfDays(newValue!));
-              Navigator.of(context).pop();
+              Navigator.of(context). pop();
             },
           ),
         );
