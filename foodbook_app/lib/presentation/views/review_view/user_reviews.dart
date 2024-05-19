@@ -52,7 +52,7 @@ class _UserReviews extends State<UserReviews> {
                 builder: (context, connectivityState) {
                   return Column(
                     children: [
-                      if (isOffline)
+                      if (isOffline|| connectivityState is BookmarksNoInternet && snapshot.connectionState == ConnectionState.waiting)
                         const Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,

@@ -113,7 +113,7 @@ class ReviewRepository {
         String review= await UserReviewsDAO().getReview(key);
         if (review != "") {
           
-          revs.add(ReviewDTO.fromJson(jsonDecode(review)).toModel());
+          revs.add(ReviewDTO.fromJsonCache(jsonDecode(review)).toModel());
         }
       }
       return revs;
