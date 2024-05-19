@@ -86,7 +86,12 @@ class _UserReviews extends State<UserReviews> {
                                   ),
                                 ),
                               );
-                            } else {
+                            }if (state is ReviewError) {
+                              return const Center(
+                                child: Text("Please connect to the internet to get your reviews"),
+                              );
+                            } 
+                            else {
                               return const Center(
                                 child: Text('No reviews, yet...'),
                               );
