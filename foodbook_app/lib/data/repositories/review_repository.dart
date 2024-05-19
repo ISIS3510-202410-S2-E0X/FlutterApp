@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:foodbook_app/data/data_access_objects/user_reviews_dao.dart';
 import 'package:foodbook_app/data/data_sources/user_reviews_sa.dart';
 import 'package:foodbook_app/data/dtos/review_dto.dart';
 import 'package:foodbook_app/data/models/review.dart';
@@ -96,6 +98,30 @@ class ReviewRepository {
     List<Review> revs = res
           .map((c) => ReviewDTO.fromJson(c).toModel())
           .toList();
+    for (var rev in revs) {
+      UserReviewsDAO().cacheReview(rev, cutmail);
+    }
+    print(revs[0].date);
     return revs;
   }
+  Future<List<Review>> fetchUserReviewsFromCache(String mail) async {
+    try {
+      var cutmail = mail.split('@')[0];
+      List<Review> revs = [];
+      List<String> res = await UserReviewsDAO().getCachedReviews(cutmail);
+      for (var key in res) {
+        String review= await UserReviewsDAO().getReview(key);
+        if (review != "") {
+          
+          revs.add(ReviewDTO.fromJson(jsonDecode(review)).toModel());
+        }
+      }
+      return revs;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+  
 }
+  
+

@@ -32,9 +32,15 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
   Future<void> _onGetUserReviews(FetchUserReviews event, Emitter<ReviewState> emit) async {
     emit(ReviewLoading());
     try {
+      
       final userReviews = await reviewRepository.fetchUserReviews(event.userId, event.userName);
+      // final cachedReviews = await reviewRepository.fetchUserReviewsFromCache(event.userId);
+      // if (cachedReviews.isNotEmpty) {
+      //   print('CACHED REVIEWS: $cachedReviews');
+      // }
       emit(ReviewFetchUserReviewsSuccess(userReviews));
     } catch (e) {
+      print("Error JSON: $e");
       emit(ReviewError(e.toString()));
     }
   }

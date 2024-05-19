@@ -76,4 +76,34 @@ class ReviewDTO {
       selectedCategories: List<String>.from(json['selectedCategories'] ?? []),
     );
   }
+  Map<String, dynamic> toJsonCache() {
+    return {
+      'user': user,
+      'title': title,
+      'content': content,
+      'date': {'seconds': date.seconds, 'nanoseconds': date.nanoseconds},
+      'imageUrl': imageUrl,
+      'ratings': ratings,
+      'selectedCategories': selectedCategories.map((category) => category).toList(),
+    };
+  }
+  static ReviewDTO fromJsonCache(Map<String, dynamic> json) {
+    Map<String, double> ratings = {};
+    json['ratings']?.forEach((key, value) {
+      ratings[key] = (value as num).toDouble();
+    });
+
+    Map<String, String> userData = {'id': json['user']['id'], 'name': json['user']['name']};
+
+    return ReviewDTO(
+      user: userData,
+      title: json['title'],
+      content: json['content'],
+      date: Timestamp(json['date']['seconds'], json['date']['nanoseconds']),
+      imageUrl: json['imageUrl'],
+      ratings: ratings,
+      selectedCategories: List<String>.from(json['selectedCategories'] ?? []),
+    );
+  }
+
 }
