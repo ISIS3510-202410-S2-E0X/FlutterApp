@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:foodbook_app/data/models/review.dart';
 
 @immutable
 abstract class ReviewState extends Equatable {}
@@ -29,4 +30,13 @@ class ReviewError extends ReviewState {
   ReviewError(this.error);
   @override
   List<Object?> get props => [error];
+}
+
+class ReviewFetchUserReviewsSuccess extends ReviewState {
+  final List<Review> userReviews;
+
+  ReviewFetchUserReviewsSuccess(this.userReviews);
+
+  @override
+  List<Object> get props => [userReviews];
 }
