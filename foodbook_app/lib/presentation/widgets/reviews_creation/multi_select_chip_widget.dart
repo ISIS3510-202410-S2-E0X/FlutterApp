@@ -48,7 +48,7 @@ class _MultiSelectChipState extends State<MultiSelectChip> {
                   if (!selectedCategories.contains(item)) {
                     selectedCategories.add(item);
                     BlocProvider.of<FoodCategoryBloc>(context).add(SelectCategoryEvent(item));
-                }
+                  }
                 }
               } else {
                 selectedCategories.remove(item);
