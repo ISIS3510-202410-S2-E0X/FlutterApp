@@ -7,6 +7,7 @@ import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
+import 'package:foodbook_app/bloc/settings_bloc/settings_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/data_access_objects/shared_preferences_dao.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
@@ -110,6 +111,9 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider<BookmarkInternetViewBloc>(
             create: (context) => BookmarkInternetViewBloc(),
+          ),
+          BlocProvider<SettingsBloc>(
+            create: (context) => SettingsBloc(),
           ),
           BlocProvider<ReviewBloc>(
             create: (context) => ReviewBloc(

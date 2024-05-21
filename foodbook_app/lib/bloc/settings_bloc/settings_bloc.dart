@@ -1,8 +1,8 @@
 // settings_bloc.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/settings_bloc/settings_event.dart';
+import 'package:foodbook_app/bloc/settings_bloc/settings_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'settings_event.dart';
-import 'settings_state.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   SettingsBloc() : super(SettingsState()) {

@@ -32,35 +32,33 @@ class _SearchPage2State extends State<SearchPage2> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        actions: [
-          Container(
-            width: MediaQuery.of(context).size.width * 0.5, // 40% of screen width
-            child: ElevatedButton(
-              onPressed: () {
-                // Dispatch an event to fetch search history when the search button is pressed
-                browseBloc.add(SearchButtonPressed2(query: ''));
-                showSearch(
-                  context: context,
-                  delegate: CustomSearchDelegate(browseBloc: browseBloc),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0), // Adjust the value as needed
-                ),
-                backgroundColor: Colors.grey[200], // Set the button color to light grey
+    return Container(
+      width: MediaQuery.of(context).size.width, // Adjust the width as needed
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // Use as little space as needed
+        children: <Widget>[
+          ElevatedButton(
+            onPressed: () {
+              browseBloc.add(SearchButtonPressed2(query: ''));
+              showSearch(
+                context: context,
+                delegate: CustomSearchDelegate(browseBloc: browseBloc),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(Icons.search, color: Colors.grey), // Set the icon color to light grey
-                  SizedBox(width: 10), // Adjust spacing between icon and text
-                  Text("Search", style: TextStyle(color: Colors.grey)), // Set the text color to light grey
-                ],
-              ),
+              backgroundColor: Colors.grey[200],
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.search, color: Colors.grey),
+                SizedBox(width: 10),
+                Text("Search", style: TextStyle(color: Colors.grey)),
+              ],
             ),
           )
         ],
@@ -103,8 +101,6 @@ class CustomSearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    
-
     browseBloc.add(SearchButtonPressed2(query: query));
     return MultiBlocProvider(
       providers: [
@@ -197,7 +193,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
     super.close(context, result);
     //browseBloc.add(LoadRestaurants());
   }
-}
+} 
 
 // @override
 // Widget build(BuildContext context) {

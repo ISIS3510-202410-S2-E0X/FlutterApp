@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_bloc/bookmark_event.dart';
@@ -17,6 +18,8 @@ import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_state.dart';
 import 'package:foodbook_app/bloc/search_bloc/search_bloc.dart';
+import 'package:foodbook_app/bloc/settings_bloc/settings_bloc.dart';
+import 'package:foodbook_app/bloc/settings_bloc/settings_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
@@ -27,6 +30,7 @@ import 'package:foodbook_app/data/models/review.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/notifications/background_task.dart';
 import 'package:foodbook_app/presentation/views/profile_view/profile_view.dart';
+import 'package:foodbook_app/presentation/views/settings_view/settings_view.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/views/test_views/search_test.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';
@@ -152,7 +156,7 @@ class _BrowseViewState extends State<BrowseView> {
               appBar: AppBar(
                 automaticallyImplyLeading: false,
                 backgroundColor: Colors.white, // Set AppBar background to white
-                title: Center(
+                title: const Center(
                   child: Text(
                     'Browse',
                     style: TextStyle(
@@ -162,14 +166,18 @@ class _BrowseViewState extends State<BrowseView> {
                   ),
                 ),
                 leading: IconButton(
-                  icon: Icon(Icons.settings, color: Colors.black), // Settings icon
+                  icon: const Icon(Icons.settings, color: Colors.black), // Settings icon
                   onPressed: () {
                     context.read<SettingsBloc>().add(LoadSettings()); 
-
                     // Navigate to the settings page
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SettingsPage()), 
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider.value(
+                          value: BlocProvider.of<SettingsBloc>(context),
+                          child: const SettingsPage(),
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -187,17 +195,17 @@ class _BrowseViewState extends State<BrowseView> {
                   ),
                 ],
                 elevation: 0, // Remove shadow
-                bottom: PreferredSize(
-                  preferredSize: Size.fromHeight(kToolbarHeight), // Adjust the height for the search bar
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    color: Colors.white, // Maintain the same color as AppBar
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context)),
-                    ),
-                  ),
-                ),
+              //   bottom: PreferredSize(
+              //     preferredSize: const Size.fromHeight(kToolbarHeight), // Adjust the height for the search bar
+              //     child: Container(
+              //       width: MediaQuery.of(context).size.width,
+              //       color: Colors.white, // Maintain the same color as AppBar
+              //       child: Padding(
+              //         padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              //         child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context)),
+              //       ),
+              //     ),
+              //   ),
               ),
               backgroundColor: Colors.grey[200], // Set the background color to grey
               body: BlocBuilder<BookmarkInternetViewBloc, BookmarkInternetViewState>(
@@ -205,19 +213,22 @@ class _BrowseViewState extends State<BrowseView> {
                   return Column(
                     children: [
                       if (isOffline|| connectivityState is BookmarksNoInternet && snapshot.connectionState == ConnectionState.waiting)
-                        const Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.signal_wifi_off, color: Colors.grey),
-                              SizedBox(width: 8),
-                              Text('Offline', style: TextStyle(color: Colors.grey)),
-                            ],
-                          ),
+                      const Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.signal_wifi_off, color: Colors.grey),
+                            SizedBox(width: 8),
+                            Text('Offline', style: TextStyle(color: Colors.grey)),
+                          ],
                         ),
+                      ),
                       Divider(
                         height: 1, // Height of the divider line
                         color: Colors.grey[300], // Color of the divider line
+                      ),
+                      SizedBox(
+                        child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context))
                       ),
                       Expanded(
                         child: BlocBuilder<BrowseBloc, BrowseState>(

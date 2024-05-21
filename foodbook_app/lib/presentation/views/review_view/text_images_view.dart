@@ -315,7 +315,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           BlocListener<UserBloc, UserState>(
             listener: (context, state) {
               if (state is AuthenticatedUserState) {
-                _name = {'id': state.email, 'name': state.displayName};
+                _name = {'id': state.email.replaceAll('@gmail.com', ''), 'name': state.displayName};
                 if (_image == null && _times == 0) {
                   createReview(_name!, null);
                   cancelSingleTask("reviewReminder");
