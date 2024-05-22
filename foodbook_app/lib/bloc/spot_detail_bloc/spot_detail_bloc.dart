@@ -17,10 +17,14 @@ class SpotDetailBloc extends Bloc<SpotDetailEvent, SpotDetailState> {
     FetchRestaurantDetail event,
     Emitter<SpotDetailState> emit,
   ) async {
+    Stopwatch stopwatch = Stopwatch()..start();
     emit(SpotDetailLoadInProgress());
     try {
       final Restaurant? restaurant = await restaurantRepository.fetchRestaurantById(event.restaurantId);
+      stopwatch.stop();
       if (restaurant != null) {
+        print('Fetched restaurant in ${stopwatch.elapsedMilliseconds}ms');
+        restaurantRepository.addSpotDetailFetchingTime(event.restaurantId, double.parse((stopwatch.elapsedMilliseconds / 1000.0).toStringAsFixed(2)));
         emit(SpotDetailLoadSuccess(restaurant));
       } else {
         emit(SpotDetailLoadFailure(event.restaurantId));
