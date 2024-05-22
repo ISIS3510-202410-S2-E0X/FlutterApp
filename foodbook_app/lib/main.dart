@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_internet_view_bloc/bookmark_internet_view_bloc.dart';
+import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_bloc.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/data_access_objects/shared_preferences_dao.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/auth_repository.dart';
+import 'package:foodbook_app/data/repositories/bugs_report_repository.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
@@ -114,6 +116,11 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider<SettingsBloc>(
             create: (context) => SettingsBloc(),
+          ),
+          BlocProvider<BugReportBloc>(
+            create: (context) => BugReportBloc(
+              BugReportRepository(DatabaseProvider()),
+            ),
           ),
           BlocProvider<ReviewBloc>(
             create: (context) => ReviewBloc(

@@ -169,7 +169,6 @@ class _BrowseViewState extends State<BrowseView> {
                   icon: const Icon(Icons.settings, color: Colors.black), // Settings icon
                   onPressed: () {
                     context.read<SettingsBloc>().add(LoadSettings()); 
-                    // Navigate to the settings page
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -195,17 +194,6 @@ class _BrowseViewState extends State<BrowseView> {
                   ),
                 ],
                 elevation: 0, // Remove shadow
-              //   bottom: PreferredSize(
-              //     preferredSize: const Size.fromHeight(kToolbarHeight), // Adjust the height for the search bar
-              //     child: Container(
-              //       width: MediaQuery.of(context).size.width,
-              //       color: Colors.white, // Maintain the same color as AppBar
-              //       child: Padding(
-              //         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              //         child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context)),
-              //       ),
-              //     ),
-              //   ),
               ),
               backgroundColor: Colors.grey[200], // Set the background color to grey
               body: BlocBuilder<BookmarkInternetViewBloc, BookmarkInternetViewState>(

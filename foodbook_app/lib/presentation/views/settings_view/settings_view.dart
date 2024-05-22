@@ -1,11 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_bloc.dart';
+import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_event.dart';
+import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_state.dart';
 import 'package:foodbook_app/bloc/settings_bloc/settings_bloc.dart';
 import 'package:foodbook_app/bloc/settings_bloc/settings_event.dart';
 import 'package:foodbook_app/bloc/settings_bloc/settings_state.dart';
+import 'package:foodbook_app/data/data_sources/database_provider.dart';
+import 'package:foodbook_app/data/models/bug_report.dart';
+import 'package:foodbook_app/data/repositories/bugs_report_repository.dart';
+import 'package:foodbook_app/presentation/views/settings_view/report_bugs_view.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
+
+  void _checkForBugReportDraft(BuildContext context) {
+    final bugReportBloc = context.read<BugReportBloc>();
+    bugReportBloc.add(GetBugReportDraft());
+
+    bugReportBloc.stream.listen((state) {
+      if (state is BugReportDraftSuccess) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("It looks like you have a draft"),
+              content: const Text('Would you like to load it?'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    bugReportBloc.add(DeleteBugReportDraft());
+                    _navigateToBugReportView(context);
+                  },
+                  child: const Text('No'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _navigateToBugReportView(context, state.bugReport);
+                  },
+                  child: const Text('Yes'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        _navigateToBugReportView(context);
+      }
+    });
+  }
+
+  void _navigateToBugReportView(BuildContext context, [BugReport? bugReport]) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BlocProvider<BugReportBloc>.value(
+          value: BugReportBloc(BugReportRepository(DatabaseProvider())),
+          child: BugReportView(initialBugReport: bugReport),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +121,7 @@ class SettingsPage extends StatelessWidget {
               ListTile(
                 title: const Text('Report a Bug'),
                 onTap: () {
-                  // Implement your navigation or functionality to report a bug
+                    _checkForBugReportDraft(context);
                 },
               ),
             ],
@@ -88,7 +145,7 @@ class SettingsPage extends StatelessWidget {
             )),
             onChanged: (int? newValue) {
               context.read<SettingsBloc>().add(UpdateNumberOfDays(newValue!));
-              Navigator.of(context). pop();
+              Navigator.of(context).pop();
             },
           ),
         );
