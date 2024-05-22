@@ -145,6 +145,7 @@ class RestaurantRepository {
       return null;
     }
   }
+
   Future<List<Restaurant>> fetchCachedFYP() async {
     List<Restaurant> restaurants = [];
     List<String> restaurantNames = await _restaurantsCacheDAO.getCachedRestaurantFYP();
@@ -159,4 +160,40 @@ class RestaurantRepository {
     return restaurants;
   }
   
+  Future<void> addSpotDetailFetchingTime(String id, double time) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    String spot = '';
+
+    // get spot name
+    DocumentSnapshot<Map<String, dynamic>> restaurantSnapshot = await db.collection('spots').doc(id).get();
+    if (restaurantSnapshot.exists && restaurantSnapshot.data() != null) {
+      spot = restaurantSnapshot.data()!['name'];
+    }
+
+    try {
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('spotDetailFetchingTime')
+          .where('spot', isEqualTo: spot)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final id = querySnapshot.docs.first.id;
+        DocumentReference restaurantSnapshot = db.collection('spotDetailFetchingTime').doc(id);
+        await restaurantSnapshot.update({
+          'times': FieldValue.arrayUnion([{
+            'date': Timestamp.fromDate(DateTime.now()),
+            'platform': 'Android',
+            'time': time
+          }])
+        });
+      } else {
+        return;
+      }
+    } catch (e) {
+      print("Error al buscar el restaurante: $e");
+      return null;
+    }
+  }
+
 }
