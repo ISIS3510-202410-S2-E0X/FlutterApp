@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_bloc.dart';
 import 'package:foodbook_app/bloc/settings_bloc/settings_bloc.dart';
 import 'package:foodbook_app/bloc/settings_bloc/settings_event.dart';
 import 'package:foodbook_app/bloc/settings_bloc/settings_state.dart';
+import 'package:foodbook_app/data/data_sources/database_provider.dart';
+import 'package:foodbook_app/data/repositories/bugs_report_repository.dart';
+import 'package:foodbook_app/presentation/views/settings_view/report_bugs_view.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -64,7 +68,16 @@ class SettingsPage extends StatelessWidget {
               ListTile(
                 title: const Text('Report a Bug'),
                 onTap: () {
-                  // Implement your navigation or functionality to report a bug
+                  // TODO: Mostrar un aviso si existe un draft
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider<BugReportBloc>.value(
+                          value: BugReportBloc(BugReportRepository(DatabaseProvider())),
+                          child: BugReportView(),
+                        ),
+                      ),
+                    );
                 },
               ),
             ],

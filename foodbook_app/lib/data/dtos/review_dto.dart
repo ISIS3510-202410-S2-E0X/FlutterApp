@@ -76,6 +76,7 @@ class ReviewDTO {
       selectedCategories: List<String>.from(json['selectedCategories'] ?? []),
     );
   }
+  
   Map<String, dynamic> toJsonCache() {
     return {
       'user': user,
