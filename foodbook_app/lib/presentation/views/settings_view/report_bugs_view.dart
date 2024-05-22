@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_bloc.dart';
@@ -25,6 +26,9 @@ class _BugReportViewState extends State<BugReportView> {
   String bugType = 'Unexpected Behavior';
   String severityLevel = 'Minor';
 
+  final Connectivity _connectivity = Connectivity();
+  Stream<List<ConnectivityResult>> get _connectivityStream => _connectivity.onConnectivityChanged;
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +38,11 @@ class _BugReportViewState extends State<BugReportView> {
       severityLevel = widget.initialBugReport!.severityLevel;
       stepsToReproduceController.text = widget.initialBugReport!.stepsToReproduce;
     }
+  }
+
+  Future<bool> _checkConnection() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    return (connectivityResult[0] != ConnectivityResult.none);
   }
 
   Future<void> _createBugReportDraft(BuildContext context) async {
@@ -180,15 +189,25 @@ class _BugReportViewState extends State<BugReportView> {
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  BugReport newReport = BugReport(
-                    date: Timestamp.fromDate(DateTime.now()),
-                    description: bugDetailsController.text,
-                    bugType: bugType,
-                    severityLevel: severityLevel,
-                    stepsToReproduce: stepsToReproduceController.text,
-                  );
-                  BlocProvider.of<BugReportBloc>(context).add(ReportBug(newReport));
+                onPressed: () async {
+                  final hasConnection = await _checkConnection();
+                  if (!hasConnection) {
+                    print('NO HAY CONEXION');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('No Internet Connection!'),
+                      )
+                    );
+                  } else {
+                    BugReport newReport = BugReport(
+                      date: Timestamp.fromDate(DateTime.now()),
+                      description: bugDetailsController.text,
+                      bugType: bugType,
+                      severityLevel: severityLevel,
+                      stepsToReproduce: stepsToReproduceController.text,
+                    );
+                    BlocProvider.of<BugReportBloc>(context).add(ReportBug(newReport));
+                  }
                 },
                 child: const Text('Send Bug Report'),
               ),
