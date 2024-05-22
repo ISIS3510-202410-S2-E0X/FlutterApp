@@ -119,7 +119,7 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider<BugReportBloc>(
             create: (context) => BugReportBloc(
-              RepositoryProvider.of<BugReportRepository>(context, listen: false),
+              BugReportRepository(DatabaseProvider()),
             ),
           ),
           BlocProvider<ReviewBloc>(

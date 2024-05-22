@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BugReport {
-  final Timestamp date;
+  Timestamp? date;
   final String bugType;
   final String description;
   final String severityLevel;
   final String stepsToReproduce;
 
   BugReport({
-    required this.date,
+    this.date,
     required this.bugType,
     required this.description,
     required this.severityLevel,
@@ -26,12 +26,21 @@ class BugReport {
   }
 
   factory BugReport.fromJson(Map<String, dynamic> json) {
-    return BugReport(
-      date: json['date'] as Timestamp,
-      bugType: json['bugType'],
-      description: json['description'],
-      severityLevel: json['severityLevel'],
-      stepsToReproduce: json['stepsToReproduce'],
-    );
+    if (json['date'] != null) {
+      return BugReport(
+        date: json['date'] as Timestamp,
+        bugType: json['bugType'],
+        description: json['description'],
+        severityLevel: json['severityLevel'],
+        stepsToReproduce: json['stepsToReproduce'],
+      );
+    } else {
+      return BugReport(
+        bugType: json['bugType'],
+        description: json['description'],
+        severityLevel: json['severityLevel'],
+        stepsToReproduce: json['stepsToReproduce'],
+      );
+    }
   }
 }

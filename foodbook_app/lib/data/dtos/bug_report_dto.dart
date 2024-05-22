@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:foodbook_app/data/models/bug_report.dart';
 
 class BugReportDTO {
-  final Timestamp date;
+  Timestamp? date;
   final String bugType;
   final String description;
   final String severityLevel;
   final String stepsToReproduce;
 
   BugReportDTO({
-    required this.date,
+    this.date,
     required this.bugType,
     required this.description,
     required this.severityLevel,
@@ -36,7 +36,15 @@ class BugReportDTO {
     );
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson(bool draft) {
+    if (draft) {
+      return {
+        'bugType': bugType,
+        'description': description,
+        'severityLevel': severityLevel,
+        'stepsToReproduce': stepsToReproduce,
+      };
+    }
     return {
       'date': date,
       'bugType': bugType,

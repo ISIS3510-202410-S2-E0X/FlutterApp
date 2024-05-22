@@ -14,6 +14,10 @@ class SaveBugReportDraft extends BugReportEvent {
   SaveBugReportDraft(this.bugReport);
 }
 
+class GetBugReportDraft extends BugReportEvent {
+  GetBugReportDraft();
+}
+
 class DeleteBugReportDraft extends BugReportEvent {
   DeleteBugReportDraft();
 }

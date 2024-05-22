@@ -3,9 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_bloc.dart';
 import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_event.dart';
+import 'package:foodbook_app/bloc/settings_bloc/settings_bloc.dart';
 import 'package:foodbook_app/data/models/bug_report.dart';
+import 'package:foodbook_app/presentation/views/settings_view/settings_view.dart';
 
 class BugReportView extends StatefulWidget {
+  final BugReport? initialBugReport;
+
+  const BugReportView({
+    super.key,
+    this.initialBugReport
+  });
+
   @override
   _BugReportViewState createState() => _BugReportViewState();
 }
@@ -17,15 +26,86 @@ class _BugReportViewState extends State<BugReportView> {
   String severityLevel = 'Minor';
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.initialBugReport != null) {
+      bugDetailsController.text = widget.initialBugReport!.description;
+      bugType = widget.initialBugReport!.bugType;
+      severityLevel = widget.initialBugReport!.severityLevel;
+      stepsToReproduceController.text = widget.initialBugReport!.stepsToReproduce;
+    }
+  }
+
+  Future<void> _createBugReportDraft(BuildContext context) async {
+    final bugReportBloc = BlocProvider.of<BugReportBloc>(context);
+
+    final saveDraft = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Would you like to save this bug as a draft?"),
+          content: const Text('This will delete your latest draft'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop('No');
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () {
+                Navigator.of(context).pop('Yes');
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (saveDraft == 'Yes') {
+      bugReportBloc.add(DeleteBugReportDraft());
+      BugReport newReport = BugReport(
+        description: bugDetailsController.text,
+        bugType: bugType,
+        severityLevel: severityLevel,
+        stepsToReproduce: stepsToReproduceController.text,
+      );
+      BlocProvider.of<BugReportBloc>(context).add(SaveBugReportDraft(newReport));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BlocProvider.value(
+            value: BlocProvider.of<SettingsBloc>(context),
+            child: const SettingsPage(),
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false, 
+      onPopInvoked: (didPop) async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BlocProvider.value(
+              value: BlocProvider.of<SettingsBloc>(context),
+              child: const SettingsPage(),
+            ),
+          ),
+        );
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: const Text("Report a Bug"),
-        leading: const BackButton(),
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              // Logic for saving as a draft
+              _createBugReportDraft(context);
             },
             child: const Text(
               'Save as draft',
@@ -116,6 +196,6 @@ class _BugReportViewState extends State<BugReportView> {
           ],
         ),
       ),
-    );
+    ));
   }
 }

@@ -11,8 +11,8 @@ class BugReportRepository {
 
   Future<String> reportBug({ required BugReport bugReport }) async {
     try {
-      print('BUG REPORT: ${BugReportDTO.fromModel(bugReport).toJson()}');
-      DocumentReference bugReportRef = await _fireCloud.add(BugReportDTO.fromModel(bugReport).toJson());
+      print('BUG REPORT: ${BugReportDTO.fromModel(bugReport).toJson(false)}');
+      DocumentReference bugReportRef = await _fireCloud.add(BugReportDTO.fromModel(bugReport).toJson(false));
       return bugReportRef.id;
     } on FirebaseException catch (e) {
       print("Failed with error '${e.code}': ${e.message}");
@@ -26,8 +26,20 @@ class BugReportRepository {
   }
 
   Future<void> reportBugDraft(BugReport bugReport) async {
+    print('BUG REPORT DRAFT: ${BugReportDTO.fromModel(bugReport).toJson(true)}');
     final db = await dbProvider.getDatabase();
-    await db.insert('BugsReports', BugReportDTO.fromModel(bugReport).toJson());
+    await db.insert('BugsReports', BugReportDTO.fromModel(bugReport).toJson(true));
+    print('DRAFT SAVED: ${BugReportDTO.fromModel(bugReport).toJson(true)}');
+  }
+
+  Future<BugReport?> getBugReportDraft() async {
+    final db = await dbProvider.getDatabase();
+    final List<Map<String, dynamic>> maps = await db.query("BugsReports");
+    if (maps.isNotEmpty) {
+      print('DRAFT: ${BugReportDTO.fromJson(maps.first).toJson(true)}');
+      return BugReportDTO.fromJson(maps.first).toModel();
+    }
+    return null;
   }
 
   Future<void> deleteBugReportDraft() async {

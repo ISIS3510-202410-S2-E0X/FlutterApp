@@ -88,7 +88,7 @@ class _SpotDetailState extends State<SpotDetail> {
                 color: Colors.white, // Set the Container color to white
                 width: double.infinity, // Fill the screen width
                 height: double.infinity, // Fill the screen height
-                child: Center(
+                child: const Center(
                   child: CircularProgressIndicator(),
                 ),
               ),
@@ -96,7 +96,7 @@ class _SpotDetailState extends State<SpotDetail> {
           } else if (state is SpotDetailLoadSuccess) {
             return SpotDetailView(restaurant: state.restaurant);
           }  else if (state is SpotDetailLoadFailure) {
-            return SpotDetailViewFailure(message: 'Connect again to see the spot detail. Please exit and enter again to the Spot once connection restored.');
+            return const SpotDetailViewFailure(message: 'Connect again to see the spot detail. Please exit and enter again to the Spot once connection restored.');
           } else {
             return const Center(child: Text('Unknown error.'));
           }
@@ -301,7 +301,7 @@ class SpotDetailView extends StatelessWidget {
                                         MaterialPageRoute(builder: (context) => ReviewListView(restaurant: restaurant)),
                                       );
                                     },
-                                    child: Text('See more (${restaurant.reviews.length})', style: TextStyle(color: Colors.blue)),
+                                    child: Text('See more (${restaurant.reviews.length})', style: const TextStyle(color: Colors.blue)),
                                   ),
                                 ],
                               ),
@@ -336,7 +336,7 @@ class SpotDetailView extends StatelessWidget {
         ),
       // ...
       bottomNavigationBar: Container(
-      color: Color.fromARGB(255, 252, 252, 252), // Grey background for the bottom bar
+      color: const Color.fromARGB(255, 252, 252, 252), // Grey background for the bottom bar
       padding: const EdgeInsets.all(16.0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -346,7 +346,7 @@ class SpotDetailView extends StatelessWidget {
         onPressed: () {
           if (isOffline) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 content: Text('Try connecting online to leave a review'),
                 duration: Duration(seconds: 2),
               ),
