@@ -207,6 +207,21 @@ class _BugReportViewState extends State<BugReportView> {
                       stepsToReproduce: stepsToReproduceController.text,
                     );
                     BlocProvider.of<BugReportBloc>(context).add(ReportBug(newReport));
+                    showDialog<String>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Thank you for making foodbook better!'),
+                        content: const Text("You report has been sent! We will review and take further action."),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Center(
+                              child: Text('OK'),
+                            ),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ],
+                      ),
+                    );
                   }
                 },
                 child: const Text('Send Bug Report'),
