@@ -54,7 +54,10 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
     await repository.saveSearchTerm(event.name!);
     print("Saving the query to search history: ${event.name}");
     try {
-      final restaurants = await restaurantRepository.fetchRestaurants();
+      var restaurants = await restaurantRepository.fetchRestaurants();
+      if (restaurants.isEmpty) {
+        restaurants = await restaurantRepository.fetchRestaurantsFromCache();
+      }
       final filteredRestaurants = _applyFilters(
         event.name,
         event.price,
