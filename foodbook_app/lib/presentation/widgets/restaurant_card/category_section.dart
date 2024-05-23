@@ -21,7 +21,7 @@ class CategorySection extends StatelessWidget {
           margin: EdgeInsets.only(right: 8),
           child: Chip(
             label: Text(category, style: TextStyle(fontWeight: FontWeight.bold)),
-            backgroundColor: Color.fromARGB(255, 199, 199, 199), // Changed color to grey
+            backgroundColor: Colors.transparent, // Changed color to grey
           ),
         )).toList(),
       ),
