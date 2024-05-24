@@ -153,7 +153,12 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                 );
               },
             );
-          } else {
+          } 
+          if (state is RestaurantsLoadFailure) {
+            return Center(child: Text("Failed to load restaurants: ${state.error}",
+            textAlign: TextAlign.center,));
+          }
+          else {
             return Center(child: Text("No results found for: $query"));
           }
         },
@@ -194,7 +199,6 @@ class CustomSearchDelegate extends SearchDelegate<String> {
     //browseBloc.add(LoadRestaurants());
   }
 } 
-
 // @override
 // Widget build(BuildContext context) {
 //   return Scaffold(
