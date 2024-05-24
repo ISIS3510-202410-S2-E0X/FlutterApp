@@ -57,7 +57,7 @@ Widget _getImageWidget(String imagePath) {
               decoration: BoxDecoration(
                 // Define the border and border radius here
                 border: Border.all(
-                  color: Colors.white, // White border
+                  color: Colors.transparent, // White border
                   width: 3, // Border width
                 ),
                 borderRadius: BorderRadius.circular(5), 
