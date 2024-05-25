@@ -12,6 +12,7 @@ import 'package:foodbook_app/data/models/review.dart';
 
 class ReviewRepository {
   final _fireCloud = FirebaseFirestore.instance.collection("reviews");
+  final _fireCloudReportReviews = FirebaseFirestore.instance.collection("reviewReports");
 
   Future<String> create({ required ReviewDTO review }) async {
     try {
@@ -117,6 +118,55 @@ class ReviewRepository {
         }
       }
       return revs;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<String?> getReviewId(Review review) async {
+    Map<String, dynamic> attributes = {
+        'date': review.date,
+        'title': review.title,
+        'content': review.content,
+        'user': review.user,
+      };
+
+    Query query = _fireCloud;
+
+    attributes.forEach((key, value) {
+      query = query.where(key, isEqualTo: value);
+    });
+
+    QuerySnapshot querySnapshot = await query.get();
+    List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+
+    if (documents.isNotEmpty) {
+      print("ID del documento encontrado: ${documents.first.id}");
+      return documents.first.id;
+    } else {
+      print("No se encontró ningún documento con esos atributos.");
+      return null;
+    }
+  }
+
+  Future<String> reportReview({ required String report, required Review review, required String user }) async {
+    try {
+      String? reviewId = await getReviewId(review);
+      DocumentReference reviewRef = await _fireCloudReportReviews.add({
+        'date': Timestamp.fromDate(DateTime.now()),
+        'reason': report,
+        'reportedBy': user,
+        'reviewId': reviewId,
+      });
+      return reviewRef.id;
+    } on FirebaseException catch (e) {
+      if (kDebugMode) {
+        print("Failed with error '${e.code}': ${e.message}");
+      }
+      throw FirebaseException(
+        plugin: 'cloud_firestore',
+        message: "Failed to report review: '${e.code}': ${e.message}"
+      );
     } catch (e) {
       throw Exception(e.toString());
     }

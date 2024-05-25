@@ -9,7 +9,7 @@ import 'package:foodbook_app/bloc/settings_bloc/settings_state.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/bug_report.dart';
 import 'package:foodbook_app/data/repositories/bugs_report_repository.dart';
-import 'package:foodbook_app/presentation/views/settings_view/report_bugs_view.dart';
+import 'package:foodbook_app/presentation/views/settings_and_reports_view/report_bugs_view.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
