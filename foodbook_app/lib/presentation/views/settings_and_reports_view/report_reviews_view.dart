@@ -1,12 +1,19 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_internet_view_bloc/bookmark_internet_view_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
+import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/review_report_bloc/review_report_bloc.dart';
 import 'package:foodbook_app/bloc/review_report_bloc/review_report_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_event.dart';
 import 'package:foodbook_app/bloc/user_bloc/user_state.dart';
 import 'package:foodbook_app/data/models/review.dart';
+import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
+import 'package:foodbook_app/data/repositories/review_repository.dart';
+import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 
 class ReviewReportView extends StatefulWidget {
   final Review review;
@@ -143,6 +150,45 @@ class _ReviewReportViewState extends State<ReviewReportView> {
                           widget.review,
                           userBlocState.email,
                         ));
+                        showDialog<String>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Thank you for making foodbook better!'),
+                            content: const Text("You report has been sent! We will review and take further action if needed."),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Center(
+                                  child: Text('OK'),
+                                ),
+                                onPressed: () => Navigator.of(context).pop(),
+                              ),
+                            ],
+                          ),
+                        );
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) {
+                            return MultiBlocProvider(
+                              providers: [
+                                BlocProvider<BrowseBloc>(
+                                  create: (context) => BrowseBloc(
+                                    restaurantRepository: RestaurantRepository(),
+                                    reviewRepository: ReviewRepository(),
+                                  )..add(LoadRestaurants()),
+                                ),
+                                BlocProvider(
+                                  create: (context) => ReviewBloc(
+                                    reviewRepository: ReviewRepository(),
+                                    restaurantRepository: RestaurantRepository(),
+                                  ),
+                                ),
+                                BlocProvider<BookmarkInternetViewBloc>(
+                                create: (context) => BookmarkInternetViewBloc(),
+                              )
+                              ],
+                              child: BrowseView(),
+                            );
+                          }),
+                        );
                       }
                     }
                   }

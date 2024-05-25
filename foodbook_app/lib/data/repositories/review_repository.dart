@@ -152,13 +152,15 @@ class ReviewRepository {
   Future<String> reportReview({ required String report, required Review review, required String user }) async {
     try {
       String? reviewId = await getReviewId(review);
-      DocumentReference reviewRef = await _fireCloudReportReviews.add({
+      DocumentReference reviewRef = _fireCloud.doc(reviewId);
+
+      DocumentReference reportRef = await _fireCloudReportReviews.add({
         'date': Timestamp.fromDate(DateTime.now()),
         'reason': report,
         'reportedBy': user,
-        'reviewId': reviewId,
+        'reviewId': reviewRef,
       });
-      return reviewRef.id;
+      return reportRef.id;
     } on FirebaseException catch (e) {
       if (kDebugMode) {
         print("Failed with error '${e.code}': ${e.message}");
