@@ -12,6 +12,8 @@ import 'package:foodbook_app/bloc/bookmark_internet_view_bloc/bookmark_internet_
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/bloc/hot_categories_bloc/hot_categories_bloc.dart';
+import 'package:foodbook_app/bloc/hot_categories_bloc/hot_categories_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_event.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
@@ -52,6 +54,7 @@ class _BrowseViewState extends State<BrowseView> {
   int _times = 0;
   final Connectivity _connectivity = Connectivity();
   Stream<List<ConnectivityResult>> get _connectivityStream => _connectivity.onConnectivityChanged;
+  bool _showHotCategories = true;
   
   @override
   void initState() {
@@ -218,6 +221,66 @@ class _BrowseViewState extends State<BrowseView> {
                       SizedBox(
                         child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context))
                       ),
+                      if (_showHotCategories)
+                        BlocBuilder<HotCategoriesBloc, HotCategoriesState>(
+                          builder: (context, state) {
+                            if (state is HotCategoriesLoaded) {
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Popular categories this week',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.close, size: 20),
+                                          onPressed: () => setState(() => _showHotCategories = false),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 40,  // Reduced height for better alignment with your design
+                                    margin: EdgeInsets.only(left: 16),  // Left padding for alignment
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: state.hotCategories.length,
+                                      itemBuilder: (context, index) {
+                                        return Container(
+                                          margin: EdgeInsets.only(right: 8),  // Consistent spacing for items
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[200],  // Background color of the chips
+                                            borderRadius: BorderRadius.circular(20),  // Rounded borders
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),  // Padding inside each chip
+                                            child: Center(
+                                              child: Text(
+                                                state.hotCategories[index],
+                                                style: TextStyle(
+                                                  color: Colors.black,  // Text color inside the chips
+                                                  fontWeight: FontWeight.bold,  // Bold text
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                            return SizedBox.shrink(); // Empty space for loading or failed state
+                          },
+                        ),
                       Expanded(
                         child: BlocBuilder<BrowseBloc, BrowseState>(
                           builder: (context, state) {
