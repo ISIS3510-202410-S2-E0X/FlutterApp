@@ -41,7 +41,7 @@ class _MultiSelectChipState extends State<MultiSelectChip> {
                 var connectivityResult = await Connectivity().checkConnectivity();
                 if (connectivityResult[0] == ConnectivityResult.none) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('No internet connection. Try connceting to continue with the review!'),
+                    content: Text('No internet connection. Try connecting to continue with the review!'),
                     duration: Duration(seconds: 2),
                   ));
                 } else {

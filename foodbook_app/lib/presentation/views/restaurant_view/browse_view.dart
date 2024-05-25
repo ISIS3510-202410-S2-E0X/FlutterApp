@@ -30,7 +30,7 @@ import 'package:foodbook_app/data/models/review.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/notifications/background_task.dart';
 import 'package:foodbook_app/presentation/views/profile_view/profile_view.dart';
-import 'package:foodbook_app/presentation/views/settings_view/settings_view.dart';
+import 'package:foodbook_app/presentation/views/settings_and_reports_view/settings_view.dart';
 import 'package:foodbook_app/presentation/views/spot_infomation_view/spot_detail_view.dart';
 import 'package:foodbook_app/presentation/views/test_views/search_test.dart';
 import 'package:foodbook_app/presentation/widgets/menu/navigation_bar.dart';

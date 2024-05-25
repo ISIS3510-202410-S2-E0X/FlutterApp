@@ -6,7 +6,7 @@ import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_bloc.dart';
 import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_event.dart';
 import 'package:foodbook_app/bloc/settings_bloc/settings_bloc.dart';
 import 'package:foodbook_app/data/models/bug_report.dart';
-import 'package:foodbook_app/presentation/views/settings_view/settings_view.dart';
+import 'package:foodbook_app/presentation/views/settings_and_reports_view/settings_view.dart';
 
 class BugReportView extends StatefulWidget {
   final BugReport? initialBugReport;
