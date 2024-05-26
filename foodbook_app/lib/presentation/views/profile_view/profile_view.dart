@@ -34,11 +34,11 @@ class _ProfileViewState extends State<ProfileView> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('No Internet Connection'),
-            content: Text('Please check your internet connection and try again.'),
+            title: const Text('No Internet Connection'),
+            content: const Text('Please check your internet connection and try again.'),
             actions: <Widget>[
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                   BlocProvider.of<AuthBloc>(context).add(NoInternet());
@@ -121,11 +121,11 @@ class _ProfileViewState extends State<ProfileView> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text('No Internet Connection'),
-                              content: Text('Please check your internet connection and try again.'),
+                              title: const Text('No Internet Connection'),
+                              content: const Text('Please check your internet connection and try again.'),
                               actions: <Widget>[
                                 TextButton(
-                                  child: Text('OK'),
+                                  child: const Text('OK'),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
