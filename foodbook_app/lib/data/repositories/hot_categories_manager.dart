@@ -18,25 +18,34 @@ class HotCategoriesManager {
   }
 
   Future<List<String>?> fetchAndSaveCategories() async {
-    final response = await http.get(Uri.parse('https://foodbook-app-backend.vercel.app/hottest_categories'));
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      List<dynamic> categories = jsonResponse['categories'];
-      List<String> categoryNames = categories.map((category) => category['name'].toString()).toList();
+    print("Fetching hot categories...");
+    try {
+      final response = await http.get(Uri.parse('https://foodbook-app-backend.vercel.app/hottest_categories'));
+      print("Response: ${response.statusCode}");
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        List<dynamic> categories = jsonResponse['categories'];
+        List<String> categoryNames = categories.map((category) => category['name'].toString()).toList();
 
-      if (categoryNames.isNotEmpty) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setStringList('hotCategories', categoryNames);
-        print("Saved categories: $categoryNames");
-        return categoryNames;
+        if (categoryNames.isNotEmpty) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setStringList('hotCategories', categoryNames);
+          print("Saved categories: $categoryNames");
+          return categoryNames;
+        } else {
+          return null;
+        }
       }
+      return null;
+    } catch (error) {
+      return null;
     }
-    return null;
   }
 
   Future<List<String>?> getSavedCategories() async {
+    print("Got saved categories:");
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? categoryNames = prefs.getStringList(_hotcategoriesKey);
+    List<String>? categoryNames = prefs.getStringList('hotCategories');
     return categoryNames;
   }
 

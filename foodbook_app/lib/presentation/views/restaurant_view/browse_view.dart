@@ -205,6 +205,9 @@ class _BrowseViewState extends State<BrowseView> {
                 builder: (context, connectivityState) {
                   return Column(
                     children: [
+                      SizedBox(
+                        child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context))
+                      ),            
                       if (isOffline|| connectivityState is BookmarksNoInternet && snapshot.connectionState == ConnectionState.waiting)
                       const Center(
                         child: Row(
@@ -215,13 +218,6 @@ class _BrowseViewState extends State<BrowseView> {
                             Text('Offline', style: TextStyle(color: Colors.grey)),
                           ],
                         ),
-                      ),
-                      Divider(
-                        height: 1, // Height of the divider line
-                        color: Colors.grey[300], // Color of the divider line
-                      ),
-                      SizedBox(
-                        child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context))
                       ),
                       if (_showHotCategories)
                         BlocBuilder<HotCategoriesBloc, HotCategoriesState>(
@@ -247,9 +243,7 @@ class _BrowseViewState extends State<BrowseView> {
                                         const Spacer(),
                                         IconButton(
                                           icon: const Icon(Icons.close),
-                                          onPressed: () {
-                                            // Implement close action here
-                                          },
+                                          onPressed: () => setState(() => _showHotCategories = false),
                                         ),
                                       ],
                                     ),
