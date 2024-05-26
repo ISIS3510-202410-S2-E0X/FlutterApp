@@ -16,10 +16,10 @@ class SearchPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search Page'),
+        title: const Text('Search Page'),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -57,7 +57,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
         close(context, '');
       },
