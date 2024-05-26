@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/bookmark_internet_view_bloc/bookmark_internet_view_bloc.dart';
 import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_bloc.dart';
+import 'package:foodbook_app/bloc/hot_categories_bloc/hot_categories_bloc.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/review_report_bloc/review_report_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:foodbook_app/data/data_access_objects/shared_preferences_dao.dar
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/repositories/auth_repository.dart';
 import 'package:foodbook_app/data/repositories/bugs_report_repository.dart';
+import 'package:foodbook_app/data/repositories/hot_categories_manager.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
@@ -133,6 +135,11 @@ class MyApp extends StatelessWidget {
             create: (context) => ReviewBloc(
               reviewRepository: ReviewRepository(),
               restaurantRepository: RestaurantRepository(),
+            ),
+          ),
+          BlocProvider<HotCategoriesBloc>(
+            create: (context) => HotCategoriesBloc(
+              hotCategoriesManager: HotCategoriesManager(),
             ),
           )
         ],

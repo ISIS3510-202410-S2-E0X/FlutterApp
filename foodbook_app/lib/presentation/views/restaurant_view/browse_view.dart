@@ -12,6 +12,9 @@ import 'package:foodbook_app/bloc/bookmark_internet_view_bloc/bookmark_internet_
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
+import 'package:foodbook_app/bloc/hot_categories_bloc/hot_categories_bloc.dart';
+import 'package:foodbook_app/bloc/hot_categories_bloc/hot_categories_event.dart';
+import 'package:foodbook_app/bloc/hot_categories_bloc/hot_categories_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_event.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
@@ -52,6 +55,7 @@ class _BrowseViewState extends State<BrowseView> {
   int _times = 0;
   final Connectivity _connectivity = Connectivity();
   Stream<List<ConnectivityResult>> get _connectivityStream => _connectivity.onConnectivityChanged;
+  bool _showHotCategories = true;
   
   @override
   void initState() {
@@ -59,6 +63,7 @@ class _BrowseViewState extends State<BrowseView> {
     checkConnection();
     loadTimesFromPrefs();
     _checkConnectionPostReviews();
+    context.read<HotCategoriesBloc>().add(LoadHotCategories());
   }
   Future<void> checkConnection() async {
     // Get the current connectivity status
@@ -202,6 +207,9 @@ class _BrowseViewState extends State<BrowseView> {
                 builder: (context, connectivityState) {
                   return Column(
                     children: [
+                      SizedBox(
+                        child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context))
+                      ),            
                       if (isOffline|| connectivityState is BookmarksNoInternet && snapshot.connectionState == ConnectionState.waiting)
                       const Center(
                         child: Row(
@@ -213,13 +221,55 @@ class _BrowseViewState extends State<BrowseView> {
                           ],
                         ),
                       ),
-                      Divider(
-                        height: 1, // Height of the divider line
-                        color: Colors.grey[300], // Color of the divider line
-                      ),
-                      SizedBox(
-                        child: SearchPage2(browseBloc: BlocProvider.of<BrowseBloc>(context))
-                      ),
+                      if (_showHotCategories)
+                        BlocBuilder<HotCategoriesBloc, HotCategoriesState>(
+                          builder: (context, state) {
+                            print('STATE ACÁ: $state');
+                            if (state is HotCategoriesLoaded) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.whatshot),
+                                        const SizedBox(width: 8),
+                                        const Text(
+                                          'Popular categories this week',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        IconButton(
+                                          icon: const Icon(Icons.close),
+                                          onPressed: () => setState(() => _showHotCategories = false),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children: state.hotCategories.map((category) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                            child: Chip(
+                                              label: Text(category),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return const SizedBox.shrink(); // Empty space for loading or failed state
+                          },
+                        ),
                       Expanded(
                         child: BlocBuilder<BrowseBloc, BrowseState>(
                           builder: (context, state) {
