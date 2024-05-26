@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -87,9 +88,24 @@ class _CategoriesAndStarsViewState extends State<CategoriesAndStarsView> {
     super.dispose();
   }
 
-  void _onSearchChanged() {
+  Future<bool> _checkConnection() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    return (connectivityResult[0] != ConnectivityResult.none);
+  }
+
+  Future<void> _onSearchChanged() async {
     // Dispara el evento de búsqueda.
-    BlocProvider.of<FoodCategoryBloc>(context).add(SearchCategoriesEvent(_searchController.text));
+    final hasConnection = await _checkConnection();
+    if (!hasConnection) {
+      const snackBar = SnackBar(
+        content: Text('No internet connection. Try connecting to continue with the review!'),
+        duration: Duration(seconds: 2),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    } else {
+      BlocProvider.of<FoodCategoryBloc>(context).add(SearchCategoriesEvent(_searchController.text));
+    }
   }
 
   void _openTextAndImagesView() async {

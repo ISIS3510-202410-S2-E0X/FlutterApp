@@ -51,7 +51,7 @@ class _ReviewListViewState extends State<ReviewListView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ...widget.restaurant.reviews.map((review) => ReviewItem(review: review, isOffline: isOffline)),
+                        ...widget.restaurant.reviews.reversed.map((review) => ReviewItem(review: review, isOffline: isOffline)),
                       ],
                     ),
                   ),
