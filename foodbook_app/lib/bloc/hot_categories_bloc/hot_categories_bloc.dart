@@ -18,11 +18,15 @@ class HotCategoriesBloc extends Bloc<HotCategoriesEvent, HotCategoriesState> {
   ) async {
     emit(HotCategoriesLoadInProgress());
     try {
+      print("Fetching hot categories... -> ANTES DE FETCH");
       List<String>? categories = await hotCategoriesManager.fetchAndSaveCategories();
+      print("Fetching hot categories... -> $categories");
       if (categories == null || categories.isEmpty) {
         // Try to get from cache
         categories = await hotCategoriesManager.getSavedCategories();
       }
+
+      print("Categories: $categories");
       
       if (categories == null || categories.isEmpty) {
         emit(HotCategoriesLoadFailure(errorMessage: "Failed to load hot categories."));

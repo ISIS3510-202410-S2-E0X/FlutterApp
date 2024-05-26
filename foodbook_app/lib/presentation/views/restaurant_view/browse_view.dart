@@ -13,6 +13,7 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/hot_categories_bloc/hot_categories_bloc.dart';
+import 'package:foodbook_app/bloc/hot_categories_bloc/hot_categories_event.dart';
 import 'package:foodbook_app/bloc/hot_categories_bloc/hot_categories_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_bloc.dart';
 import 'package:foodbook_app/bloc/review_bloc/review_bloc/review_event.dart';
@@ -62,6 +63,7 @@ class _BrowseViewState extends State<BrowseView> {
     checkConnection();
     loadTimesFromPrefs();
     _checkConnectionPostReviews();
+    context.read<HotCategoriesBloc>().add(LoadHotCategories());
   }
   Future<void> checkConnection() async {
     // Get the current connectivity status
@@ -224,61 +226,52 @@ class _BrowseViewState extends State<BrowseView> {
                       if (_showHotCategories)
                         BlocBuilder<HotCategoriesBloc, HotCategoriesState>(
                           builder: (context, state) {
+                            print('STATE ACÁ: $state');
                             if (state is HotCategoriesLoaded) {
-                              return Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
                                       children: [
-                                        Text(
+                                        const Icon(Icons.whatshot),
+                                        const SizedBox(width: 8),
+                                        const Text(
                                           'Popular categories this week',
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
+                                        const Spacer(),
                                         IconButton(
-                                          icon: Icon(Icons.close, size: 20),
-                                          onPressed: () => setState(() => _showHotCategories = false),
+                                          icon: const Icon(Icons.close),
+                                          onPressed: () {
+                                            // Implement close action here
+                                          },
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  Container(
-                                    height: 40,  // Reduced height for better alignment with your design
-                                    margin: EdgeInsets.only(left: 16),  // Left padding for alignment
-                                    child: ListView.builder(
+                                    const SizedBox(height: 8),
+                                    SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
-                                      itemCount: state.hotCategories.length,
-                                      itemBuilder: (context, index) {
-                                        return Container(
-                                          margin: EdgeInsets.only(right: 8),  // Consistent spacing for items
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[200],  // Background color of the chips
-                                            borderRadius: BorderRadius.circular(20),  // Rounded borders
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),  // Padding inside each chip
-                                            child: Center(
-                                              child: Text(
-                                                state.hotCategories[index],
-                                                style: TextStyle(
-                                                  color: Colors.black,  // Text color inside the chips
-                                                  fontWeight: FontWeight.bold,  // Bold text
-                                                ),
-                                              ),
+                                      child: Row(
+                                        children: state.hotCategories.map((category) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                            child: Chip(
+                                              label: Text(category),
                                             ),
-                                          ),
-                                        );
-                                      },
+                                          );
+                                        }).toList(),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               );
                             }
-                            return SizedBox.shrink(); // Empty space for loading or failed state
+                            return const SizedBox.shrink(); // Empty space for loading or failed state
                           },
                         ),
                       Expanded(

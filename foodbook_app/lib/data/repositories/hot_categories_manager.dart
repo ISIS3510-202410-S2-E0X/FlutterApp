@@ -23,10 +23,11 @@ class HotCategoriesManager {
       final jsonResponse = jsonDecode(response.body);
       List<dynamic> categories = jsonResponse['categories'];
       List<String> categoryNames = categories.map((category) => category['name'].toString()).toList();
-      
+
       if (categoryNames.isNotEmpty) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setStringList(_hotcategoriesKey, categoryNames);
+        await prefs.setStringList('hotCategories', categoryNames);
+        print("Saved categories: $categoryNames");
         return categoryNames;
       }
     }
