@@ -50,10 +50,8 @@ class ReviewRepository {
 
   Future<List<Review>> fetchReviews(List<String> reviewIds) async {
     List<Review> reviews = [];
-    print('REVIEW IDS: $reviewIds');
     for (String id in reviewIds) {
       var reviewData = await getReviewById(id);
-      print('REVIEW DATA: $reviewData');
       if (reviewData != null) {
         ReviewDTO reviewDTO = ReviewDTO.fromJson(reviewData);
         reviews.add(reviewDTO.toModel());
@@ -74,7 +72,6 @@ class ReviewRepository {
     );
 
     try {
-      print('IMAGEN ACÁ: ${image.path}, ${image.runtimeType}, ${image}');
       await referenceImageToUpload.putFile(File(image.path), metadata);
       String path = await referenceImageToUpload.getDownloadURL();
       return path;
@@ -141,10 +138,8 @@ class ReviewRepository {
     List<QueryDocumentSnapshot> documents = querySnapshot.docs;
 
     if (documents.isNotEmpty) {
-      print("ID del documento encontrado: ${documents.first.id}");
       return documents.first.id;
     } else {
-      print("No se encontró ningún documento con esos atributos.");
       return null;
     }
   }

@@ -10,12 +10,13 @@ import 'package:foodbook_app/data/dtos/restaurant_dto.dart';
 import 'package:foodbook_app/data/models/restaurant.dart';
 
 class RestaurantRepository {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final RestaurantsCacheDAO _restaurantsCacheDAO = RestaurantsCacheDAO();
 
   Future<List<Restaurant>> fetchRestaurants() async {
     List<Restaurant> restaurants = [];
     try {
-      final pro = await FirebaseFirestore.instance.collection('spots').get();
+      final pro = await _firestore.collection('spots').get();
       for (var element in pro.docs) {
         // Guarda el id del restaurante
         String restaurantId = element.id;
@@ -23,7 +24,6 @@ class RestaurantRepository {
         var restaurantDTO = RestaurantDTO.fromJson(restaurantId, restaurantData);
         Restaurant restaurant = restaurantDTO.toModel();
         _restaurantsCacheDAO.cacheRestaurant(restaurant);
-        print("cached restaurant: ${restaurant.name}");
         var reviewReferences = restaurantData['reviewData']['userReviews'] as List<dynamic>?;
         if (reviewReferences != null) {
           List<Review> reviews = [];
@@ -40,7 +40,15 @@ class RestaurantRepository {
       return restaurants;
     }
     on FirebaseException catch (e) {
-    print("Failed to fetch restaurants with error '${e.code}': ${e.message}");
+      if (kDebugMode) {
+        print("Failed to fetch restaurants: $e");
+      }
+      return [];
+    }
+    catch (e) {
+      if (kDebugMode) {
+        print("Failed to fetch restaurants: $e");
+      }
     return [];
     }
   }
@@ -62,10 +70,9 @@ class RestaurantRepository {
 
   Future<void> addReviewToRestaurant(String restaurantId, String reviewId) async {
     try {
-      print('RESTAURANT ID: $restaurantId');
-      DocumentReference restaurantRef = FirebaseFirestore.instance.collection('spots').doc(restaurantId);
+      DocumentReference restaurantRef = _firestore.collection('spots').doc(restaurantId);
       
-      DocumentReference reviewRef = FirebaseFirestore.instance.collection('reviews').doc(reviewId);
+      DocumentReference reviewRef = _firestore.collection('reviews').doc(reviewId);
       
       await restaurantRef.update({
         'reviewData.userReviews': FieldValue.arrayUnion([reviewRef])
@@ -92,21 +99,17 @@ class RestaurantRepository {
         return null;
       }
     } catch (e) {
-      print("Error al buscar el restaurante: $e");
       return null;
     }
   }
 
   Future<List<dynamic>> getRestaurantsIdsFromIntAPI(String username) async {
-    print("fetching recommended restaurants for $username...");
     final response = await http.get(Uri.parse('https://foodbook-app-backend.vercel.app/recommendation/$username'));
-    print('RESPONSE: ${response.body}, ${response.statusCode}');
     if (response.statusCode == 404) {
       throw Exception('Leave reviews to get personalized recommendations!');
     }
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
-      print('JSON RESPONSE: ${jsonResponse}');
       return jsonResponse['spots'];
     }
     else{
@@ -116,9 +119,8 @@ class RestaurantRepository {
   }
 
   Future<Restaurant?> fetchRestaurantById(String restaurantId) async {
-    FirebaseFirestore db = FirebaseFirestore.instance;
     try {
-      DocumentSnapshot<Map<String, dynamic>> restaurantSnapshot = await db.collection('spots').doc(restaurantId).get();
+      DocumentSnapshot<Map<String, dynamic>> restaurantSnapshot = await _firestore.collection('spots').doc(restaurantId).get();
       if (restaurantSnapshot.exists && restaurantSnapshot.data() != null) {
         var restaurantDTO = RestaurantDTO.fromJson(restaurantId,restaurantSnapshot.data()!);
         Restaurant restaurant = restaurantDTO.toModel();
@@ -134,7 +136,6 @@ class RestaurantRepository {
         }
         restaurant.reviews = reviews;
         }
-        print('O: ${restaurant.reviews}');
         return restaurant;
       }
       return null;
@@ -161,11 +162,10 @@ class RestaurantRepository {
   }
   
   Future<void> addSpotDetailFetchingTime(String id, double time) async {
-    FirebaseFirestore db = FirebaseFirestore.instance;
     String spot = '';
 
     // get spot name
-    DocumentSnapshot<Map<String, dynamic>> restaurantSnapshot = await db.collection('spots').doc(id).get();
+    DocumentSnapshot<Map<String, dynamic>> restaurantSnapshot = await _firestore.collection('spots').doc(id).get();
     if (restaurantSnapshot.exists && restaurantSnapshot.data() != null) {
       spot = restaurantSnapshot.data()!['name'];
     }
@@ -179,7 +179,7 @@ class RestaurantRepository {
 
       if (querySnapshot.docs.isNotEmpty) {
         final id = querySnapshot.docs.first.id;
-        DocumentReference restaurantSnapshot = db.collection('spotDetailFetchingTime').doc(id);
+        DocumentReference restaurantSnapshot = _firestore.collection('spotDetailFetchingTime').doc(id);
         await restaurantSnapshot.update({
           'times': FieldValue.arrayUnion([{
             'date': Timestamp.fromDate(DateTime.now()),
@@ -191,7 +191,6 @@ class RestaurantRepository {
         return;
       }
     } catch (e) {
-      print("Error al buscar el restaurante: $e");
       return null;
     }
   }

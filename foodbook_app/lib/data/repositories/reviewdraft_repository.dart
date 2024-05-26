@@ -29,7 +29,6 @@ class ReviewDraftRepository {
       whereArgs: [spot]
     );
 
-    print('RES: $res');
     if (res.length == 1) {
       return res.map((c) => ReviewDraftDTO.fromJson(c).toModel()).toList();
     }
@@ -40,11 +39,9 @@ class ReviewDraftRepository {
   Future<String?> findId(String spot) async {
     try {
       QuerySnapshot docs = await _fireCloud.get();
-      List<DocumentSnapshot> foundDocs = [];
       String? id ;
       for (var doc in docs.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        print(data);
         if (data['spot'] == spot) {
             id = doc.id;
             break;
@@ -92,14 +89,11 @@ class ReviewDraftRepository {
   }
 
   Future<void> insertDraft(ReviewDraft draft) async {
-    print('INSERTING DRAFT: ${draft.image}');
     
     if (draft.image != null) {
       draft.image = await FileManagerDAO().saveImage(draft.image!, draft.spot!);
     }
-    print("New draft image path: ${draft.image}");
     final db = await dbProvider.getDatabase();
-    print('SAVING: ${ReviewDraftDTO.fromModel(draft).toJson()}');
     // await updateUnifinishedDraftCount(draft.spot!, true);
     await db.insert('ReviewDrafts', ReviewDraftDTO.fromModel(draft).toJson());
   }
