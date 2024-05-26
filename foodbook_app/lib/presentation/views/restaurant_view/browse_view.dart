@@ -249,7 +249,6 @@ class _BrowseViewState extends State<BrowseView> {
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 8),
                                     SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
                                       child: Row(
