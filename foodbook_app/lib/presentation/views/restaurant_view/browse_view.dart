@@ -62,6 +62,8 @@ class _BrowseViewState extends State<BrowseView> {
   }
   Future<void> checkConnection() async {
     // Get the current connectivity status
+    _times = 0;
+    saveTimesToPrefs();
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult[0] == ConnectivityResult.none) {
       context.read<BookmarkInternetViewBloc>().add(BookmarksAccessNoInternet());
@@ -123,7 +125,7 @@ class _BrowseViewState extends State<BrowseView> {
     if (connectivityResult[0] != ConnectivityResult.none) {
       print('HAY INTERNET!');
       List<Review> reviewsToUpload = _getReviewsToUpload(context);
-      print('SIZE REVIEWS TO UPLOAD: ${reviewsToUpload.length}');
+      print('SIZE REVIEWS TO UPLOAD: ${reviewsToUpload.length} - $_times');
       if (reviewsToUpload.isNotEmpty && _times == 0) {
         print('ENTRO ACÁ $_times');
         for (var eachReview in reviewsToUpload) {

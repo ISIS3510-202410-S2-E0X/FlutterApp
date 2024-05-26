@@ -87,11 +87,13 @@ class SettingsPage extends StatelessWidget {
                   context.read<SettingsBloc>().add(UpdateDaysSinceLastReviewEnabled(value));
                 },
               ),
-              ListTile(
-                title: const Text('Number of days'),
-                trailing: Text('${state.numberOfDays} days'),
-                onTap: () => _showDaysSelection(context, state.numberOfDays),
-              ),
+              // Only show this ListTile if daysSinceLastReviewEnabled is true
+              if (state.daysSinceLastReviewEnabled)
+                ListTile(
+                  title: const Text('Number of days'),
+                  trailing: Text('${state.numberOfDays} days'),
+                  onTap: () => _showDaysSelection(context, state.numberOfDays),
+                ),
               SwitchListTile(
                 title: const Text('Reviews uploaded'),
                 value: state.reviewsUploaded,

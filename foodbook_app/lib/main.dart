@@ -18,6 +18,7 @@ import 'package:foodbook_app/data/repositories/bugs_report_repository.dart';
 import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
 import 'package:foodbook_app/data/repositories/review_repository.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
+import 'package:foodbook_app/data/repositories/settings_manager.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
 import 'package:foodbook_app/notifications/background_review_reminder.dart';
 import 'package:foodbook_app/notifications/background_task.dart';
@@ -116,7 +117,7 @@ class MyApp extends StatelessWidget {
             create: (context) => BookmarkInternetViewBloc(),
           ),
           BlocProvider<SettingsBloc>(
-            create: (context) => SettingsBloc(),
+            create: (context) => SettingsBloc(SettingsManager()),
           ),
           BlocProvider<BugReportBloc>(
             create: (context) => BugReportBloc(

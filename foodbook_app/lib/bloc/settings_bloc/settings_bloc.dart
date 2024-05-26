@@ -1,11 +1,12 @@
-// settings_bloc.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/settings_bloc/settings_event.dart';
 import 'package:foodbook_app/bloc/settings_bloc/settings_state.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:foodbook_app/data/repositories/settings_manager.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
-  SettingsBloc() : super(SettingsState()) {
+  final SettingsManager settingsManager;
+
+  SettingsBloc(this.settingsManager) : super(SettingsState()) {
     on<LoadSettings>(_onLoadSettings);
     on<UpdateDaysSinceLastReviewEnabled>(_onUpdateDaysSinceLastReviewEnabled);
     on<UpdateNumberOfDays>(_onUpdateNumberOfDays);
@@ -14,37 +15,33 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   }
 
   void _onLoadSettings(LoadSettings event, Emitter<SettingsState> emit) async {
-    final prefs = await SharedPreferences.getInstance();
+    await settingsManager.initPrefs();
     emit(SettingsState(
-      daysSinceLastReviewEnabled: prefs.getBool('daysSinceLastReviewEnabled') ?? true,
-      numberOfDays: prefs.getInt('numberOfDays') ?? 4,
-      reviewsUploaded: prefs.getBool('reviewsUploaded') ?? true,
-      lunchTime: prefs.getBool('lunchTime') ?? true,
+      daysSinceLastReviewEnabled: await settingsManager.getBool('daysSinceLastReviewEnabled', true),
+      numberOfDays: await settingsManager.getInt('numberOfDays', 4),
+      reviewsUploaded: await settingsManager.getBool('reviewsUploaded', true),
+      lunchTime: await settingsManager.getBool('lunchTime', true),
     ));
   }
 
   void _onUpdateDaysSinceLastReviewEnabled(
       UpdateDaysSinceLastReviewEnabled event, Emitter<SettingsState> emit) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('daysSinceLastReviewEnabled', event.enabled);
+    await settingsManager.setBool('daysSinceLastReviewEnabled', event.enabled);
     emit(state.copyWith(daysSinceLastReviewEnabled: event.enabled));
   }
 
   void _onUpdateNumberOfDays(UpdateNumberOfDays event, Emitter<SettingsState> emit) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('numberOfDays', event.days);
+    await settingsManager.setInt('numberOfDays', event.days);
     emit(state.copyWith(numberOfDays: event.days));
   }
 
   void _onUpdateReviewsUploaded(UpdateReviewsUploaded event, Emitter<SettingsState> emit) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('reviewsUploaded', event.enabled);
+    await settingsManager.setBool('reviewsUploaded', event.enabled);
     emit(state.copyWith(reviewsUploaded: event.enabled));
   }
 
   void _onUpdateLunchTime(UpdateLunchTime event, Emitter<SettingsState> emit) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('lunchTime', event.enabled);
+    await settingsManager.setBool('lunchTime', event.enabled);
     emit(state.copyWith(lunchTime: event.enabled));
   }
 }
