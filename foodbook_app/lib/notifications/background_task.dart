@@ -11,9 +11,23 @@ void callbackDispatcher() {
     String emailPrefix = getEmail();  // Get sanitized email prefix
 
     switch (task) {
+      case 'RepLocTest':
+        Position userLocation = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        print("user location: $userLocation.latitude, $userLocation.longitude");
+        var userLatitude = userLocation.latitude;
+        var userLongitude = userLocation.longitude;
+        double distance = Geolocator.distanceBetween(userLatitude, userLongitude, 4.6028679, -74.0649262);
+        if (distance > 1000) {
+          NotificationService.showNotification(
+            id: 1,
+            title: 'Hungry?',
+            body: "Choose what you will eat today and leave a review!",
+          );
+        }
+        return Future.value(true);
       case 'show_daily_notification':
         bool? showDailyNotification = prefs.getBool(emailPrefix + 'lunchTime');
-        if (showDailyNotification ?? false) {
+        if (showDailyNotification == true) {
           Position userLocation = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
           print("user location: $userLocation.latitude, $userLocation.longitude");
           var userLatitude = userLocation.latitude;
@@ -27,102 +41,93 @@ void callbackDispatcher() {
             );
           }
         }
-        break;
-      case 'show_review_reminder_notification':
-        bool? showReviewReminder = prefs.getBool(emailPrefix + 'daysSinceLastReviewEnabled');
-        if (showReviewReminder ?? false) {
-          NotificationService.showNotification(
-            id: 2,
-            title: "We miss you...",
-            body: "you haven't left a review in a while."
-          );
-        }
-        break;
+        return Future.value(true);
+      // case 'show_review_reminder_notification':
+      //   bool? showReviewReminder = prefs.getBool(emailPrefix + 'daysSinceLastReviewEnabled');
+      //   if (showReviewReminder == true) {
+      //     NotificationService.showNotification(
+      //       id: 2,
+      //       title: "We miss you...",
+      //       body: "you haven't left a review in a while."
+      //     );
+      //   }
+      //   return Future.value(true);
       case 'task_drafts_loaded_notification':
         bool? showDraftsLoadedNotification = prefs.getBool(emailPrefix + 'reviewsUploaded');
-        if (showDraftsLoadedNotification ?? false) {
+        if (showDraftsLoadedNotification == true) {
           NotificationService.showNotification(
             id: 3,
             title: "Reviews Uploaded",
             body: "The reviews you created w/o connection have been uploaded"
           );
         }
-        break;
+        return Future.value(true);
       default:
-        print("Task not recognized: $task");
+        print("Task no reconocida: $task");
         break;
     }
     return Future.value(true);
   });
 }
 
-void initializeBackgroundTask() async {
-  try {
-    String emailPrefix = getEmail();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+Future<void> initializeBackgroundTask() async {  
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String emailPrefix = getEmail();  // Get sanitized email prefix
 
-    // Retrieve settings from SharedPreferences using the email prefix
-    bool? lunchTime = prefs.getBool(emailPrefix + 'lunchTime');
-    bool? reviewReminderEnabled = prefs.getBool(emailPrefix + 'daysSinceLastReviewEnabled');
-    int numberOfDays = prefs.getInt(emailPrefix + 'numberOfDays') ?? 4;  // Default to 4 if not set
-    bool? draftsUploaded = prefs.getBool(emailPrefix + 'reviewsUploaded');
+  bool? lunchTime = prefs.getBool(emailPrefix + 'lunchTime');
+  bool? reviewReminderEnabled = prefs.getBool(emailPrefix + 'daysSinceLastReviewEnabled');
+  int numberOfDays = prefs.getInt(emailPrefix + 'numberOfDays') ?? 4;  // Default to 4 if not set
+  bool? draftsUploaded = prefs.getBool(emailPrefix + 'reviewsUploaded');
 
-    DateTime now = DateTime.now();
-    DateTime nextMidday = DateTime(now.year, now.month, now.day, 12, 0);
-    if (now.hour >= 12) {
-      nextMidday = nextMidday.add(const Duration(days: 1));
-    }
-    Duration initialDelay = nextMidday.difference(now);
-
-    Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-
-    Workmanager workmanager = Workmanager();
-    workmanager.cancelByUniqueName("RecurringlocatiionUsageTest3");
-    workmanager.cancelByUniqueName("dailyEatingTest_notification");
-    workmanager.cancelByUniqueName("reviewReminder");
-
-    // Conditional task registrations
-    if (lunchTime == true) {
-      Workmanager().registerPeriodicTask(
-        'dailyEatingTest_notification',
-        'show_daily_notification',
-        frequency: const Duration(days: 1),
-        initialDelay: initialDelay,
-        constraints: Constraints(networkType: NetworkType.connected),
-      );
-    }
-
-    if (reviewReminderEnabled == true) {
-      Workmanager().registerPeriodicTask(
-        'reviewReminder',
-        'show_review_reminder_notification',
-        frequency: Duration(days: numberOfDays),
-        initialDelay: Duration(days: numberOfDays),
-      );
-    }
-    print("Background tasks initialized based on user-specific settings.");
-  } catch (e) {
-    print("Error initializing background tasks: $e");
+  DateTime now = DateTime.now();
+  DateTime nextMidday = DateTime(now.year, now.month, now.day, 12, 0);
+  
+  if (now.hour >= 12) {
+     nextMidday = nextMidday.add(const Duration(days: 1));
   }
+
+  Duration initialDelay = nextMidday.difference(now);
+  print("initial delay: $initialDelay");
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  //Workmanager().registerOneOffTask("DistanceBasedTest", "NotificationDisplayDistGLOCTest");
+  Workmanager workmanager = Workmanager();
+  workmanager.cancelByUniqueName("RecurringlocatiionUsageTest3");
+  workmanager.cancelByUniqueName("dailyEatingTest_notification");
+  workmanager.cancelByUniqueName("reviewReminder");
+
+  if (lunchTime == true) {
+    Workmanager().registerPeriodicTask(
+      'dailyEatingTest_notification',
+      'show_daily_notification',
+      frequency: const Duration(days: 1),
+      initialDelay: initialDelay,
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+      ),
+    );
+  }
+
+  // if (reviewReminderEnabled == true) {
+  //   Workmanager().registerPeriodicTask(
+  //     'reviewReminder',
+  //     'show_review_reminder_notification',
+  //     frequency: Duration(days: num),
+  //     initialDelay: Duration(days: 30),
+  //   );
+  // }
+
+  print("background task initialized");
 }
 
-void draftsLoadNotification() async {
-  try {
-    String emailPrefix = getEmail(); // Get sanitized email prefix
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+Future<void> draftsLoadNotification() async {
+  String emailPrefix = getEmail(); // Get sanitized email prefix
+  SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // Retrieve the 'reviewsUploaded' setting using the email prefix
-    bool? draftsUploaded = prefs.getBool(emailPrefix + 'reviewsUploaded');
+  bool? draftsUploaded = prefs.getBool(emailPrefix + 'reviewsUploaded');
 
-    if (draftsUploaded == true) {
-      Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-      Workmanager().registerOneOffTask('drafts_loaded_notification', 'task_drafts_loaded_notification');
-      print("Drafts load notification task has been registered.");
-    } else {
-      print("Drafts load notification task not registered due to user setting.");
-    }
-  } catch (e) {
-    print("Error in draftsLoadNotification: $e");
+  if (draftsUploaded == true) {
+    Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+    Workmanager().registerOneOffTask('drafts_loaded_notification', 'task_drafts_loaded_notification');
   }
 }
 
@@ -138,4 +143,3 @@ String getEmail() {
 String sanitizeEmail(String email) {
   return email.replaceAll('.', '_').replaceAll('@', '_');
 }
-
