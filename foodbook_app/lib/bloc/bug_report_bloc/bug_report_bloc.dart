@@ -38,7 +38,11 @@ class BugReportBloc extends Bloc<BugReportEvent, BugReportState> {
     try {
       BugReport? bugReport = await bugReportRepository.getBugReportDraft();
       print('BUG REPORT: $bugReport');
-      emit(BugReportDraftSuccess("Draft retrieved", bugReport: bugReport));
+      if (bugReport != null) {
+        emit(BugReportDraftSuccess("Draft retrieved", bugReport: bugReport));
+      } else {
+        emit(BugReportNoDraftSuccess("No draft found"));
+      }
     } catch (e) {
       emit(BugReportError(e.toString()));
     }

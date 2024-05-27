@@ -19,6 +19,12 @@ class BugReportDraftSuccess extends BugReportState {
   BugReportDraftSuccess(this.message, {required this.bugReport});
 }
 
+class BugReportNoDraftSuccess extends BugReportState {
+  final String message;
+
+  BugReportNoDraftSuccess(this.message);
+}
+
 class BugReportError extends BugReportState {
   final String error;
 

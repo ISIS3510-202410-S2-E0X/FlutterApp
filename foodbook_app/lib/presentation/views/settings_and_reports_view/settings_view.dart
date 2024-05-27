@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
+import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_bloc.dart';
 import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_event.dart';
 import 'package:foodbook_app/bloc/bug_report_bloc/bug_report_state.dart';
@@ -9,6 +11,9 @@ import 'package:foodbook_app/bloc/settings_bloc/settings_state.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
 import 'package:foodbook_app/data/models/bug_report.dart';
 import 'package:foodbook_app/data/repositories/bugs_report_repository.dart';
+import 'package:foodbook_app/data/repositories/restaurant_repository.dart';
+import 'package:foodbook_app/data/repositories/review_repository.dart';
+import 'package:foodbook_app/presentation/views/restaurant_view/browse_view.dart';
 import 'package:foodbook_app/presentation/views/settings_and_reports_view/report_bugs_view.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -70,7 +75,23 @@ class SettingsPage extends StatelessWidget {
 
     return BlocBuilder<SettingsBloc, SettingsState>(
       builder: (context, state) {
-        return Scaffold(
+        return PopScope(
+      canPop: false, 
+      onPopInvoked: (didPop) async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) {
+            return BlocProvider<BrowseBloc>(
+              create: (context) => BrowseBloc(
+                restaurantRepository: RestaurantRepository(),
+                reviewRepository: ReviewRepository(),
+              )..add(LoadRestaurants()),
+              child: BrowseView(),
+            );
+          }),
+        );
+      },
+      child: Scaffold(
           appBar: AppBar(
             title: const Text('Settings'),
           ),
@@ -128,6 +149,7 @@ class SettingsPage extends StatelessWidget {
               ),
             ],
           ),
+        ),
         );
       },
     );
