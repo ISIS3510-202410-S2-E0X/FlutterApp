@@ -5,12 +5,15 @@ class UserReviewsServiceAdapter {
 
   Future<List<Map<String, dynamic>>> getUserReviews(String username, String name) async {
     try {
+      print('USERNAME: $username');
+      print('NAME: $name');
       QuerySnapshot querySnapshot = await _firestore
           .collection('reviews')
           .where('user.id', isEqualTo: username)
           .where('user.name', isEqualTo: name) 
           .get();
-      print(querySnapshot.docs[0].data());
+
+      print('USER: ${querySnapshot.docs[0].data()}');
       List<Map<String, dynamic>> reviews = querySnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
           .toList();

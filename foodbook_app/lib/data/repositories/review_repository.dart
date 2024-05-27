@@ -96,6 +96,9 @@ class ReviewRepository {
     List<Review> revs = res
           .map((c) => ReviewDTO.fromJson(c).toModel())
           .toList();
+    
+    print('REVS: $revs');
+
     for (var rev in revs) {
       UserReviewsDAO().cacheReview(rev, cutmail);
     }
