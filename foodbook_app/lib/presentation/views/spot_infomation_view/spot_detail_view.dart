@@ -35,6 +35,7 @@ class SpotDetail extends StatefulWidget {
 }
 
 class _SpotDetailState extends State<SpotDetail> {
+  // ignore: unused_field
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
@@ -87,7 +88,7 @@ class _SpotDetailState extends State<SpotDetail> {
                 color: Colors.white, // Set the Container color to white
                 width: double.infinity, // Fill the screen width
                 height: double.infinity, // Fill the screen height
-                child: Center(
+                child: const Center(
                   child: CircularProgressIndicator(),
                 ),
               ),
@@ -95,7 +96,7 @@ class _SpotDetailState extends State<SpotDetail> {
           } else if (state is SpotDetailLoadSuccess) {
             return SpotDetailView(restaurant: state.restaurant);
           }  else if (state is SpotDetailLoadFailure) {
-            return SpotDetailViewFailure(message: 'Connect again to see the spot detail.');
+            return const SpotDetailViewFailure(message: 'Connect again to see the spot detail. Please exit and enter again to the Spot once connection restored.');
           } else {
             return const Center(child: Text('Unknown error.'));
           }
@@ -120,6 +121,7 @@ class SpotDetailView extends StatelessWidget {
       reviewDraftBloc.stream.firstWhere((state) => state is ReviewLoaded).then((state) {
         if (state is ReviewLoaded && state.drafts.isNotEmpty) {
           print('Draft found, navigating with draft');
+          print(state.drafts.first.image); 
           _pushCategoriesAndStarsView(context, state.drafts.first);
         } else {
           print('No draft found, navigating to new review page');
@@ -299,7 +301,7 @@ class SpotDetailView extends StatelessWidget {
                                         MaterialPageRoute(builder: (context) => ReviewListView(restaurant: restaurant)),
                                       );
                                     },
-                                    child: Text('See more (${restaurant.reviews.length})', style: TextStyle(color: Colors.blue)),
+                                    child: Text('See more (${restaurant.reviews.length})', style: const TextStyle(color: Colors.blue)),
                                   ),
                                 ],
                               ),
@@ -334,7 +336,7 @@ class SpotDetailView extends StatelessWidget {
         ),
       // ...
       bottomNavigationBar: Container(
-      color: Color.fromARGB(255, 252, 252, 252), // Grey background for the bottom bar
+      color: const Color.fromARGB(255, 252, 252, 252), // Grey background for the bottom bar
       padding: const EdgeInsets.all(16.0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -344,7 +346,7 @@ class SpotDetailView extends StatelessWidget {
         onPressed: () {
           if (isOffline) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
+              const SnackBar(
                 content: Text('Try connecting online to leave a review'),
                 duration: Duration(seconds: 2),
               ),
@@ -414,7 +416,7 @@ class SpotDetailViewFailure extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 64.0), // Adjust the padding as needed
+        padding: const EdgeInsets.only(top: 0.0), // Adjust the padding as needed
         child: Column(
           mainAxisSize: MainAxisSize.min, // Use min to take up less space
           mainAxisAlignment: MainAxisAlignment.start,
@@ -428,7 +430,12 @@ class SpotDetailViewFailure extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20), // Space between the offline icon and the message
-            Text(message),
+            Center(
+              child: Text(
+                message,
+                textAlign: TextAlign.center
+              )
+            ),
           ],
         ),
       ),

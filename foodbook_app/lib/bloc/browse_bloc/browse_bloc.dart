@@ -21,6 +21,7 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
     on<SearchWord2>(_onSearchWord);
     on<SearchButtonPressed2>(_onSearchButtonPressed);
     on<AddSuggestion2>(_onAddSuggestion);
+    on<TooLongSearch>(_onLongsearch);
     //on<ToggleBookmark>(_onToggleBookmark);
   }
 
@@ -34,8 +35,9 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
         if (cachedRests.isEmpty) {
           emit(RestaurantsLoadFailure('No restaurants found'));
         }
-        
-        emit(RestaurantsLoadSuccess(cachedRests));
+        if (cachedRests.isNotEmpty) {
+          emit(RestaurantsLoadSuccess(cachedRests));
+        }
 
       }
       if (restaurants.isNotEmpty) {
@@ -52,7 +54,10 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
     await repository.saveSearchTerm(event.name!);
     print("Saving the query to search history: ${event.name}");
     try {
-      final restaurants = await restaurantRepository.fetchRestaurants();
+      var restaurants = await restaurantRepository.fetchRestaurants();
+      if (restaurants.isEmpty) {
+        restaurants = await restaurantRepository.fetchRestaurantsFromCache();
+      }
       final filteredRestaurants = _applyFilters(
         event.name,
         event.price,
@@ -60,7 +65,7 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
         restaurants,
       );
       if (filteredRestaurants.isEmpty) {
-        emit(RestaurantsLoadFailure('No restaurants found'));
+        emit(RestaurantsLoadFailure('hmm something went wrong, please verify you’re connected to the internet'));
         return;
       }
       emit(RestaurantsLoadSuccess(filteredRestaurants));
@@ -119,6 +124,9 @@ class BrowseBloc extends Bloc<BrowseEvent, BrowseState> {
   }
   void _onAddSuggestion(AddSuggestion2 event, Emitter<BrowseState> emit) async {
     emit(SearchFinalized());
+  }
+  void _onLongsearch(TooLongSearch event, Emitter<BrowseState> emit) async {
+    emit(SearchBlocked());
   }
   List<Restaurant> _applyFilters(
     String? name,

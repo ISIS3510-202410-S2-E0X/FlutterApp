@@ -68,3 +68,5 @@ class SearchSuccess extends BrowseState {
 
 class Prefilter extends BrowseState {
 }
+class SearchBlocked extends BrowseState {
+}

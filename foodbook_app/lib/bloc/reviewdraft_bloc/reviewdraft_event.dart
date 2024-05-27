@@ -39,6 +39,11 @@ class DeleteDraft extends ReviewDraftEvent {
   DeleteDraft(this.spot);
 }
 
+class UpdateUnfinishedReviewsCount extends ReviewDraftEvent {
+  final String spot;
+  UpdateUnfinishedReviewsCount(this.spot);
+}
+
 class CheckUnfinishedDraft extends ReviewDraftEvent {
   final String restaurant;
   CheckUnfinishedDraft(this.restaurant);

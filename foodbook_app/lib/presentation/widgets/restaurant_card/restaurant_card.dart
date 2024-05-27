@@ -36,7 +36,7 @@ class RestaurantCard extends StatelessWidget {
           // Image layout based on the number of images
           SizedBox(
             height: 200,
-            child: hasImages ? ImagesDisplay(restaurant: restaurant) : Container(color: Color.fromARGB(255, 255, 255, 255)),
+            child: hasImages ? ImagesDisplay(restaurant: restaurant) : Container(),
           ),
           // Restaurant details
           Padding(

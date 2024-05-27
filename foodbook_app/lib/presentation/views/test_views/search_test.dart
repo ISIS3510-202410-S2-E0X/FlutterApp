@@ -6,7 +6,6 @@ import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_state.dart';
 import 'package:foodbook_app/bloc/review_bloc/food_category_bloc/food_category_state.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_bloc.dart';
-import 'package:foodbook_app/bloc/search_bloc/search_state.dart';
 import 'package:foodbook_app/data/repositories/bookmark_manager.dart';
 import 'package:foodbook_app/data/repositories/reviewdraft_repository.dart';
 import 'package:foodbook_app/data/repositories/shared_preferences_repository.dart';
@@ -33,35 +32,33 @@ class _SearchPage2State extends State<SearchPage2> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        actions: [
-          Container(
-            width: MediaQuery.of(context).size.width * 0.5, // 40% of screen width
-            child: ElevatedButton(
-              onPressed: () {
-                // Dispatch an event to fetch search history when the search button is pressed
-                browseBloc.add(SearchButtonPressed2(query: ''));
-                showSearch(
-                  context: context,
-                  delegate: CustomSearchDelegate(browseBloc: browseBloc),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0), // Adjust the value as needed
-                ),
-                backgroundColor: Colors.grey[200], // Set the button color to light grey
+    return Container(
+      width: MediaQuery.of(context).size.width, // Adjust the width as needed
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // Use as little space as needed
+        children: <Widget>[
+          ElevatedButton(
+            onPressed: () {
+              browseBloc.add(SearchButtonPressed2(query: ''));
+              showSearch(
+                context: context,
+                delegate: CustomSearchDelegate(browseBloc: browseBloc),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(Icons.search, color: Colors.grey), // Set the icon color to light grey
-                  SizedBox(width: 10), // Adjust spacing between icon and text
-                  Text("Search", style: TextStyle(color: Colors.grey)), // Set the text color to light grey
-                ],
-              ),
+              backgroundColor: Colors.grey[200],
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.search, color: Colors.grey),
+                SizedBox(width: 10),
+                Text("Search", style: TextStyle(color: Colors.grey)),
+              ],
             ),
           )
         ],
@@ -118,14 +115,20 @@ class CustomSearchDelegate extends SearchDelegate<String> {
         bloc: browseBloc,
         builder: (context, state) {
           if (state is SearchLoading2) {
-            print("Saving the query to search history: $query");
-            if (query != '') {
+            if (query != '' && query.length < 25) {
               browseBloc.add(FilterRestaurants(name: query));
+            }
+            else if (query.length >= 25) {
+              browseBloc.add(TooLongSearch(query: query));
             }
             return const Center(child: CircularProgressIndicator());
           } else if (state is RestaurantsLoadInProgress) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is RestaurantsLoadSuccess) {
+          }else if (state is SearchBlocked){
+            return const Center(child: Text("Search limit is 25 characters"));
+          }
+          
+          else if (state is RestaurantsLoadSuccess) {
             return ListView.builder(
               itemCount: state.restaurants.length,
               itemBuilder: (context, index) {
@@ -150,14 +153,20 @@ class CustomSearchDelegate extends SearchDelegate<String> {
                 );
               },
             );
-          } else{
-              return Center(child: Text("No results found for: $query"));
+          } 
+          if (state is RestaurantsLoadFailure) {
+            return Center(child: Text("Failed to load restaurants: ${state.error}",
+            textAlign: TextAlign.center,));
+          }
+          else {
+            return Center(child: Text("No results found for: $query"));
           }
         },
       )
   
     );
   }
+
 
 
   @override
@@ -189,8 +198,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
     super.close(context, result);
     //browseBloc.add(LoadRestaurants());
   }
-}
-
+} 
 // @override
 // Widget build(BuildContext context) {
 //   return Scaffold(

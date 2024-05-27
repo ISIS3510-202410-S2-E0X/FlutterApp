@@ -41,7 +41,7 @@ class TextAndImagesView extends StatefulWidget {
     this.reviewTitle,
     this.reviewContent,
     this.imageUrl,
-    required this.wasLoaded
+    required this.wasLoaded, String? imagePath
   });
 
   @override
@@ -51,6 +51,7 @@ class TextAndImagesView extends StatefulWidget {
 
 class _TextAndImagesViewState extends State<TextAndImagesView> {
   File? _image;
+  String? _imagePath;
   int _times = 0;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
@@ -65,6 +66,12 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
 
     if (widget.reviewContent != null) {
       _commentController.text = widget.reviewContent!;
+    }
+    
+    if (widget.imageUrl != null) {
+      print('Image URL: ${widget.imageUrl}');
+      _image = File(widget.imageUrl!);
+      _imagePath = _image!.path;
     }
   }
 
@@ -90,7 +97,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           content: const Text("We couldn't upload your review, but don't worry, we'll do it once you have connection"),
           actions: <Widget>[
             TextButton(
-              child: const Text('Ok'),
+              child: const Text('OK'),
               onPressed: () => 
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) {
@@ -112,6 +119,16 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     return true;
   }
 
+  void _onBackWOInternetPressed() async {
+    showDialog<String>(
+      context: context,
+      builder: (context) => const AlertDialog(
+        title: Text('No connection'),
+        content: Text("Please make sure you are connected to go back to the categories view."),
+      ),
+    );
+  }
+
   ReviewDraft _getUpdatedValues() {
     final userBlocState = BlocProvider.of<UserBloc>(context).state;
     final foodCategoryBloc = BlocProvider.of<FoodCategoryBloc>(context);
@@ -121,7 +138,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
       user: userBlocState.email,
       title: _titleController.text,
       content: _commentController.text,
-      image: "", // TODO: Change to actual image
+      image: "",
       spot: widget.restaurant.name,
       uploaded: 0,
       ratings: {
@@ -136,9 +153,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     return draft;
   }
 
-  Future<void> getImage() async {
-    final ImagePicker picker = ImagePicker();
-
+  Future<void> showMBS(ImagePicker picker) async {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -160,6 +175,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     if (pickedFile != null) {
                       setState(() {
                         _image = File(pickedFile.path);
+                        _imagePath = pickedFile.path;
                       });
                     }
                   }
@@ -183,6 +199,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
                     if (pickedFile != null) {
                       setState(() {
                         _image = File(pickedFile.path);
+                        _imagePath = pickedFile.path; 
                       });
                     }
                   }
@@ -199,12 +216,31 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     );
   }
 
+  Future<void> getImage() async {
+    final ImagePicker picker = ImagePicker();
+    if (!widget.wasLoaded && _image == null) {
+      showMBS(picker);
+    }
+    else if (widget.wasLoaded && _image == null) {
+      showMBS(picker);
+    }
+    else {
+      print("Image already uploaded: $_imagePath");
+    }
+  }
+
   Map<String, String>? _name;
   String? _uploadedImageUrl;
   Future saveImage() async {
-    if (_image == null) return; 
+    print('Saving image...');
+    print("Image path: ${_image!.path}");
+    if (_image == null) {
+      print("imagen nula");
+      return;
+    } 
     final imageUploadBloc = BlocProvider.of<ImageUploadBloc>(context);
     imageUploadBloc.add(ImageUploadRequested(_image!));
+    if (_image == null) return; 
   }
 
   @override
@@ -212,11 +248,19 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
     return PopScope(
       canPop: false, 
       onPopInvoked: (didPop) async {
-        Navigator.of(context).pop({
-          'reviewTitle': _titleController.text,
-          'reviewContent': _commentController.text,
-          'imageUrl': _uploadedImageUrl,
-        });
+        if (!didPop) {
+            var connectivityResult = await Connectivity().checkConnectivity();
+            if (connectivityResult[0] == ConnectivityResult.none) {
+                _onBackWOInternetPressed();
+            } else {
+              Navigator.of(context).pop({
+              'reviewTitle': _titleController.text,
+              'reviewContent': _commentController.text,
+              'imageUrl': _uploadedImageUrl,
+              'imagePath': _imagePath,
+            });
+          }
+        }
     },
     child: Scaffold(
       appBar: AppBar(
@@ -239,7 +283,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
               }
               context.read<UserBloc>().add(GetCurrentUser());
               saveImage();
-              Navigator.of(context).pushReplacement(
+              Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) {
                   return BlocProvider<BrowseBloc>(
                     create: (context) => BrowseBloc(
@@ -271,7 +315,7 @@ class _TextAndImagesViewState extends State<TextAndImagesView> {
           BlocListener<UserBloc, UserState>(
             listener: (context, state) {
               if (state is AuthenticatedUserState) {
-                _name = {'id': state.email, 'name': state.displayName};
+                _name = {'id': state.email.replaceAll('@gmail.com', ''), 'name': state.displayName};
                 if (_image == null && _times == 0) {
                   createReview(_name!, null);
                   cancelSingleTask("reviewReminder");

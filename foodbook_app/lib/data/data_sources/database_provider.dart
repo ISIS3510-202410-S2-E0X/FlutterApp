@@ -13,11 +13,12 @@ class DatabaseProvider {
 
   _initDB() async {
     var documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, "LoSgDraftsDB_4.db");
+    String path = join(documentsDirectory.path, "LoSgDraftsDB_6.db");
     print("DB path: $path");
     return await openDatabase(path, version: 1, onCreate: (db, version) async {
       await _createDB(db, version);
       await _createSecondTable(db, version);
+      await _createThirdTable(db, version);
     });
   }
 
@@ -59,6 +60,23 @@ class DatabaseProvider {
         "category3 TEXT"
         ")"
       );
+  }
+
+   _createThirdTable(Database db, int version) async {
+    await db.execute(
+        "CREATE TABLE BugsReports ("
+        "description TEXT,"
+        "bugType TEXT,"
+        "severityLevel TEXT,"
+        "stepsToReproduce TEXT"
+        ")"
+      );
+  }
+
+  Future<void> clearTable(String tableName) async {
+    final db = await getDatabase();
+    await db.execute('DELETE FROM $tableName');
+    print("All data from $tableName has been deleted.");
   }
 
   Future<void> killDatabase() async {

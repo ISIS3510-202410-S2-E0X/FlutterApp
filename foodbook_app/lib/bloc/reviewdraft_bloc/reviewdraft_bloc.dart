@@ -1,3 +1,4 @@
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_event.dart';
 import 'package:foodbook_app/bloc/reviewdraft_bloc/reviewdraft_state.dart';
@@ -16,6 +17,7 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
     on<AddDraftToUpload>(_onAddDraftToUpload);
     on<LoadDraftsToUpload>(_onLoadDraftsToUpload);
     on<DeleteDraftToUpload>(_onDeleteDraftsToUpload);
+    on<UpdateUnfinishedReviewsCount>(_onUpdateUnfishedReviewsCount);
   }
 
   Future<void> _onLoadDrafts(LoadDrafts event, Emitter<ReviewDraftState> emit) async {
@@ -42,7 +44,8 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
 
   Future<void> _onAddDraft(AddDraft event, Emitter<ReviewDraftState> emit) async {
     await reviewDraftRepository.insertDraft(event.draft);
-    add(LoadDrafts());
+    print("Adding draft");
+    //add(LoadDrafts());
   }
 
   Future<void> _onUpdateDraft(UpdateDraft event, Emitter<ReviewDraftState> emit) async {
@@ -53,6 +56,10 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
   Future<void> _onDeleteDraft(DeleteDraft event, Emitter<ReviewDraftState> emit) async {
     await reviewDraftRepository.deleteDraft(event.spot);
     add(LoadDrafts());
+  }
+
+  Future<void> _onUpdateUnfishedReviewsCount(UpdateUnfinishedReviewsCount event, Emitter<ReviewDraftState> emit) async {
+    await reviewDraftRepository.updateUnifinishedDraftCount(event.spot, true);
   }
 
   Future<void> _onCheckUnfinishedDraft(CheckUnfinishedDraft event, Emitter<ReviewDraftState> emit) async {
@@ -85,9 +92,10 @@ class ReviewDraftBloc extends Bloc<ReviewDraftEvent, ReviewDraftState> {
       for (var draft in drafts) {
         print('DRAFTS: ${draft.spot}');
       }
-      emit(ReviewLoaded(drafts));
+      emit(ReviewToUploadLoaded(drafts));
     } catch (e) {
       emit(ReviewError());
     }
   }
+  
 }

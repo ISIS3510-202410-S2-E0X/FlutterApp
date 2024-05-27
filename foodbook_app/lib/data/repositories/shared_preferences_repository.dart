@@ -1,9 +1,9 @@
 import 'package:foodbook_app/data/data_access_objects/shared_preferences_dao.dart';
+import 'package:foodbook_app/data/data_sources/service_adapter_searchwords.dart';
 
 class SharedPreferencesRepository {
   final SearchHistoryDAO _searchHistoryDAO = SearchHistoryDAO();
-
-  SharedPreferencesRepository();
+  final ServiceAdapterSearchWords _saSearchWords = ServiceAdapterSearchWords();
 
   Future<void> saveSearchTerm(String term) async {
     if (term.isNotEmpty) {
@@ -13,6 +13,7 @@ class SharedPreferencesRepository {
       }
       searchHistory.insert(0, term);
       await _searchHistoryDAO.saveSearchTerm(searchHistory);
+      _saSearchWords.postDataToFirestore(term);
     }
   }
 

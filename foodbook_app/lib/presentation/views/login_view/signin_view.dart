@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/bookmark_internet_view_bloc/bookmark_internet_view_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_bloc.dart';
 import 'package:foodbook_app/bloc/browse_bloc/browse_event.dart';
 import 'package:foodbook_app/bloc/login_bloc/auth_bloc.dart';
@@ -54,7 +55,10 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
                       reviewRepository: ReviewRepository(),
                       restaurantRepository: RestaurantRepository(),
                     ),
-                  )
+                  ),
+                  BlocProvider<BookmarkInternetViewBloc>(
+                  create: (context) => BookmarkInternetViewBloc(),
+                )
                 ],
                 child: BrowseView(),
               );
@@ -187,11 +191,11 @@ late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('No Internet Connection'),
-            content: Text('Please check your internet connection and try again.'),
+            title: const Text('No Internet Connection'),
+            content: const Text('Please check your internet connection and try again.'),
             actions: <Widget>[
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                   BlocProvider.of<AuthBloc>(context).add(NoInternet());

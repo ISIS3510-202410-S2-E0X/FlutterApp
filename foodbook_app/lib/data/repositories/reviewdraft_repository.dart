@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:foodbook_app/data/data_access_objects/file_manager_dao.dart';
 import 'package:foodbook_app/data/dtos/reviewdraft_dto.dart';
 import 'package:foodbook_app/data/models/reviewdraft.dart';
 import 'package:foodbook_app/data/data_sources/database_provider.dart';
@@ -28,7 +29,6 @@ class ReviewDraftRepository {
       whereArgs: [spot]
     );
 
-    print('RES: $res');
     if (res.length == 1) {
       return res.map((c) => ReviewDraftDTO.fromJson(c).toModel()).toList();
     }
@@ -39,11 +39,9 @@ class ReviewDraftRepository {
   Future<String?> findId(String spot) async {
     try {
       QuerySnapshot docs = await _fireCloud.get();
-      List<DocumentSnapshot> foundDocs = [];
       String? id ;
       for (var doc in docs.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        print(data);
         if (data['spot'] == spot) {
             id = doc.id;
             break;
@@ -91,9 +89,12 @@ class ReviewDraftRepository {
   }
 
   Future<void> insertDraft(ReviewDraft draft) async {
+    
+    if (draft.image != null) {
+      draft.image = await FileManagerDAO().saveImage(draft.image!, draft.spot!);
+    }
     final db = await dbProvider.getDatabase();
-    print('SAVING: ${ReviewDraftDTO.fromModel(draft).toJson()}');
-    await updateUnifinishedDraftCount(draft.spot!, true);
+    // await updateUnifinishedDraftCount(draft.spot!, true);
     await db.insert('ReviewDrafts', ReviewDraftDTO.fromModel(draft).toJson());
   }
 
@@ -114,7 +115,7 @@ class ReviewDraftRepository {
       where: 'spot = ?',
       whereArgs: [spot]
     );
-    await updateUnifinishedDraftCount(spot, false);
+    // await updateUnifinishedDraftCount(spot, false);
   }
 
   Future<void> deleteAllDrafts() async {

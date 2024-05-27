@@ -4,7 +4,7 @@ class ReviewDraft {
   final String user;
   final String? title;
   final String? content;
-  final String? image;
+  String? image;
   final String? spot;
   final int uploaded; // SQLite no maneja Boolean, así que se convierte a int
   final Map<String, double> ratings;

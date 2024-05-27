@@ -2,7 +2,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodbook_app/bloc/review_report_bloc/review_report_bloc.dart';
+import 'package:foodbook_app/bloc/user_bloc/user_bloc.dart';
 import 'package:foodbook_app/data/models/review.dart';
+import 'package:foodbook_app/presentation/views/settings_and_reports_view/report_reviews_view.dart';
 import 'package:intl/intl.dart'; // Asegúrate de tener intl en tu pubspec.yaml para usar DateFormat
 
 class ReviewItem extends StatelessWidget {
@@ -46,9 +50,16 @@ class ReviewItem extends StatelessWidget {
             const SizedBox(height: 10),
             // ignore: avoid_print
             if (review.imageUrl != null && !isOffline) Image.network(
-              review.imageUrl!,
-              fit: BoxFit.cover,
-            ),
+                review.imageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  // If there is an error in loading the image from the network, show a placeholder image
+                  return Image.asset(
+                    'lib/presentation/images/review-detail-no-connection.jpeg', // Path to your placeholder image
+                    fit: BoxFit.cover,
+                  );
+                },
+              ),
             if (isOffline) Center(
               child: FittedBox(
                 fit: BoxFit.contain,
@@ -84,6 +95,42 @@ class ReviewItem extends StatelessWidget {
             const SizedBox(height: 10),
             // Text('Categories: ${review.selectedCategories}'),
             Text('Categories: ${review.selectedCategories.map((c) => c).join(', ')}'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                const Icon(
+                  Icons.report_problem_rounded,  // Este es un ícono de ejemplo, puedes cambiarlo por el que necesites
+                  color: Colors.blue,
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return MultiBlocProvider(
+                            providers: [
+                              BlocProvider.value(
+                                value: BlocProvider.of<ReviewReportBloc>(context),
+                              ),
+                              BlocProvider.value(
+                                value: BlocProvider.of<UserBloc>(context),
+                              )
+                            ],
+                            child: ReviewReportView(review: review),
+                          );
+                        } 
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Report review',
+                    style: TextStyle(
+                      color: Colors.blue
+                      )
+                    ),
+                  ),
+              ],
+            )
           ],
         ),
       ),

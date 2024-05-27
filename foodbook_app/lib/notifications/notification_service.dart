@@ -52,7 +52,7 @@ static Future<void> schedulePeriodicNotification() async {
   static Future<void> scheduleNotification() async {
     const int id = 4 ;
     const String title = 'We miss you...';
-    const String body = 'This notification was scheduled four days ago';
+    const String body = 'This notification was scheduled days ago';
 
     // Calculate the date and time four days from now
     final now = DateTime.now();
